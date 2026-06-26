@@ -5,6 +5,7 @@ node_modules/
 .env
 .env.*
 !.env.example
+*.local
 
 # Logs
 logs/
@@ -13,6 +14,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # Runtime data
 pids/
@@ -28,12 +30,19 @@ build/
 
 # Node.js caches
 .npm/
+.pnpm-store/
 .eslintcache
 .cache/
 
 # VS Code
 .vscode/
 !.vscode/extensions.json
+!.vscode/settings.json.example
+
+# Editor metadata
+.idea/
+*.swp
+*.swo
 
 # macOS
 .DS_Store
@@ -48,6 +57,7 @@ Thumbs.db:encryptable
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.lnk
 
 # Local Codex/agent workspace metadata
 .agents/

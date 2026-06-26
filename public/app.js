@@ -96,9 +96,123 @@ let currentUser = null;
 let currentState = null;
 let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
+let discordIdentityInitialised = false;
+
+async function initialiseDiscordIdentity() {
+  if (discordIdentityInitialised || !isLikelyDiscordActivity()) {
+    return;
+  }
+
+  discordIdentityInitialised = true;
+
+  try {
+    const config = await fetch("/api/discord/config").then((response) => response.json());
+
+    if (!config.clientId) {
+      return;
+    }
+
+    const DiscordSDK = await loadDiscordSdk();
+    const discordSdk = new DiscordSDK(config.clientId);
+    await discordSdk.ready();
+
+    const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
+
+    if (!authCode) {
+      return;
+    }
+
+    const tokenResponse = await fetch("/api/discord/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        code: authCode
+      })
+    });
+
+    if (!tokenResponse.ok) {
+      return;
+    }
+
+    const tokenData = await tokenResponse.json();
+    const auth = await discordSdk.commands.authenticate({
+      access_token: tokenData.access_token
+    });
+    const user = auth?.user;
+
+    if (!user) {
+      return;
+    }
+
+    socket.emit("setUserIdentity", {
+      name: user.global_name || user.display_name || user.username,
+      avatarUrl: getDiscordAvatarUrl(user),
+      discordUserId: user.id
+    });
+  } catch (error) {
+    console.warn("Discord identity unavailable; using guest identity.", error);
+  }
+}
+
+function isLikelyDiscordActivity() {
+  const params = new URLSearchParams(window.location.search);
+  return window.parent !== window &&
+    (
+      document.referrer.includes("discord.com") ||
+      params.has("frame_id") ||
+      params.has("instance_id") ||
+      params.has("guild_id") ||
+      params.has("channel_id")
+    );
+}
+
+async function loadDiscordSdk() {
+  const sources = [
+    "https://cdn.jsdelivr.net/npm/@discord/embedded-app-sdk/+esm",
+    "https://esm.sh/@discord/embedded-app-sdk"
+  ];
+
+  for (const source of sources) {
+    try {
+      const module = await import(source);
+
+      if (module.DiscordSDK) {
+        return module.DiscordSDK;
+      }
+    } catch {
+      // Try the next CDN source.
+    }
+  }
+
+  throw new Error("Discord Embedded App SDK could not be loaded.");
+}
+
+async function getDiscordAuthCode(discordSdk, clientId) {
+  const response = await discordSdk.commands.authorize({
+    client_id: clientId,
+    response_type: "code",
+    state: "",
+    prompt: "none",
+    scope: ["identify"]
+  });
+
+  return response?.code || "";
+}
+
+function getDiscordAvatarUrl(user) {
+  if (!user?.id || !user.avatar) {
+    return "";
+  }
+
+  const extension = user.avatar.startsWith("a_") ? "gif" : "png";
+  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${extension}?size=128`;
+}
 
 socket.on("connected", (user) => {
   currentUser = user;
+  initialiseDiscordIdentity();
 });
 
 socket.on("gameState", (state) => {
@@ -152,6 +266,13 @@ changeRoleBtn.addEventListener("click", () => {
 
 startGameBtn.addEventListener("click", () => {
   socket.emit("startGame");
+});
+
+socket.on("identityUpdated", (user) => {
+  currentUser = {
+    ...currentUser,
+    ...user
+  };
 });
 
 boardSelect.addEventListener("change", () => {
@@ -453,8 +574,9 @@ function renderScores(state) {
     item.className = isHost ? "score-row editable-score-row" : "score-row";
 
     const name = document.createElement("span");
-    name.className = "score-name";
-    name.textContent = player.name;
+    name.className = "score-name user-identity";
+    name.appendChild(createUserAvatar(player));
+    name.appendChild(createUserName(player));
 
     const score = document.createElement("span");
     score.className = "score-value";
@@ -1059,9 +1181,47 @@ function renderList(element, users, emptyText) {
 
   users.forEach((user) => {
     const item = document.createElement("li");
-    item.textContent = user.name;
+    item.appendChild(createUserIdentity(user));
     element.appendChild(item);
   });
+}
+
+function createUserIdentity(user) {
+  const identity = document.createElement("span");
+  identity.className = "user-identity";
+  identity.appendChild(createUserAvatar(user));
+  identity.appendChild(createUserName(user));
+  return identity;
+}
+
+function createUserAvatar(user) {
+  if (user.avatarUrl) {
+    const avatar = document.createElement("img");
+    avatar.className = "user-avatar";
+    avatar.src = user.avatarUrl;
+    avatar.alt = "";
+    avatar.loading = "lazy";
+    avatar.referrerPolicy = "no-referrer";
+    return avatar;
+  }
+
+  const placeholder = document.createElement("span");
+  placeholder.className = "user-avatar user-avatar-placeholder";
+  placeholder.textContent = getInitials(user.name);
+  return placeholder;
+}
+
+function createUserName(user) {
+  const name = document.createElement("span");
+  name.className = "user-name";
+  name.textContent = user.name;
+  return name;
+}
+
+function getInitials(name = "") {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  const initials = words.slice(0, 2).map((word) => word.charAt(0).toUpperCase()).join("");
+  return initials || "?";
 }
 
 function capitalise(word) {

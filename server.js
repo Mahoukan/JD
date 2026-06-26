@@ -20,7 +20,53 @@ const availableBoards = discoverAvailableBoards();
 const selectedBoard = availableBoards[0] ?? createFallbackBoardOption();
 const initialBoard = loadBoardByFilename(selectedBoard.filename) ?? createEmptyBoard(selectedBoard);
 
+app.use(express.json());
 app.use(express.static("public"));
+
+app.get("/api/discord/config", (req, res) => {
+  res.json({
+    clientId: process.env.DISCORD_CLIENT_ID || ""
+  });
+});
+
+app.post("/api/discord/token", async (req, res) => {
+  const clientId = process.env.DISCORD_CLIENT_ID;
+  const clientSecret = process.env.DISCORD_CLIENT_SECRET;
+  const code = typeof req.body?.code === "string" ? req.body.code : "";
+
+  if (!clientId || !clientSecret || !code) {
+    res.status(400).json({ error: "Discord auth is not configured." });
+    return;
+  }
+
+  try {
+    const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: "authorization_code",
+        code
+      })
+    });
+
+    if (!tokenResponse.ok) {
+      res.status(502).json({ error: "Discord token exchange failed." });
+      return;
+    }
+
+    const tokenData = await tokenResponse.json();
+    res.json({
+      access_token: tokenData.access_token
+    });
+  } catch (error) {
+    console.warn(`Discord token exchange failed: ${error.message}`);
+    res.status(502).json({ error: "Discord token exchange failed." });
+  }
+});
 
 const gameState = {
   host: null,
@@ -50,6 +96,8 @@ function getUser(socket) {
   return {
     id: socket.id,
     name: socket.data.name || `Guest ${socket.id.slice(0, 4)}`,
+    avatarUrl: socket.data.avatarUrl || "",
+    discordUserId: socket.data.discordUserId || "",
     role: socket.data.role || null
   };
 }
@@ -82,10 +130,30 @@ io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
 
   socket.data.name = `Guest ${socket.id.slice(0, 4)}`;
+  socket.data.avatarUrl = "";
+  socket.data.discordUserId = "";
   socket.data.role = null;
 
   socket.emit("connected", getUser(socket));
   sendGameState();
+
+  socket.on("setUserIdentity", ({ name, avatarUrl, discordUserId } = {}) => {
+    const identity = sanitizeIdentity({
+      name,
+      avatarUrl,
+      discordUserId
+    });
+
+    if (identity.name) {
+      socket.data.name = identity.name;
+    }
+
+    socket.data.avatarUrl = identity.avatarUrl;
+    socket.data.discordUserId = identity.discordUserId;
+    updateUserIdentity(socket.id, identity);
+    socket.emit("identityUpdated", getUser(socket));
+    sendGameState();
+  });
 
   socket.on("chooseRole", (role) => {
     if (!["host", "player", "spectator"].includes(role)) {
@@ -777,6 +845,72 @@ function removeUserFromAllRoles(socketId) {
 
   gameState.players = gameState.players.filter((player) => player.id !== socketId);
   gameState.spectators = gameState.spectators.filter((spectator) => spectator.id !== socketId);
+}
+
+function sanitizeIdentity({ name, avatarUrl, discordUserId }) {
+  return {
+    name: sanitizeDisplayName(name),
+    avatarUrl: sanitizeAvatarUrl(avatarUrl),
+    discordUserId: sanitizePlainText(discordUserId, 40)
+  };
+}
+
+function sanitizeDisplayName(value) {
+  const name = sanitizePlainText(value, 40);
+  return name || "";
+}
+
+function sanitizeAvatarUrl(value) {
+  const url = sanitizePlainText(value, 300);
+
+  if (!url) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    return ["https:", "http:"].includes(parsedUrl.protocol) ? parsedUrl.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function sanitizePlainText(value, maxLength) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, maxLength);
+}
+
+function updateUserIdentity(socketId, identity) {
+  const applyIdentity = (user) => {
+    if (!user || user.id !== socketId) {
+      return user;
+    }
+
+    return {
+      ...user,
+      name: identity.name || user.name,
+      avatarUrl: identity.avatarUrl,
+      discordUserId: identity.discordUserId
+    };
+  };
+
+  gameState.host = applyIdentity(gameState.host);
+  gameState.players = gameState.players.map(applyIdentity);
+  gameState.spectators = gameState.spectators.map(applyIdentity);
+
+  if (gameState.buzzedPlayer?.id === socketId) {
+    gameState.buzzedPlayer = applyIdentity(gameState.buzzedPlayer);
+  }
+
+  gameState.buzzes = gameState.buzzes.map((buzz) => applyIdentity(buzz));
+  gameState.lockedOutPlayers = gameState.lockedOutPlayers.map((player) => applyIdentity(player));
+
+  if (gameState.dailyDouble.playerId === socketId && identity.name) {
+    gameState.dailyDouble.playerName = identity.name;
+  }
 }
 
 function discoverAvailableBoards() {
