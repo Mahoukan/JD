@@ -6,7 +6,7 @@
 
   <title>Discord Jeopardy</title>
 
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=__BUILD_VERSION__" />
 </head>
 <body>
 
@@ -220,8 +220,13 @@
     </div>
   </div>
   <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+  <div id="build-badge" class="build-badge">Build __BUILD_VERSION__</div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js?v=2"></script>
+  <script>
+    window.BUILD_VERSION = "__BUILD_VERSION__";
+    console.log("Discord Jeopardy Build:", window.BUILD_VERSION);
+  </script>
+  <script src="app.js?v=__BUILD_VERSION__"></script>
 </body>
 </html>

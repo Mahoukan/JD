@@ -15,13 +15,35 @@ const READING_TIMER_MS = 5000;
 const ANSWER_TIMER_MS = 10000;
 const TIMER_BROADCAST_MS = 250;
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(readFileSync(join(__dirname, "package.json"), "utf8"));
+const BUILD_VERSION = process.env.BUILD_VERSION ||
+  process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ||
+  `${packageJson.version}-${Date.now()}`;
 const boardsDirectory = join(__dirname, "public", "boards");
 const availableBoards = discoverAvailableBoards();
 const selectedBoard = availableBoards[0] ?? createFallbackBoardOption();
 const initialBoard = loadBoardByFilename(selectedBoard.filename) ?? createEmptyBoard(selectedBoard);
 
 app.use(express.json());
-app.use(express.static("public"));
+
+app.get(["/", "/index.html"], (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.type("html").send(renderIndexHtml());
+});
+
+app.use(express.static("public", {
+  immutable: true,
+  maxAge: "1y",
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+    }
+  }
+}));
 
 app.get("/api/discord/config", (req, res) => {
   res.json({
@@ -100,6 +122,11 @@ function getUser(socket) {
     discordUserId: socket.data.discordUserId || "",
     role: socket.data.role || null
   };
+}
+
+function renderIndexHtml() {
+  return readFileSync(join(__dirname, "public", "index.html"), "utf8")
+    .replaceAll("__BUILD_VERSION__", BUILD_VERSION);
 }
 
 function sendGameState() {
@@ -1403,5 +1430,6 @@ function getVisibleCurrentClue() {
 }
 
 server.listen(PORT, () => {
+  console.log(`Discord Jeopardy Build: ${BUILD_VERSION}`);
   console.log(`Server running on http://localhost:${PORT}`);
 });

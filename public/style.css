@@ -5,6 +5,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: Arial, sans-serif;
   background:
     radial-gradient(circle at top, #1e3a8a 0%, transparent 35%),
@@ -18,7 +19,22 @@ body {
 .app {
   width: 100%;
   max-width: 1180px;
-  padding: 12px;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+}
+
+.build-badge {
+  position: fixed;
+  right: max(8px, env(safe-area-inset-right));
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 10001;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 6px;
+  padding: 4px 6px;
+  background: rgba(17, 24, 39, 0.78);
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 800;
+  pointer-events: none;
 }
 
 .card {
@@ -1158,16 +1174,76 @@ li {
 
 @media (max-width: 800px), (hover: none), (pointer: coarse) {
   body {
-    align-items: start;
+    align-items: center;
   }
 
   .app {
-    padding: 8px;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
   }
 
   .card {
     border-radius: 12px;
-    padding: 14px 10px;
+    padding: 12px 9px;
+  }
+
+  h1 {
+    margin-bottom: 5px;
+    font-size: clamp(28px, 9vw, 42px);
+  }
+
+  .game-header {
+    align-items: end;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  #game-screen h1 {
+    margin-bottom: 2px;
+    font-size: clamp(24px, 7.5vw, 36px);
+  }
+
+  .round-status {
+    margin-bottom: 1px;
+    font-size: 12px;
+  }
+
+  #board-status {
+    font-size: 13px;
+  }
+
+  .board-layout {
+    gap: 8px;
+  }
+
+  .jeopardy-board {
+    grid-template-columns: repeat(6, minmax(36px, 1fr));
+    gap: clamp(2px, 0.65vw, 6px);
+  }
+
+  .board-category {
+    min-height: clamp(36px, 6.1vw, 60px);
+    padding: 4px;
+    font-size: clamp(8px, 1.05vw, 13px);
+    line-height: 1.08;
+  }
+
+  .clue-square {
+    aspect-ratio: 1.55 / 1;
+    padding: 3px;
+    font-size: clamp(14px, 3vw, 29px);
+  }
+
+  .score-panel {
+    padding: 9px;
+  }
+
+  .score-panel h2 {
+    margin-bottom: 7px;
+    font-size: 14px;
+  }
+
+  .score-row {
+    padding: 6px 8px;
   }
 
   #question-screen {
