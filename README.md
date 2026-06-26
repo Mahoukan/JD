@@ -76,7 +76,7 @@ BUILD_VERSION=
 
 Discord variables are optional for local browser testing. If they are not configured, the app still works with `Guest xxxx` names.
 
-`BUILD_VERSION` is optional. If omitted, the server uses the Railway commit hash when available, or falls back to the package version plus a startup timestamp.
+`BUILD_VERSION` is optional. If omitted, the server uses the Railway commit hash when available plus a startup timestamp, or falls back to the package version plus a startup timestamp.
 
 ## Board JSON Format
 

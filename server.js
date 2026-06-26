@@ -16,9 +16,9 @@ const ANSWER_TIMER_MS = 10000;
 const TIMER_BROADCAST_MS = 250;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(join(__dirname, "package.json"), "utf8"));
+const buildCommit = process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || packageJson.version;
 const BUILD_VERSION = process.env.BUILD_VERSION ||
-  process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ||
-  `${packageJson.version}-${Date.now()}`;
+  `${buildCommit}-${Date.now()}`;
 const boardsDirectory = join(__dirname, "public", "boards");
 const availableBoards = discoverAvailableBoards();
 const selectedBoard = availableBoards[0] ?? createFallbackBoardOption();
