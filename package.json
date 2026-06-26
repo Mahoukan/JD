@@ -10,10 +10,15 @@
     "url": "https://github.com/your-username/discord-jeopardy-activity.git"
   },
   "scripts": {
+    "build": "npm run build:discord-sdk",
+    "build:discord-sdk": "esbuild src/discord-sdk-entry.js --bundle --format=iife --outfile=public/discord-sdk.js",
+    "prestart": "npm run build",
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "npm run build && node server.js"
   },
   "dependencies": {
+    "@discord/embedded-app-sdk": "^2.5.0",
+    "esbuild": "^0.28.1",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
   }

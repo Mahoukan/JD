@@ -238,27 +238,14 @@ function isLikelyDiscordActivity() {
     window.parent !== window;
 }
 
-async function loadDiscordSdk() {
-  const sources = [
-    "https://cdn.jsdelivr.net/npm/@discord/embedded-app-sdk/+esm",
-    "https://esm.sh/@discord/embedded-app-sdk"
-  ];
+function loadDiscordSdk() {
+  console.log("Discord identity: loading bundled SDK");
 
-  for (const source of sources) {
-    try {
-      console.log("Discord identity: loading SDK", source);
-      const module = await import(source);
-
-      if (module.DiscordSDK) {
-        return module.DiscordSDK;
-      }
-    } catch (error) {
-      console.warn("Discord identity: SDK source failed", source, error);
-      // Try the next CDN source.
-    }
+  if (!window.DiscordSDK) {
+    throw new Error("Discord Embedded App SDK bundle was not loaded.");
   }
 
-  throw new Error("Discord Embedded App SDK could not be loaded.");
+  return window.DiscordSDK;
 }
 
 async function getDiscordAuthCode(discordSdk, clientId) {
