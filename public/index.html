@@ -95,6 +95,12 @@
       <p id="question-category" class="question-category"></p>
       <h1 id="question-value" class="question-value"></h1>
       <p id="question-clue" class="question-clue"></p>
+      <div id="timer-panel" class="timer-panel">
+        <span id="timer-label" class="timer-label">Reading time</span>
+        <span id="timer-value" class="timer-value">0.0</span>
+        <span id="timer-status" class="timer-status">Paused</span>
+      </div>
+      <p id="buzzing-status" class="buzzing-status">Read the clue...</p>
       <div id="question-answer" class="question-answer answer-hidden">Answer hidden</div>
       <p id="result-message" class="result-message"></p>
       <p id="buzz-message" class="buzz-message"></p>
@@ -106,6 +112,11 @@
       </div>
 
       <div id="question-host-controls" class="host-controls hidden">
+        <div id="timer-controls" class="timer-controls">
+          <button id="pause-timer-btn" class="secondary-button">Pause Timer</button>
+          <button id="resume-timer-btn" class="secondary-button">Resume Timer</button>
+          <button id="add-time-btn" class="secondary-button">Add 5 Seconds</button>
+        </div>
         <div class="judge-controls">
           <button id="correct-btn" class="judge-button correct-button">Correct</button>
           <button id="incorrect-btn" class="judge-button incorrect-button">Incorrect</button>

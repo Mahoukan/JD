@@ -20,6 +20,11 @@ const scoreList = document.getElementById("score-list");
 const questionCategory = document.getElementById("question-category");
 const questionValue = document.getElementById("question-value");
 const questionClue = document.getElementById("question-clue");
+const timerPanel = document.getElementById("timer-panel");
+const timerLabel = document.getElementById("timer-label");
+const timerValue = document.getElementById("timer-value");
+const timerStatus = document.getElementById("timer-status");
+const buzzingStatus = document.getElementById("buzzing-status");
 const questionAnswer = document.getElementById("question-answer");
 const resultMessage = document.getElementById("result-message");
 const buzzMessage = document.getElementById("buzz-message");
@@ -30,6 +35,10 @@ const buzzBtn = document.getElementById("buzz-btn");
 const questionHostControls = document.getElementById("question-host-controls");
 const correctBtn = document.getElementById("correct-btn");
 const incorrectBtn = document.getElementById("incorrect-btn");
+const timerControls = document.getElementById("timer-controls");
+const pauseTimerBtn = document.getElementById("pause-timer-btn");
+const resumeTimerBtn = document.getElementById("resume-timer-btn");
+const addTimeBtn = document.getElementById("add-time-btn");
 const revealAnswerBtn = document.getElementById("reveal-answer-btn");
 const backToBoardBtn = document.getElementById("back-to-board-btn");
 
@@ -115,6 +124,18 @@ correctBtn.addEventListener("click", () => {
 
 incorrectBtn.addEventListener("click", () => {
   socket.emit("markIncorrect");
+});
+
+pauseTimerBtn.addEventListener("click", () => {
+  socket.emit("pauseTimer");
+});
+
+resumeTimerBtn.addEventListener("click", () => {
+  socket.emit("resumeTimer");
+});
+
+addTimeBtn.addEventListener("click", () => {
+  socket.emit("addTimerTime", 5000);
 });
 
 function updateRoleButtons(state) {
@@ -254,6 +275,8 @@ function renderQuestion(state) {
   const hasActiveBuzz = Boolean(state.buzzedPlayer) && !state.answerRevealed;
   const buzzingAvailable =
     state.phase === "question" &&
+    isPlayer &&
+    state.buzzingOpen &&
     !state.answerRevealed &&
     !playerHasBuzzed &&
     !playerIsLockedOut &&
@@ -264,11 +287,13 @@ function renderQuestion(state) {
   buzzBtn.disabled = !buzzingAvailable;
   correctBtn.disabled = !hasActiveBuzz;
   incorrectBtn.disabled = !hasActiveBuzz;
+  renderTimer(state);
 
   if (!currentClue) {
     questionCategory.textContent = "";
     questionValue.textContent = "";
     questionClue.textContent = "";
+    buzzingStatus.textContent = "";
     questionAnswer.textContent = "Answer hidden";
     questionAnswer.classList.add("answer-hidden");
     resultMessage.textContent = "";
@@ -294,25 +319,101 @@ function renderQuestion(state) {
   revealAnswerBtn.disabled = Boolean(state.answerRevealed);
   resultMessage.textContent = state.resultMessage || "";
   buzzMessage.textContent = state.buzzedPlayer
-    ? `${state.buzzedPlayer.name} buzzed in!`
+    ? `Current answering: ${state.buzzedPlayer.name}`
     : "";
+  buzzingStatus.textContent = getBuzzingStatus(state);
   lockedOutMessage.textContent = state.lockedOutPlayers?.length
     ? `Locked out: ${state.lockedOutPlayers.map((player) => player.name).join(", ")}`
     : "";
-  renderBuzzes(state.buzzes || []);
+  renderBuzzes(state.buzzes || [], state.buzzedPlayer, state.lockedOutPlayers || []);
 }
 
-function renderBuzzes(buzzes) {
+function renderTimer(state) {
+  const timer = state.timer;
+  const hasTimer = Boolean(timer?.type);
+  const isHost = currentUser?.role === "host";
+
+  timerPanel.classList.toggle("hidden", !hasTimer);
+  timerControls.classList.toggle("hidden", !isHost || !hasTimer);
+
+  if (!hasTimer) {
+    timerLabel.textContent = "";
+    timerValue.textContent = "";
+    timerStatus.textContent = "";
+    pauseTimerBtn.disabled = true;
+    resumeTimerBtn.disabled = true;
+    addTimeBtn.disabled = true;
+    return;
+  }
+
+  timerLabel.textContent = timer.expired
+    ? "Time expired"
+    : timer.type === "reading"
+      ? "Reading time"
+      : "Answer time";
+  timerValue.textContent = formatTimer(timer.remainingMs);
+  timerStatus.textContent = timer.expired
+    ? "Host decides"
+    : timer.running
+      ? "Running"
+      : "Paused";
+
+  pauseTimerBtn.disabled = !timer.running || timer.expired;
+  resumeTimerBtn.disabled = timer.running || timer.expired || timer.remainingMs <= 0;
+  addTimeBtn.disabled = false;
+}
+
+function getBuzzingStatus(state) {
+  if (state.answerRevealed) {
+    return "Buzzing closed.";
+  }
+
+  if (state.timer?.expired && state.timer.type === "answer") {
+    return "Time expired - host decides.";
+  }
+
+  if (state.buzzedPlayer) {
+    return `${state.buzzedPlayer.name} answering...`;
+  }
+
+  if (state.buzzingOpen) {
+    return "Buzzing open!";
+  }
+
+  return "Read the clue...";
+}
+
+function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
   buzzList.innerHTML = "";
+
+  const lockedOutPlayerIds = new Set(lockedOutPlayers.map((player) => player.id));
 
   buzzes.forEach((buzz, index) => {
     const item = document.createElement("li");
     item.className = "buzz-result";
-    item.textContent = index === 0
+    item.classList.toggle("active-buzz", buzz.id === buzzedPlayer?.id);
+    item.classList.toggle("locked-out-buzz", lockedOutPlayerIds.has(buzz.id));
+
+    const status = getBuzzStatus(buzz, buzzedPlayer, lockedOutPlayerIds);
+    const buzzText = index === 0
       ? `${buzz.name} buzzed first!`
       : `${buzz.name} was ${formatDelay(buzz.delayMs)} late`;
+
+    item.textContent = status ? `${buzzText} (${status})` : buzzText;
     buzzList.appendChild(item);
   });
+}
+
+function getBuzzStatus(buzz, buzzedPlayer, lockedOutPlayerIds) {
+  if (buzz.id === buzzedPlayer?.id) {
+    return "answering now";
+  }
+
+  if (lockedOutPlayerIds.has(buzz.id)) {
+    return "locked out";
+  }
+
+  return "";
 }
 
 function showScreen(screen) {
@@ -366,4 +467,8 @@ function formatScore(score) {
 
 function formatDelay(delayMs) {
   return `${(delayMs / 1000).toFixed(2)}s`;
+}
+
+function formatTimer(remainingMs) {
+  return (Math.max(0, remainingMs) / 1000).toFixed(1);
 }

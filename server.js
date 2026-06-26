@@ -11,6 +11,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = process.env.PORT || 3001;
+const READING_TIMER_MS = 5000;
+const ANSWER_TIMER_MS = 10000;
+const TIMER_BROADCAST_MS = 250;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const testBoard = JSON.parse(
   readFileSync(join(__dirname, "public", "boards", "test-board.json"), "utf8")
@@ -27,11 +30,16 @@ const gameState = {
   board: testBoard,
   currentClue: null,
   answerRevealed: false,
+  buzzingOpen: false,
   buzzedPlayer: null,
   buzzes: [],
   lockedOutPlayers: [],
+  timer: createEmptyTimer(),
   resultMessage: ""
 };
+
+let timerTimeout = null;
+let timerBroadcastInterval = null;
 
 function getUser(socket) {
   return {
@@ -51,9 +59,11 @@ function sendGameState() {
     board: gameState.board,
     currentClue: getVisibleCurrentClue(),
     answerRevealed: gameState.answerRevealed,
+    buzzingOpen: gameState.buzzingOpen,
     buzzedPlayer: gameState.buzzedPlayer,
     buzzes: gameState.buzzes,
     lockedOutPlayers: gameState.lockedOutPlayers,
+    timer: getVisibleTimer(),
     resultMessage: gameState.resultMessage
   });
 }
@@ -110,12 +120,7 @@ io.on("connection", (socket) => {
     }
 
     gameState.phase = "board";
-    gameState.currentClue = null;
-    gameState.answerRevealed = false;
-    gameState.buzzedPlayer = null;
-    gameState.buzzes = [];
-    gameState.lockedOutPlayers = [];
-    gameState.resultMessage = "";
+    resetCurrentClueState();
     sendGameState();
   });
 
@@ -143,6 +148,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    stopTimer();
     gameState.currentClue = {
       categoryIndex,
       questionIndex,
@@ -152,11 +158,13 @@ io.on("connection", (socket) => {
       answer: question.answer
     };
     gameState.answerRevealed = false;
+    gameState.buzzingOpen = false;
     gameState.buzzedPlayer = null;
     gameState.buzzes = [];
     gameState.lockedOutPlayers = [];
-    gameState.resultMessage = "";
+    gameState.resultMessage = "Read the clue...";
     gameState.phase = "question";
+    startTimer("reading", READING_TIMER_MS);
     sendGameState();
   });
 
@@ -173,6 +181,11 @@ io.on("connection", (socket) => {
 
     if (gameState.answerRevealed) {
       socket.emit("actionRejected", "Buzzing is closed after the answer is revealed.");
+      return;
+    }
+
+    if (!gameState.buzzingOpen) {
+      socket.emit("actionRejected", "Buzzing is not open yet.");
       return;
     }
 
@@ -206,6 +219,7 @@ io.on("connection", (socket) => {
 
     if (!gameState.buzzedPlayer) {
       gameState.buzzedPlayer = player;
+      startTimer("answer", ANSWER_TIMER_MS);
     }
 
     sendGameState();
@@ -228,7 +242,9 @@ io.on("connection", (socket) => {
 
     player.score += gameState.currentClue.value;
     gameState.answerRevealed = true;
+    gameState.buzzingOpen = false;
     gameState.resultMessage = `${player.name} is correct! +$${gameState.currentClue.value}`;
+    stopTimer();
     markCurrentClueAnswered();
     sendGameState();
   });
@@ -253,9 +269,12 @@ io.on("connection", (socket) => {
       id: player.id,
       name: player.name
     });
-    gameState.resultMessage = `${player.name} is incorrect. -$${gameState.currentClue.value}`;
+    gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -$${gameState.currentClue.value}`;
     gameState.buzzedPlayer = null;
+    gameState.buzzes = [];
     gameState.answerRevealed = false;
+    gameState.buzzingOpen = true;
+    stopTimer();
     sendGameState();
   });
 
@@ -276,6 +295,45 @@ io.on("connection", (socket) => {
     }
 
     gameState.answerRevealed = true;
+    gameState.buzzingOpen = false;
+    stopTimer();
+    sendGameState();
+  });
+
+  socket.on("pauseTimer", () => {
+    if (!canHostControlTimer(socket)) {
+      socket.emit("actionRejected", "Only the host can control an active timer.");
+      return;
+    }
+
+    pauseTimer();
+    sendGameState();
+  });
+
+  socket.on("resumeTimer", () => {
+    if (!canHostControlTimer(socket)) {
+      socket.emit("actionRejected", "Only the host can control an active timer.");
+      return;
+    }
+
+    resumeTimer();
+    sendGameState();
+  });
+
+  socket.on("addTimerTime", (amountMs = 5000) => {
+    if (!canHostControlTimer(socket)) {
+      socket.emit("actionRejected", "Only the host can control an active timer.");
+      return;
+    }
+
+    const parsedAmountMs = Number(amountMs);
+
+    if (!Number.isFinite(parsedAmountMs) || parsedAmountMs <= 0) {
+      socket.emit("actionRejected", "Timer time must be a positive number.");
+      return;
+    }
+
+    addTimerTime(Math.min(parsedAmountMs, 60000));
     sendGameState();
   });
 
@@ -290,12 +348,7 @@ io.on("connection", (socket) => {
     }
 
     gameState.phase = "board";
-    gameState.currentClue = null;
-    gameState.answerRevealed = false;
-    gameState.buzzedPlayer = null;
-    gameState.buzzes = [];
-    gameState.lockedOutPlayers = [];
-    gameState.resultMessage = "";
+    resetCurrentClueState();
     sendGameState();
   });
 
@@ -306,12 +359,7 @@ io.on("connection", (socket) => {
 
     if (gameState.host === null) {
       gameState.phase = "waiting";
-      gameState.currentClue = null;
-      gameState.answerRevealed = false;
-      gameState.buzzedPlayer = null;
-      gameState.buzzes = [];
-      gameState.lockedOutPlayers = [];
-      gameState.resultMessage = "";
+      resetCurrentClueState();
     }
 
     sendGameState();
@@ -333,6 +381,147 @@ function addAnsweredTracking(boardPack) {
       question.answered = Boolean(question.answered);
     });
   });
+}
+
+function createEmptyTimer() {
+  return {
+    type: null,
+    remainingMs: 0,
+    running: false,
+    endsAt: null,
+    expired: false
+  };
+}
+
+function getVisibleTimer() {
+  if (!gameState.timer.type) {
+    return createEmptyTimer();
+  }
+
+  const remainingMs = gameState.timer.running
+    ? Math.max(0, gameState.timer.endsAt - Date.now())
+    : gameState.timer.remainingMs;
+
+  return {
+    ...gameState.timer,
+    remainingMs
+  };
+}
+
+function startTimer(type, durationMs) {
+  clearTimerHandles();
+  const now = Date.now();
+
+  gameState.timer = {
+    type,
+    remainingMs: durationMs,
+    running: true,
+    endsAt: now + durationMs,
+    expired: false
+  };
+
+  timerTimeout = setTimeout(handleTimerExpired, durationMs);
+  timerBroadcastInterval = setInterval(sendGameState, TIMER_BROADCAST_MS);
+}
+
+function stopTimer() {
+  clearTimerHandles();
+  gameState.timer = createEmptyTimer();
+}
+
+function pauseTimer() {
+  if (!gameState.timer.type || !gameState.timer.running) {
+    return;
+  }
+
+  gameState.timer.remainingMs = Math.max(0, gameState.timer.endsAt - Date.now());
+  gameState.timer.running = false;
+  gameState.timer.endsAt = null;
+  clearTimerHandles();
+}
+
+function resumeTimer() {
+  if (!gameState.timer.type || gameState.timer.running || gameState.timer.remainingMs <= 0) {
+    return;
+  }
+
+  const now = Date.now();
+  gameState.timer.running = true;
+  gameState.timer.endsAt = now + gameState.timer.remainingMs;
+  gameState.timer.expired = false;
+  timerTimeout = setTimeout(handleTimerExpired, gameState.timer.remainingMs);
+  timerBroadcastInterval = setInterval(sendGameState, TIMER_BROADCAST_MS);
+}
+
+function addTimerTime(amountMs) {
+  if (!gameState.timer.type) {
+    return;
+  }
+
+  if (gameState.timer.running) {
+    gameState.timer.endsAt += amountMs;
+    gameState.timer.remainingMs = Math.max(0, gameState.timer.endsAt - Date.now());
+    clearTimeout(timerTimeout);
+    timerTimeout = setTimeout(handleTimerExpired, gameState.timer.remainingMs);
+    return;
+  }
+
+  gameState.timer.remainingMs += amountMs;
+  gameState.timer.expired = false;
+}
+
+function handleTimerExpired() {
+  clearTimerHandles();
+  const expiredType = gameState.timer.type;
+
+  gameState.timer = {
+    type: expiredType,
+    remainingMs: 0,
+    running: false,
+    endsAt: null,
+    expired: true
+  };
+
+  if (expiredType === "reading") {
+    gameState.buzzingOpen = true;
+    gameState.timer = createEmptyTimer();
+    gameState.resultMessage = "Buzzing open!";
+  }
+
+  if (expiredType === "answer") {
+    gameState.resultMessage = "Time expired - host decides.";
+  }
+
+  sendGameState();
+}
+
+function clearTimerHandles() {
+  if (timerTimeout) {
+    clearTimeout(timerTimeout);
+    timerTimeout = null;
+  }
+
+  if (timerBroadcastInterval) {
+    clearInterval(timerBroadcastInterval);
+    timerBroadcastInterval = null;
+  }
+}
+
+function canHostControlTimer(socket) {
+  return gameState.host?.id === socket.id &&
+    gameState.phase === "question" &&
+    Boolean(gameState.timer.type);
+}
+
+function resetCurrentClueState() {
+  stopTimer();
+  gameState.currentClue = null;
+  gameState.answerRevealed = false;
+  gameState.buzzingOpen = false;
+  gameState.buzzedPlayer = null;
+  gameState.buzzes = [];
+  gameState.lockedOutPlayers = [];
+  gameState.resultMessage = "";
 }
 
 function validateHostJudgement(socket) {
