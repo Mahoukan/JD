@@ -62,8 +62,15 @@ app.post("/api/discord/token", async (req, res) => {
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
   const code = typeof req.body?.code === "string" ? req.body.code : "";
 
-  if (!clientId || !clientSecret || !code) {
+  if (!clientId || !clientSecret) {
+    console.warn("Discord token exchange blocked: DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is missing.");
     res.status(400).json({ error: "Discord auth is not configured." });
+    return;
+  }
+
+  if (!code) {
+    console.warn("Discord token exchange blocked: authorization code is missing.");
+    res.status(400).json({ error: "Discord authorization code is missing." });
     return;
   }
 
@@ -82,11 +89,17 @@ app.post("/api/discord/token", async (req, res) => {
     });
 
     if (!tokenResponse.ok) {
+      const errorBody = await tokenResponse.text();
+      console.warn("Discord token exchange failed:", tokenResponse.status, errorBody);
       res.status(502).json({ error: "Discord token exchange failed." });
       return;
     }
 
     const tokenData = await tokenResponse.json();
+    console.log("Discord token exchange succeeded:", {
+      hasAccessToken: Boolean(tokenData.access_token),
+      tokenType: tokenData.token_type || ""
+    });
     res.json({
       access_token: tokenData.access_token
     });
@@ -96,29 +109,24 @@ app.post("/api/discord/token", async (req, res) => {
   }
 });
 
-const gameState = {
-  host: null,
-  players: [],
-  spectators: [],
-  phase: "waiting",
-  availableBoards,
-  selectedBoardFilename: selectedBoard.filename,
-  board: initialBoard,
-  currentRound: "jeopardy",
-  currentClue: null,
-  answerRevealed: false,
-  buzzingOpen: false,
-  buzzedPlayer: null,
-  buzzes: [],
-  lockedOutPlayers: [],
-  dailyDouble: createEmptyDailyDouble(),
-  finalJeopardyState: createEmptyFinalJeopardyState(),
-  timer: createEmptyTimer(),
-  resultMessage: ""
+const GameManager = {
+  games: new Map(),
+  getGame(gameId = "development") {
+    const id = gameId || "development";
+
+    if (!this.games.has(id)) {
+      this.games.set(id, createGameContext(id));
+      console.log(`Game instance created: ${id}`);
+    }
+
+    return this.games.get(id);
+  }
 };
 
-let timerTimeout = null;
-let timerBroadcastInterval = null;
+let activeGameContext = GameManager.getGame("development");
+let gameState = activeGameContext.state;
+let timerTimeout = activeGameContext.timerTimeout;
+let timerBroadcastInterval = activeGameContext.timerBroadcastInterval;
 
 function getUser(socket) {
   return {
@@ -135,8 +143,106 @@ function renderIndexHtml() {
     .replaceAll("__BUILD_VERSION__", BUILD_VERSION);
 }
 
+function createGameContext(id) {
+  return {
+    id,
+    state: createInitialGameState(),
+    timerTimeout: null,
+    timerBroadcastInterval: null
+  };
+}
+
+function createInitialGameState() {
+  return {
+    host: null,
+    players: [],
+    spectators: [],
+    phase: "waiting",
+    availableBoards,
+    selectedBoardFilename: selectedBoard.filename,
+    board: structuredCloneBoard(initialBoard),
+    currentRound: "jeopardy",
+    currentClue: null,
+    answerRevealed: false,
+    buzzingOpen: false,
+    buzzedPlayer: null,
+    buzzes: [],
+    lockedOutPlayers: [],
+    dailyDouble: createEmptyDailyDouble(),
+    finalJeopardyState: createEmptyFinalJeopardyState(),
+    timer: createEmptyTimer(),
+    resultMessage: ""
+  };
+}
+
+function structuredCloneBoard(board) {
+  return JSON.parse(JSON.stringify(board));
+}
+
+function setActiveGameContext(gameContext) {
+  activeGameContext = gameContext;
+  gameState = gameContext.state;
+  timerTimeout = gameContext.timerTimeout;
+  timerBroadcastInterval = gameContext.timerBroadcastInterval;
+}
+
+function saveActiveTimerHandles() {
+  activeGameContext.timerTimeout = timerTimeout;
+  activeGameContext.timerBroadcastInterval = timerBroadcastInterval;
+}
+
+function getSocketGame(socket) {
+  return GameManager.getGame(socket.data.gameId || "development");
+}
+
+function runInSocketGame(socket, callback) {
+  setActiveGameContext(getSocketGame(socket));
+
+  try {
+    return callback();
+  } finally {
+    saveActiveTimerHandles();
+  }
+}
+
+function runInGameContext(gameContext, callback) {
+  setActiveGameContext(gameContext);
+
+  try {
+    return callback();
+  } finally {
+    saveActiveTimerHandles();
+  }
+}
+
+function onGameEvent(socket, eventName, handler) {
+  socket.on(eventName, (...args) => {
+    runInSocketGame(socket, () => handler(...args));
+  });
+}
+
+function setSocketGame(socket, gameId) {
+  const nextGameId = sanitizeGameId(gameId) || "development";
+  const previousGameId = socket.data.gameId || "development";
+
+  if (previousGameId === nextGameId) {
+    setActiveGameContext(GameManager.getGame(nextGameId));
+    return;
+  }
+
+  runInSocketGame(socket, () => {
+    removeUserFromAllRoles(socket.id);
+    sendGameState();
+  });
+  socket.leave(previousGameId);
+  socket.data.gameId = nextGameId;
+  socket.join(nextGameId);
+  setActiveGameContext(GameManager.getGame(nextGameId));
+  console.log(`Discord activity: socket ${socket.id} using game instance ${nextGameId}`);
+}
+
 function sendGameState() {
-  io.emit("gameState", {
+  io.to(activeGameContext.id).emit("gameState", {
     host: gameState.host,
     players: gameState.players,
     spectators: gameState.spectators,
@@ -162,17 +268,30 @@ function sendGameState() {
 io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
 
+  socket.data.gameId = "development";
   socket.data.name = `Guest ${socket.id.slice(0, 4)}`;
   socket.data.avatarUrl = "";
   socket.data.discordUserId = "";
   socket.data.role = null;
+  socket.join(socket.data.gameId);
+  setActiveGameContext(getSocketGame(socket));
 
   socket.emit("connected", getUser(socket));
   sendGameState();
 
-  socket.on("setUserIdentity", ({ name, avatarUrl, discordUserId } = {}) => {
+  socket.on("setGameInstance", ({ instanceId } = {}) => {
+    const gameId = sanitizeGameId(instanceId) || "development";
+    setSocketGame(socket, gameId);
+    socket.emit("gameInstanceConfirmed", {
+      gameId
+    });
+    sendGameState();
+  });
+
+  onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId } = {}) => {
     console.log("Discord identity: server received setUserIdentity", {
       socketId: socket.id,
+      gameId: activeGameContext.id,
       hasName: typeof name === "string" && name.trim().length > 0,
       hasAvatarUrl: typeof avatarUrl === "string" && avatarUrl.trim().length > 0,
       hasDiscordUserId: typeof discordUserId === "string" && discordUserId.trim().length > 0
@@ -202,9 +321,12 @@ io.on("connection", (socket) => {
     console.log("Discord identity: server gameState updated", getIdentityDebugState(socket.id, identity.discordUserId));
     socket.emit("identityUpdated", getUser(socket));
     sendGameState();
+    console.log("Discord identity: server broadcast updated gameState", {
+      gameId: activeGameContext.id
+    });
   });
 
-  socket.on("chooseRole", (role) => {
+  onGameEvent(socket, "chooseRole", (role) => {
     if (!["host", "player", "spectator"].includes(role)) {
       socket.emit("roleRejected", "Invalid role.");
       return;
@@ -240,7 +362,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("startGame", () => {
+  onGameEvent(socket, "startGame", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start the game.");
       return;
@@ -252,7 +374,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("selectClue", ({ categoryIndex, questionIndex } = {}) => {
+  onGameEvent(socket, "selectClue", ({ categoryIndex, questionIndex } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can select clues.");
       return;
@@ -306,7 +428,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("startDoubleJeopardy", () => {
+  onGameEvent(socket, "startDoubleJeopardy", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start Double Jeopardy.");
       return;
@@ -333,7 +455,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("startFinalJeopardy", () => {
+  onGameEvent(socket, "startFinalJeopardy", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start Final Jeopardy.");
       return;
@@ -355,7 +477,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("submitFinalWager", ({ wager } = {}) => {
+  onGameEvent(socket, "submitFinalWager", ({ wager } = {}) => {
     if (gameState.phase !== "finalWager") {
       socket.emit("actionRejected", "Final Jeopardy wagering is not active.");
       return;
@@ -384,7 +506,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("revealFinalClue", () => {
+  onGameEvent(socket, "revealFinalClue", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can reveal the Final Jeopardy clue.");
       return;
@@ -404,7 +526,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("submitFinalAnswer", ({ answer } = {}) => {
+  onGameEvent(socket, "submitFinalAnswer", ({ answer } = {}) => {
     if (gameState.phase !== "finalAnswers") {
       socket.emit("actionRejected", "Final Jeopardy answers are not active.");
       return;
@@ -428,7 +550,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("startFinalReview", () => {
+  onGameEvent(socket, "startFinalReview", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start Final Jeopardy review.");
       return;
@@ -448,7 +570,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("revealFinalAnswerForPlayer", ({ playerId } = {}) => {
+  onGameEvent(socket, "revealFinalAnswerForPlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can reveal Final Jeopardy answers.");
       return;
@@ -471,7 +593,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("judgeFinalAnswer", ({ playerId, result } = {}) => {
+  onGameEvent(socket, "judgeFinalAnswer", ({ playerId, result } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can judge Final Jeopardy answers.");
       return;
@@ -505,7 +627,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("showFinalResults", () => {
+  onGameEvent(socket, "showFinalResults", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can show Final Jeopardy results.");
       return;
@@ -525,7 +647,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("buzz", () => {
+  onGameEvent(socket, "buzz", () => {
     if (socket.data.role !== "player") {
       socket.emit("actionRejected", "Only players can buzz.");
       return;
@@ -584,7 +706,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("markCorrect", () => {
+  onGameEvent(socket, "markCorrect", () => {
     if (gameState.phase === "dailyDoubleQuestion") {
       const validationError = validateDailyDoubleJudgement(socket);
 
@@ -621,7 +743,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("markIncorrect", () => {
+  onGameEvent(socket, "markIncorrect", () => {
     if (gameState.phase === "dailyDoubleQuestion") {
       const validationError = validateDailyDoubleJudgement(socket);
 
@@ -666,7 +788,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("selectDailyDoublePlayer", ({ playerId } = {}) => {
+  onGameEvent(socket, "selectDailyDoublePlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can choose the Daily Double player.");
       return;
@@ -697,7 +819,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("submitDailyDoubleWager", ({ wager } = {}) => {
+  onGameEvent(socket, "submitDailyDoubleWager", ({ wager } = {}) => {
     if (gameState.phase !== "dailyDoubleWager") {
       socket.emit("actionRejected", "Daily Double wagering is not active.");
       return;
@@ -732,7 +854,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("selectBoard", ({ filename } = {}) => {
+  onGameEvent(socket, "selectBoard", ({ filename } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can select a board.");
       return;
@@ -769,7 +891,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("resetBoard", () => {
+  onGameEvent(socket, "resetBoard", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can reset the board.");
       return;
@@ -779,7 +901,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("editPlayerScore", ({ playerId, newScore } = {}) => {
+  onGameEvent(socket, "editPlayerScore", ({ playerId, newScore } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can edit scores.");
       return;
@@ -803,7 +925,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("revealAnswer", () => {
+  onGameEvent(socket, "revealAnswer", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can reveal the answer.");
       return;
@@ -825,7 +947,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("pauseTimer", () => {
+  onGameEvent(socket, "pauseTimer", () => {
     if (!canHostControlTimer(socket)) {
       socket.emit("actionRejected", "Only the host can control an active timer.");
       return;
@@ -835,7 +957,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("resumeTimer", () => {
+  onGameEvent(socket, "resumeTimer", () => {
     if (!canHostControlTimer(socket)) {
       socket.emit("actionRejected", "Only the host can control an active timer.");
       return;
@@ -845,7 +967,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("addTimerTime", (amountMs = 5000) => {
+  onGameEvent(socket, "addTimerTime", (amountMs = 5000) => {
     if (!canHostControlTimer(socket)) {
       socket.emit("actionRejected", "Only the host can control an active timer.");
       return;
@@ -862,7 +984,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("returnToBoard", () => {
+  onGameEvent(socket, "returnToBoard", () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can return to the board.");
       return;
@@ -877,7 +999,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("disconnect", () => {
+  onGameEvent(socket, "disconnect", () => {
     console.log(`Disconnected: ${socket.id}`);
 
     removeUserFromAllRoles(socket.id);
@@ -934,6 +1056,11 @@ function sanitizePlainText(value, maxLength) {
   }
 
   return value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, maxLength);
+}
+
+function sanitizeGameId(value) {
+  const gameId = sanitizePlainText(value, 120);
+  return /^[A-Za-z0-9_-]+$/.test(gameId) ? gameId : "";
 }
 
 function updateUserIdentity(socketId, identity) {
@@ -1331,6 +1458,7 @@ function getVisibleTimer() {
 function startTimer(type, durationMs) {
   clearTimerHandles();
   const now = Date.now();
+  const gameContext = activeGameContext;
 
   gameState.timer = {
     type,
@@ -1340,8 +1468,8 @@ function startTimer(type, durationMs) {
     expired: false
   };
 
-  timerTimeout = setTimeout(handleTimerExpired, durationMs);
-  timerBroadcastInterval = setInterval(sendGameState, TIMER_BROADCAST_MS);
+  timerTimeout = setTimeout(() => runInGameContext(gameContext, handleTimerExpired), durationMs);
+  timerBroadcastInterval = setInterval(() => runInGameContext(gameContext, sendGameState), TIMER_BROADCAST_MS);
 }
 
 function stopTimer() {
@@ -1366,11 +1494,12 @@ function resumeTimer() {
   }
 
   const now = Date.now();
+  const gameContext = activeGameContext;
   gameState.timer.running = true;
   gameState.timer.endsAt = now + gameState.timer.remainingMs;
   gameState.timer.expired = false;
-  timerTimeout = setTimeout(handleTimerExpired, gameState.timer.remainingMs);
-  timerBroadcastInterval = setInterval(sendGameState, TIMER_BROADCAST_MS);
+  timerTimeout = setTimeout(() => runInGameContext(gameContext, handleTimerExpired), gameState.timer.remainingMs);
+  timerBroadcastInterval = setInterval(() => runInGameContext(gameContext, sendGameState), TIMER_BROADCAST_MS);
 }
 
 function addTimerTime(amountMs) {
@@ -1379,10 +1508,11 @@ function addTimerTime(amountMs) {
   }
 
   if (gameState.timer.running) {
+    const gameContext = activeGameContext;
     gameState.timer.endsAt += amountMs;
     gameState.timer.remainingMs = Math.max(0, gameState.timer.endsAt - Date.now());
     clearTimeout(timerTimeout);
-    timerTimeout = setTimeout(handleTimerExpired, gameState.timer.remainingMs);
+    timerTimeout = setTimeout(() => runInGameContext(gameContext, handleTimerExpired), gameState.timer.remainingMs);
     return;
   }
 

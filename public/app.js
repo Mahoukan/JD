@@ -143,8 +143,21 @@ async function initialiseDiscordIdentity() {
     const DiscordSDK = await loadDiscordSdk();
     console.log("Discord identity: SDK initialized");
     const discordSdk = new DiscordSDK(config.clientId);
+    console.log("Discord identity: SDK created");
     await discordSdk.ready();
     console.log("Discord identity: SDK ready");
+    const instanceId = discordSdk.instanceId || "";
+    console.log("Discord activity: instanceId", instanceId || "(missing)");
+    socket.emit("setGameInstance", {
+      instanceId
+    });
+
+    try {
+      const participants = await discordSdk.commands.getInstanceConnectedParticipants();
+      console.log("Discord activity: connected participants", participants);
+    } catch (participantsError) {
+      console.warn("Discord activity: connected participants unavailable", participantsError);
+    }
 
     const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
 
@@ -152,6 +165,7 @@ async function initialiseDiscordIdentity() {
       console.warn("Discord identity: authorize did not return a code");
       return;
     }
+    console.log("Discord identity: authorize succeeded");
     console.log("Discord identity: authorization code received");
 
     const tokenResponse = await fetch("/api/discord/token", {
@@ -170,6 +184,9 @@ async function initialiseDiscordIdentity() {
     }
 
     const tokenData = await tokenResponse.json();
+    console.log("Discord identity: access token received", {
+      hasAccessToken: Boolean(tokenData.access_token)
+    });
     const auth = await discordSdk.commands.authenticate({
       access_token: tokenData.access_token
     });
@@ -187,7 +204,7 @@ async function initialiseDiscordIdentity() {
       id: user.id,
       username: user.username,
       globalName: user.global_name,
-      displayName: user.display_name,
+      discriminator: user.discriminator,
       hasAvatar: Boolean(user.avatar)
     });
 
@@ -197,7 +214,7 @@ async function initialiseDiscordIdentity() {
     }
 
     const identityPayload = {
-      name: user.global_name || user.display_name || user.username,
+      name: getDiscordDisplayName(user),
       avatarUrl: getDiscordAvatarUrl(user),
       discordUserId: user.id
     };
@@ -258,12 +275,41 @@ async function getDiscordAuthCode(discordSdk, clientId) {
 }
 
 function getDiscordAvatarUrl(user) {
-  if (!user?.id || !user.avatar) {
-    return "";
+  if (!user?.id) {
+    return "https://cdn.discordapp.com/embed/avatars/0.png";
   }
 
-  const extension = user.avatar.startsWith("a_") ? "gif" : "png";
-  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${extension}?size=128`;
+  if (!user.avatar) {
+    return getDiscordDefaultAvatarUrl(user);
+  }
+
+  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
+}
+
+function getDiscordDisplayName(user) {
+  if (user.global_name) {
+    return user.global_name;
+  }
+
+  if (user.username && user.discriminator && user.discriminator !== "0") {
+    return `${user.username}#${user.discriminator}`;
+  }
+
+  return user.username || "Discord Player";
+}
+
+function getDiscordDefaultAvatarUrl(user) {
+  const discriminator = Number(user.discriminator);
+
+  if (Number.isInteger(discriminator) && discriminator > 0) {
+    return `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`;
+  }
+
+  try {
+    return `https://cdn.discordapp.com/embed/avatars/${Number((BigInt(user.id) >> 22n) % 6n)}.png`;
+  } catch {
+    return "https://cdn.discordapp.com/embed/avatars/0.png";
+  }
 }
 
 function showToast(messageText, type = "info") {
@@ -356,6 +402,12 @@ function findGameStateUserByDiscordId(state, discordUserId) {
 socket.on("connected", (user) => {
   currentUser = user;
   initialiseDiscordIdentity();
+});
+
+socket.on("gameInstanceConfirmed", ({ gameId } = {}) => {
+  console.log("Discord activity: game instance confirmed", {
+    gameId: gameId || "development"
+  });
 });
 
 socket.on("gameState", (state) => {
