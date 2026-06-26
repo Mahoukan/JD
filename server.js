@@ -89,10 +89,6 @@ app.post("/api/discord/token", async (req, res) => {
     }
 
     const tokenData = await tokenResponse.json();
-    console.log("Discord token exchange succeeded:", {
-      hasAccessToken: Boolean(tokenData.access_token),
-      tokenType: tokenData.token_type || ""
-    });
     res.json({
       access_token: tokenData.access_token
     });
@@ -142,12 +138,6 @@ function exchangeDiscordToken({ clientId, clientSecret, code }) {
     client_secret: clientSecret,
     grant_type: "authorization_code",
     code
-  });
-
-  console.log("Discord token exchange body", {
-    client_id: clientId,
-    grant_type: "authorization_code",
-    hasCode: Boolean(code)
   });
 
   return fetch("https://discord.com/api/oauth2/token", {
@@ -254,7 +244,6 @@ function setSocketGame(socket, gameId) {
   socket.data.gameId = nextGameId;
   socket.join(nextGameId);
   setActiveGameContext(GameManager.getGame(nextGameId));
-  console.log(`Discord activity: socket ${socket.id} using game instance ${nextGameId}`);
 }
 
 function sendGameState() {
@@ -305,26 +294,12 @@ io.on("connection", (socket) => {
   });
 
   onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId } = {}) => {
-    console.log("Discord identity: server received setUserIdentity", {
-      socketId: socket.id,
-      gameId: activeGameContext.id,
-      hasName: typeof name === "string" && name.trim().length > 0,
-      hasAvatarUrl: typeof avatarUrl === "string" && avatarUrl.trim().length > 0,
-      hasDiscordUserId: typeof discordUserId === "string" && discordUserId.trim().length > 0
-    });
     const identity = sanitizeIdentity({
       name,
       avatarUrl,
       discordUserId
     });
     const restoredRole = restoreDiscordSession(socket, identity);
-    console.log("Discord identity: server sanitized identity", {
-      socketId: socket.id,
-      name: identity.name,
-      hasAvatarUrl: Boolean(identity.avatarUrl),
-      discordUserId: identity.discordUserId,
-      restoredRole
-    });
 
     if (identity.name) {
       socket.data.name = identity.name;
@@ -334,12 +309,8 @@ io.on("connection", (socket) => {
     socket.data.discordUserId = identity.discordUserId;
     socket.data.role = restoredRole || socket.data.role;
     updateUserIdentity(socket.id, identity);
-    console.log("Discord identity: server gameState updated", getIdentityDebugState(socket.id, identity.discordUserId));
     socket.emit("identityUpdated", getUser(socket));
     sendGameState();
-    console.log("Discord identity: server broadcast updated gameState", {
-      gameId: activeGameContext.id
-    });
   });
 
   onGameEvent(socket, "chooseRole", (role) => {
@@ -1107,30 +1078,6 @@ function updateUserIdentity(socketId, identity) {
   if (gameState.dailyDouble.playerId === socketId && identity.name) {
     gameState.dailyDouble.playerName = identity.name;
   }
-}
-
-function getIdentityDebugState(socketId, discordUserId) {
-  const userSummary = (user, role) => user
-    ? {
-        role,
-        id: user.id,
-        name: user.name,
-        hasAvatarUrl: Boolean(user.avatarUrl),
-        discordUserId: user.discordUserId || ""
-      }
-    : null;
-  const matchesSocketOrDiscordId = (user) => user
-    && (user.id === socketId || (discordUserId && user.discordUserId === discordUserId));
-  const player = gameState.players.find(matchesSocketOrDiscordId);
-  const spectator = gameState.spectators.find(matchesSocketOrDiscordId);
-
-  return {
-    socketId,
-    discordUserId,
-    host: matchesSocketOrDiscordId(gameState.host) ? userSummary(gameState.host, "host") : null,
-    player: userSummary(player, "player"),
-    spectator: userSummary(spectator, "spectator")
-  };
 }
 
 function restoreDiscordSession(socket, identity) {

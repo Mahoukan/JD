@@ -116,28 +116,17 @@ let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
 let discordIdentityEmitted = false;
-let discordIdentityGameStateLogged = false;
 let pendingConfirmAction = null;
 let resetBoardConfirmTimeout = null;
 
 async function initialiseDiscordIdentity() {
   const isDiscordActivity = isLikelyDiscordActivity();
-  console.log("Discord identity: activity detection", {
-    isDiscordActivity,
-    referrer: document.referrer,
-    search: window.location.search,
-    inIframe: window.parent !== window,
-  });
 
   if (discordIdentityInitialised) {
-    console.log("Discord identity: already initialized");
     return;
   }
 
   if (!isDiscordActivity) {
-    console.log(
-      "Discord identity: not running inside Discord, using guest identity",
-    );
     return;
   }
 
@@ -147,9 +136,6 @@ async function initialiseDiscordIdentity() {
     const config = await fetch("/api/discord/config").then((response) =>
       response.json(),
     );
-    console.log("Discord identity: config loaded", {
-      hasClientId: Boolean(config.clientId),
-    });
 
     if (!config.clientId) {
       console.warn(
@@ -159,13 +145,9 @@ async function initialiseDiscordIdentity() {
     }
 
     const DiscordSDK = await loadDiscordSdk();
-    console.log("Discord identity: SDK initialized");
     const discordSdk = new DiscordSDK(config.clientId);
-    console.log("Discord identity: SDK created");
     await discordSdk.ready();
-    console.log("Discord identity: SDK ready");
     const instanceId = discordSdk.instanceId || "";
-    console.log("Discord activity: instanceId", instanceId || "(missing)");
     socket.emit("setGameInstance", {
       instanceId,
     });
@@ -176,8 +158,6 @@ async function initialiseDiscordIdentity() {
       console.warn("Discord identity: authorize did not return a code");
       return;
     }
-    console.log("Discord identity: authorize succeeded");
-    console.log("Discord identity: authorization code received");
 
     const tokenResponse = await fetch("/api/discord/token", {
       method: "POST",
@@ -198,17 +178,8 @@ async function initialiseDiscordIdentity() {
     }
 
     const tokenData = await tokenResponse.json();
-    console.log("Discord identity: access token received", {
-      hasAccessToken: Boolean(tokenData.access_token),
-    });
-    console.log("Discord identity: token exchange success");
     const auth = await discordSdk.commands.authenticate({
       access_token: tokenData.access_token,
-    });
-    console.log("Discord identity: authentication success", {
-      hasUser: Boolean(auth?.user),
-      username: auth?.user?.username || "",
-      discordUserId: auth?.user?.id || "",
     });
     const user = auth?.user;
 
@@ -219,21 +190,7 @@ async function initialiseDiscordIdentity() {
       return;
     }
 
-    console.log("Discord identity: retrieved Discord user", {
-      id: user.id,
-      username: user.username,
-      globalName: user.global_name,
-      discriminator: user.discriminator,
-      hasAvatar: Boolean(user.avatar),
-    });
-    console.log(
-      "Discord identity: authenticated username",
-      getDiscordDisplayName(user),
-    );
-    console.log("Discord identity: authenticated Discord ID", user.id);
-
     if (discordIdentityEmitted) {
-      console.log("Discord identity: setUserIdentity already emitted");
       return;
     }
 
@@ -244,23 +201,6 @@ async function initialiseDiscordIdentity() {
     };
     socket.emit("setUserIdentity", identityPayload);
     discordIdentityEmitted = true;
-    console.log("Discord identity: emitted setUserIdentity", {
-      name: identityPayload.name,
-      hasAvatarUrl: Boolean(identityPayload.avatarUrl),
-      discordUserId: identityPayload.discordUserId,
-    });
-
-    try {
-      const participants =
-        await discordSdk.commands.getInstanceConnectedParticipants();
-      console.log("Discord activity: participants retrieved", participants);
-      console.log("Discord activity: connected participants", participants);
-    } catch (participantsError) {
-      console.warn(
-        "Discord activity: connected participants unavailable",
-        participantsError,
-      );
-    }
   } catch (error) {
     console.warn(
       "Discord identity: authentication failure, using guest identity.",
@@ -287,8 +227,6 @@ function isLikelyDiscordActivity() {
 }
 
 function loadDiscordSdk() {
-  console.log("Discord identity: loading bundled SDK");
-
   if (!window.DiscordSDK) {
     throw new Error("Discord Embedded App SDK bundle was not loaded.");
   }
@@ -297,7 +235,6 @@ function loadDiscordSdk() {
 }
 
 async function getDiscordAuthCode(discordSdk, clientId) {
-  console.log("Discord identity: requesting authorization");
   const authorizePayload = {
     client_id: clientId,
     response_type: "code",
@@ -311,7 +248,6 @@ async function getDiscordAuthCode(discordSdk, clientId) {
       "rpc.voice.read",
     ],
   };
-  console.log("Discord identity: authorize payload", authorizePayload);
   const response = await discordSdk.commands.authorize(authorizePayload);
   return response?.code || "";
 }
@@ -401,76 +337,13 @@ function clearResetBoardConfirm() {
   resetBoardBtn.classList.remove("warning-button");
 }
 
-function logDiscordIdentityGameState(state) {
-  if (discordIdentityGameStateLogged || !currentUser?.discordUserId) {
-    return;
-  }
-
-  const visibleUser = findGameStateUserByDiscordId(
-    state,
-    currentUser.discordUserId,
-  );
-
-  if (!visibleUser) {
-    return;
-  }
-
-  discordIdentityGameStateLogged = true;
-  console.log("Discord identity: gameState contains identity", {
-    role: visibleUser.role,
-    name: visibleUser.user.name,
-    hasAvatarUrl: Boolean(visibleUser.user.avatarUrl),
-    discordUserId: visibleUser.user.discordUserId,
-  });
-}
-
-function findGameStateUserByDiscordId(state, discordUserId) {
-  if (state.host?.discordUserId === discordUserId) {
-    return {
-      role: "host",
-      user: state.host,
-    };
-  }
-
-  const player = state.players.find(
-    (currentPlayer) => currentPlayer.discordUserId === discordUserId,
-  );
-
-  if (player) {
-    return {
-      role: "player",
-      user: player,
-    };
-  }
-
-  const spectator = state.spectators.find(
-    (currentSpectator) => currentSpectator.discordUserId === discordUserId,
-  );
-
-  if (spectator) {
-    return {
-      role: "spectator",
-      user: spectator,
-    };
-  }
-
-  return null;
-}
-
 socket.on("connected", (user) => {
   currentUser = user;
   initialiseDiscordIdentity();
 });
 
-socket.on("gameInstanceConfirmed", ({ gameId } = {}) => {
-  console.log("Discord activity: game instance confirmed", {
-    gameId: gameId || "development",
-  });
-});
-
 socket.on("gameState", (state) => {
   currentState = state;
-  logDiscordIdentityGameState(state);
 
   updateRoleButtons(state);
   updateWaitingRoom(state);
@@ -528,12 +401,6 @@ socket.on("identityUpdated", (user) => {
     ...currentUser,
     ...user,
   };
-  console.log("Discord identity: identityUpdated received", {
-    name: currentUser.name,
-    hasAvatarUrl: Boolean(currentUser.avatarUrl),
-    discordUserId: currentUser.discordUserId,
-    role: currentUser.role,
-  });
 });
 
 boardSelect.addEventListener("change", () => {
