@@ -303,7 +303,13 @@ async function getDiscordAuthCode(discordSdk, clientId) {
     response_type: "code",
     state: "",
     prompt: "none",
-    scope: ["identify"],
+    scope: [
+      "applications.commands",
+      "identify",
+      "guilds",
+      "guilds.members.read",
+      "rpc.voice.read",
+    ],
   };
   console.log("Discord identity: authorize payload", authorizePayload);
   const response = await discordSdk.commands.authorize(authorizePayload);
