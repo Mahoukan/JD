@@ -1,0 +1,20 @@
+{
+  "name": "discord-jeopardy-activity",
+  "version": "1.0.0",
+  "description": "A real-time Jeopardy-style Discord Activity built with Express and Socket.IO.",
+  "type": "module",
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/discord-jeopardy-activity.git"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

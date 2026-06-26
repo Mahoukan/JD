@@ -1,0 +1,440 @@
+{
+    "id": "ACADEMIC-BOWL",
+    "name": "Academic Bowl",
+    "jeopardy": {
+      "board": [
+        {
+          "category": "I READ THE BOOK",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "A word that describes a noun, such as \"happy,\" \"blue,\" or \"enormous.\"",
+              "answer": "Adjective",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "This language feature uses exaggeration for effect, such as \"I've told you a million times.\"",
+              "answer": "Hyperbole",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "\"The wind whispered through the trees\" is an example of this language feature, where human qualities are given to a non-human thing.",
+              "answer": "Personification",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "The author's attitude toward a subject or audience is known as this.",
+              "answer": "Tone",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "A recurring object, symbol, image, or idea that helps develop a theme is known as this.",
+              "answer": "Motif",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "SHOW YOUR WORKING",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "A triangle with sides of lengths 3, 4, and 5 is this type of triangle.",
+              "answer": "Right-angled triangle",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "Using Pythagoras' Theorem, find the hypotenuse of a right-angled triangle with sides 6 and 8.",
+              "answer": "10",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "The probability of rolling a 6 on a fair six-sided die is this fraction.",
+              "answer": "1/6",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "When two quantities increase at the same rate, they are said to be in this type of relationship.",
+              "answer": "Proportional relationship",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "The graph of y=x² is known by this mathematical name.",
+              "answer": "Parabola",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "TRUST THE SCIENCE",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "Humans have this many pairs of chromosomes in most body cells.",
+              "answer": "23",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "The pH of a neutral solution is this number.",
+              "answer": "7",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "This unit is used to measure force.",
+              "answer": "Newton",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "The gas that makes up approximately 78% of Earth's atmosphere.",
+              "answer": "Nitrogen",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "An atom with a different number of neutrons than usual, but the same number of protons, is known as this.",
+              "answer": "Isotope",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "OMELETTE DU FROMAGE",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "The French word for \"thank you.\"",
+              "answer": "Merci",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "The French word chien refers to this animal.",
+              "answer": "Dog",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "The French phrase s'il vous plaît is commonly used to mean this.",
+              "answer": "Please",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "The French word bibliothèque refers to this place.",
+              "answer": "Library",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "This is the French word for \"window.\"",
+              "answer": "Fenêtre",
+              "used": false,
+              "dailyDouble": true
+            }
+          ]
+        },
+        {
+          "category": "SOCIETY",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "New Zealand's head of state is this monarch (Full title like King Henry VIII).",
+              "answer": "King Charles III",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "The legislative branch of New Zealand's government meets in this city.",
+              "answer": "Wellington",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "This term describes the movement of people from rural areas into cities.",
+              "answer": "Urbanisation",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "The study of how people, resources, and businesses interact is called this.",
+              "answer": "Economics",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "This economic term refers to a sustained increase in the general price of goods and services over time.",
+              "answer": "Inflation",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "JAZZ HANDS",
+          "questions": [
+            {
+              "value": 200,
+              "clue": "Colours opposite each other on the colour wheel are known as these.",
+              "answer": "Complementary colours",
+              "used": false
+            },
+            {
+              "value": 400,
+              "clue": "This family of musical instruments includes the violin, cello, and double bass.",
+              "answer": "Strings",
+              "used": false
+            },
+            {
+              "value": 600,
+              "clue": "A dance performed by a group moving together in a coordinated pattern is known by this term.",
+              "answer": "Choreography",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "This dramatic technique involves speaking directly to the audience while other characters on stage cannot hear.",
+              "answer": "Aside",
+              "used": false
+            },
+            {
+              "value": 1000,
+              "clue": "The symbol ♯ raises a note by this amount.",
+              "answer": "Semitone",
+              "used": false
+            }
+          ]
+        }
+      ]
+    },
+    "doubleJeopardy": {
+      "board": [
+        {
+          "category": "READ BETWEEN THE LINES",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "A story told by a narrator who uses \"I\" and participates in the events is written in this point of view.",
+              "answer": "First-person perspective",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "A reference to another text, historical event, or famous figure is known as this literary device.",
+              "answer": "Allusion",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "When the audience knows something that a character does not, this technique is being used.",
+              "answer": "Dramatic irony",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "The repetition of consonant sounds at the beginning of nearby words is known as this.",
+              "answer": "Alliteration",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "A character who contrasts with another character in order to highlight their qualities is known as this.",
+              "answer": "Foil",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "BY THE NUMBERS",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "The middle value in an ordered set of data is known as this.",
+              "answer": "Median",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "A graph commonly used to display the distribution of numerical data by grouping values into intervals.",
+              "answer": "Histogram",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "If two variables tend to increase together, they are said to have this type of relationship.",
+              "answer": "Positive correlation",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "A value that lies unusually far from the rest of the data is known as this.",
+              "answer": "Outlier",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "The number of standard deviations a value is from the mean is called this.",
+              "answer": "Z-score",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "IT'S THE LAW",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "The SI unit of force is named after this scientist.",
+              "answer": "Isaac Newton",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "This quantity is calculated by multiplying mass by velocity.",
+              "answer": "Momentum",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "The speed of a wave can be found by multiplying its frequency by this quantity.",
+              "answer": "Wavelength",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "When light passes from one medium into another and changes direction, this phenomenon occurs.",
+              "answer": "Refraction",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "The tendency of an object to resist changes in its motion is known as this.",
+              "answer": "Inertia",
+              "used": false,
+              "dailyDouble": true
+            }
+          ]
+        },
+        {
+          "category": "ELEMENTARY",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "The amount of substance containing approximately 6.02×10^23 particles is called this.",
+              "answer": "Mole",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "Atoms of the same element with different numbers of neutrons are known as these.",
+              "answer": "Isotopes",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "The sharing of electrons between atoms forms this type of bond.",
+              "answer": "Covalent bond",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "This organic functional group contains an oxygen atom bonded to a hydrogen atom (-OH).",
+              "answer": "Alcohol",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "A reaction in which electrons are transferred between substances is known by this term.",
+              "answer": "Redox reaction",
+              "used": false
+            }
+          ]
+        },
+        {
+          "category": "LIFE FINDS A WAY",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "The molecule that carries genetic information in living organisms.",
+              "answer": "DNA",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "This process produces two genetically identical daughter cells.",
+              "answer": "Mitosis",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "The units of heredity passed from parents to offspring are known as these.",
+              "answer": "Genes",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "The process by which organisms with advantageous traits are more likely to survive and reproduce is known as this.",
+              "answer": "Natural selection",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "The sequence of three bases on mRNA that codes for an amino acid is known as this.",
+              "answer": "Codon",
+              "used": false,
+              "dailyDouble": true
+            }
+          ]
+        },
+        {
+          "category": "I LEARNED THAT SOMEWHERE",
+          "questions": [
+            {
+              "value": 400,
+              "clue": "Copying someone else's work and presenting it as your own is known as this.",
+              "answer": "Plagiarism",
+              "used": false
+            },
+            {
+              "value": 800,
+              "clue": "A statement that can be tested through investigation is known as this.",
+              "answer": "Hypothesis",
+              "used": false
+            },
+            {
+              "value": 1200,
+              "clue": "This logical error occurs when someone argues that because two events happened together, one must have caused the other.",
+              "answer": "Correlation does not imply causation",
+              "used": false
+            },
+            {
+              "value": 1600,
+              "clue": "This psychological effect describes the tendency for people with low ability in a subject to overestimate their competence.",
+              "answer": "Dunning-Kruger effect",
+              "used": false
+            },
+            {
+              "value": 2000,
+              "clue": "This principle suggests that, when multiple explanations are possible, the simplest one is usually preferred.",
+              "answer": "Occam's Razor",
+              "used": false
+            }
+          ]
+        }
+      ]
+    },
+    "finalJeopardy": {
+      "category": "WORD ORIGINS",
+      "clue": "This word, used in mathematics, science, and everyday life, comes from the Latin for 'unknown quantity' and is commonly represented by the letter x.",
+      "answer": "Variable"
+    }
+  }

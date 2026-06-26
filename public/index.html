@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Discord Jeopardy</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="app">
+
+    <section id="role-screen" class="screen card">
+      <h1>Jeopardy</h1>
+      <h2>Welcome to Jeopardy!</h2>
+      <p>Choose how you'd like to join.</p>
+
+      <div class="role-list">
+        <button id="host-btn" class="role-card">
+          <span class="role-icon">👑</span>
+          <span class="role-title">Host</span>
+          <span class="role-description">Control the game</span>
+        </button>
+
+        <button id="player-btn" class="role-card">
+          <span class="role-icon">🎮</span>
+          <span class="role-title">Player</span>
+          <span class="role-description">Compete for points</span>
+        </button>
+
+        <button id="spectator-btn" class="role-card">
+          <span class="role-icon">👀</span>
+          <span class="role-title">Spectator</span>
+          <span class="role-description">Watch the game</span>
+        </button>
+      </div>
+
+      <p id="message" class="message"></p>
+    </section>
+
+    <section id="waiting-room" class="screen card hidden">
+      <h1>Jeopardy</h1>
+      <h2 id="welcome-text">Welcome!</h2>
+      <p class="subtle">Waiting Room</p>
+
+      <div class="room-grid">
+        <div class="room-section">
+          <h3>👑 Host</h3>
+          <ul id="host-list"></ul>
+        </div>
+
+        <div class="room-section">
+          <h3>🎮 Players</h3>
+          <ul id="player-list"></ul>
+        </div>
+
+        <div class="room-section">
+          <h3>👀 Spectators</h3>
+          <ul id="spectator-list"></ul>
+        </div>
+      </div>
+
+      <div id="host-controls" class="host-controls hidden">
+        <button id="start-game-btn" class="primary-button">Start Game</button>
+      </div>
+
+      <p id="waiting-message" class="waiting-message">
+        Waiting for the host to start...
+      </p>
+
+      <button id="change-role-btn" class="secondary-button">Change Role</button>
+    </section>
+
+    <section id="game-screen" class="screen card hidden">
+      <div class="game-header">
+        <div>
+          <h1>Jeopardy</h1>
+          <p id="board-status" class="subtle">Loading board...</p>
+        </div>
+      </div>
+
+      <div class="board-layout">
+        <div id="jeopardy-board" class="jeopardy-board" aria-label="Jeopardy board"></div>
+
+        <aside class="score-panel" aria-label="Player scores">
+          <h2>Scores</h2>
+          <ul id="score-list" class="score-list"></ul>
+        </aside>
+      </div>
+    </section>
+
+    <section id="question-screen" class="screen card hidden">
+      <p id="question-category" class="question-category"></p>
+      <h1 id="question-value" class="question-value"></h1>
+      <p id="question-clue" class="question-clue"></p>
+      <div id="question-answer" class="question-answer answer-hidden">Answer hidden</div>
+      <p id="result-message" class="result-message"></p>
+      <p id="buzz-message" class="buzz-message"></p>
+      <ul id="buzz-list" class="buzz-list"></ul>
+      <p id="locked-out-message" class="locked-out-message"></p>
+
+      <div id="player-buzz-controls" class="buzz-controls hidden">
+        <button id="buzz-btn" class="buzz-button">BUZZ</button>
+      </div>
+
+      <div id="question-host-controls" class="host-controls hidden">
+        <div class="judge-controls">
+          <button id="correct-btn" class="judge-button correct-button">Correct</button>
+          <button id="incorrect-btn" class="judge-button incorrect-button">Incorrect</button>
+        </div>
+        <button id="reveal-answer-btn" class="primary-button">Reveal Answer</button>
+        <button id="back-to-board-btn" class="primary-button">Back to Board</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
