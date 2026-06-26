@@ -151,8 +151,10 @@ async function initialiseDiscordIdentity() {
     socket.emit("setGameInstance", {
       instanceId
     });
+    const redirectUri = getDiscordProxyRedirectUri(config.clientId);
+    console.log("Discord identity: redirectUri used for authorize", redirectUri);
 
-    const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
+    const authCode = await getDiscordAuthCode(discordSdk, config.clientId, redirectUri);
 
     if (!authCode) {
       console.warn("Discord identity: authorize did not return a code");
@@ -167,7 +169,8 @@ async function initialiseDiscordIdentity() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        code: authCode
+        code: authCode,
+        redirectUri
       })
     });
 
@@ -254,10 +257,11 @@ function loadDiscordSdk() {
   return window.DiscordSDK;
 }
 
-async function getDiscordAuthCode(discordSdk, clientId) {
+async function getDiscordAuthCode(discordSdk, clientId, redirectUri) {
   console.log("Discord identity: requesting authorization");
   const response = await discordSdk.commands.authorize({
     client_id: clientId,
+    redirect_uri: redirectUri,
     response_type: "code",
     state: "",
     prompt: "none",
@@ -265,6 +269,10 @@ async function getDiscordAuthCode(discordSdk, clientId) {
   });
 
   return response?.code || "";
+}
+
+function getDiscordProxyRedirectUri(clientId) {
+  return `https://${clientId}.discordsays.com/.proxy/api/discord/callback`;
 }
 
 function getDiscordAvatarUrl(user) {

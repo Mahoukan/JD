@@ -61,6 +61,8 @@ app.post("/api/discord/token", async (req, res) => {
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
   const code = typeof req.body?.code === "string" ? req.body.code : "";
+  const redirectUri = typeof req.body?.redirectUri === "string" ? req.body.redirectUri : "";
+  const expectedRedirectUri = getDiscordProxyRedirectUri(clientId);
 
   if (!clientId || !clientSecret) {
     console.warn("Discord token exchange blocked: DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is missing.");
@@ -74,6 +76,17 @@ app.post("/api/discord/token", async (req, res) => {
     return;
   }
 
+  if (redirectUri !== expectedRedirectUri) {
+    console.warn("Discord token exchange blocked: redirect URI mismatch.", {
+      received: redirectUri,
+      expected: expectedRedirectUri
+    });
+    res.status(400).json({ error: "Discord redirect URI is invalid." });
+    return;
+  }
+
+  console.log("Discord token exchange redirectUri:", redirectUri);
+
   try {
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
@@ -84,7 +97,8 @@ app.post("/api/discord/token", async (req, res) => {
         client_id: clientId,
         client_secret: clientSecret,
         grant_type: "authorization_code",
-        code
+        code,
+        redirect_uri: redirectUri
       })
     });
 
@@ -141,6 +155,10 @@ function getUser(socket) {
 function renderIndexHtml() {
   return readFileSync(join(__dirname, "public", "index.html"), "utf8")
     .replaceAll("__BUILD_VERSION__", BUILD_VERSION);
+}
+
+function getDiscordProxyRedirectUri(clientId) {
+  return `https://${clientId}.discordsays.com/.proxy/api/discord/callback`;
 }
 
 function createGameContext(id) {
