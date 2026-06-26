@@ -346,6 +346,15 @@ li {
   display: none;
 }
 
+.warning-button {
+  background: #dc2626;
+  color: #fff7ed;
+}
+
+.warning-button:hover {
+  background: #b91c1c;
+}
+
 .board-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -1161,6 +1170,10 @@ li {
     padding: 14px 10px;
   }
 
+  #question-screen {
+    padding-bottom: max(128px, calc(112px + env(safe-area-inset-bottom)));
+  }
+
   .question-category {
     margin-bottom: 7px;
   }
@@ -1184,8 +1197,15 @@ li {
   }
 
   .buzz-controls {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 9998;
+    max-width: none;
     min-height: 104px;
-    margin-bottom: 10px;
+    margin: 0;
+    padding: 0 0 18px;
   }
 
   .timer-panel {

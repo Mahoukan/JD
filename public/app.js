@@ -104,6 +104,7 @@ let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
 let pendingConfirmAction = null;
+let resetBoardConfirmTimeout = null;
 
 async function initialiseDiscordIdentity() {
   if (discordIdentityInitialised || !isLikelyDiscordActivity()) {
@@ -245,6 +246,16 @@ function closeConfirm() {
   confirmModal.classList.add("hidden");
 }
 
+function clearResetBoardConfirm() {
+  if (resetBoardConfirmTimeout) {
+    clearTimeout(resetBoardConfirmTimeout);
+    resetBoardConfirmTimeout = null;
+  }
+
+  resetBoardBtn.textContent = "Reset Board";
+  resetBoardBtn.classList.remove("warning-button");
+}
+
 socket.on("connected", (user) => {
   currentUser = user;
   initialiseDiscordIdentity();
@@ -318,14 +329,16 @@ boardSelect.addEventListener("change", () => {
 });
 
 resetBoardBtn.addEventListener("click", () => {
-  showConfirm({
-    title: "Reset Board",
-    message: "Reset all clue states and set every player score to $0?",
-    confirmText: "Reset Board",
-    onConfirm: () => {
-      socket.emit("resetBoard");
-    }
-  });
+  if (resetBoardConfirmTimeout) {
+    socket.emit("resetBoard");
+    clearResetBoardConfirm();
+    return;
+  }
+
+  resetBoardBtn.textContent = "Click Again to Confirm";
+  resetBoardBtn.classList.add("warning-button");
+  showToast("Click Reset Board again to confirm.", "error");
+  resetBoardConfirmTimeout = setTimeout(clearResetBoardConfirm, 4000);
 });
 
 startDoubleJeopardyBtn.addEventListener("click", () => {
@@ -548,6 +561,11 @@ function renderBoard(state) {
   resetBoardBtn.classList.toggle("hidden", !isHost || state.phase !== "board");
   startDoubleJeopardyBtn.classList.toggle("hidden", !canStartDoubleJeopardy);
   startFinalJeopardyBtn.classList.toggle("hidden", !canStartFinalJeopardy);
+
+  if (!isHost || state.phase !== "board") {
+    clearResetBoardConfirm();
+  }
+
   roundStatus.textContent = getRoundName(state.currentRound);
 
   if (!categories?.length) {
