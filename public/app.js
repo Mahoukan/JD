@@ -33,6 +33,12 @@ const scoreEditInput = document.getElementById("score-edit-input");
 const scoreEditError = document.getElementById("score-edit-error");
 const scoreEditCancelBtn = document.getElementById("score-edit-cancel-btn");
 const scoreEditSaveBtn = document.getElementById("score-edit-save-btn");
+const confirmModal = document.getElementById("confirm-modal");
+const confirmTitle = document.getElementById("confirm-title");
+const confirmMessage = document.getElementById("confirm-message");
+const confirmCancelBtn = document.getElementById("confirm-cancel-btn");
+const confirmConfirmBtn = document.getElementById("confirm-confirm-btn");
+const toastContainer = document.getElementById("toast-container");
 const questionCategory = document.getElementById("question-category");
 const questionValue = document.getElementById("question-value");
 const questionClue = document.getElementById("question-clue");
@@ -97,6 +103,7 @@ let currentState = null;
 let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
+let pendingConfirmAction = null;
 
 async function initialiseDiscordIdentity() {
   if (discordIdentityInitialised || !isLikelyDiscordActivity()) {
@@ -210,6 +217,34 @@ function getDiscordAvatarUrl(user) {
   return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${extension}?size=128`;
 }
 
+function showToast(messageText, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = messageText;
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("toast-exiting");
+    toast.addEventListener("transitionend", () => {
+      toast.remove();
+    }, { once: true });
+  }, 3500);
+}
+
+function showConfirm({ title, message: modalMessage, confirmText = "Confirm", onConfirm }) {
+  pendingConfirmAction = typeof onConfirm === "function" ? onConfirm : null;
+  confirmTitle.textContent = title || "Confirm";
+  confirmMessage.textContent = modalMessage || "";
+  confirmConfirmBtn.textContent = confirmText;
+  confirmModal.classList.remove("hidden");
+  confirmCancelBtn.focus();
+}
+
+function closeConfirm() {
+  pendingConfirmAction = null;
+  confirmModal.classList.add("hidden");
+}
+
 socket.on("connected", (user) => {
   currentUser = user;
   initialiseDiscordIdentity();
@@ -242,10 +277,11 @@ socket.on("roleConfirmed", (user) => {
 
 socket.on("roleRejected", (reason) => {
   message.textContent = reason;
+  showToast(reason, "error");
 });
 
 socket.on("actionRejected", (reason) => {
-  alert(reason);
+  showToast(reason, "error");
 });
 
 hostBtn.addEventListener("click", () => {
@@ -282,9 +318,14 @@ boardSelect.addEventListener("change", () => {
 });
 
 resetBoardBtn.addEventListener("click", () => {
-  if (confirm("Reset the board and set all player scores to $0?")) {
-    socket.emit("resetBoard");
-  }
+  showConfirm({
+    title: "Reset Board",
+    message: "Reset all clue states and set every player score to $0?",
+    confirmText: "Reset Board",
+    onConfirm: () => {
+      socket.emit("resetBoard");
+    }
+  });
 });
 
 startDoubleJeopardyBtn.addEventListener("click", () => {
@@ -372,6 +413,25 @@ scoreEditCancelBtn.addEventListener("click", () => {
 scoreEditModal.addEventListener("click", (event) => {
   if (event.target === scoreEditModal) {
     closeScoreEditModal();
+  }
+});
+
+confirmCancelBtn.addEventListener("click", () => {
+  closeConfirm();
+});
+
+confirmConfirmBtn.addEventListener("click", () => {
+  const action = pendingConfirmAction;
+  closeConfirm();
+
+  if (action) {
+    action();
+  }
+});
+
+confirmModal.addEventListener("click", (event) => {
+  if (event.target === confirmModal) {
+    closeConfirm();
   }
 });
 

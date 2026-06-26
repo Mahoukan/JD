@@ -210,6 +210,19 @@
       </form>
     </div>
 
+    <div id="confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="confirm-modal">
+        <h2 id="confirm-title">Confirm</h2>
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel-btn" class="secondary-button" type="button">Cancel</button>
+          <button id="confirm-confirm-btn" class="primary-button" type="button">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
   </main>
 
   <script src="/socket.io/socket.io.js"></script>
