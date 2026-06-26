@@ -865,7 +865,7 @@ function getSelectedBoard(state) {
     ) ||
     (state.board
       ? {
-          name: state.board.name || "Jeopardy Board",
+          name: state.board.name || "Trivia Showdown Board",
           filename: state.selectedBoardFilename,
         }
       : null)
@@ -958,7 +958,7 @@ function renderBoard(state) {
     });
   }
 
-  boardStatus.textContent = state.board.name || "Jeopardy Board";
+  boardStatus.textContent = state.board.name || "Trivia Showdown Board";
 }
 
 function getCurrentRoundCategories(state) {
@@ -973,7 +973,19 @@ function hasDoubleJeopardyBoard(state) {
 }
 
 function getRoundName(round) {
-  return round === "doubleJeopardy" ? "Double Jeopardy" : "Jeopardy";
+  switch (round) {
+    case "jeopardy":
+      return "Round One";
+
+    case "doubleJeopardy":
+      return "Round Two";
+
+    case "finalJeopardy":
+      return "Final Round";
+
+    default:
+      return "";
+  }
 }
 
 function renderScores(state) {
