@@ -298,13 +298,15 @@ function loadDiscordSdk() {
 
 async function getDiscordAuthCode(discordSdk, clientId) {
   console.log("Discord identity: requesting authorization");
-  const response = await discordSdk.commands.authorize({
+  const authorizePayload = {
     client_id: clientId,
     response_type: "code",
     state: "",
     prompt: "none",
     scope: ["identify"],
-  });
+  };
+  console.log("Discord identity: authorize payload", authorizePayload);
+  const response = await discordSdk.commands.authorize(authorizePayload);
   return response?.code || "";
 }
 

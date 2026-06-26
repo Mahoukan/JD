@@ -75,7 +75,7 @@ app.post("/api/discord/token", async (req, res) => {
   }
 
   try {
-    let tokenResponse = await exchangeDiscordToken({
+    const tokenResponse = await exchangeDiscordToken({
       clientId,
       clientSecret,
       code
@@ -83,23 +83,9 @@ app.post("/api/discord/token", async (req, res) => {
 
     if (!tokenResponse.ok) {
       const errorBody = await tokenResponse.text();
-      console.warn("Discord token exchange without redirect_uri failed:", tokenResponse.status, errorBody);
-
-      const redirectUri = getDiscordProxyRedirectUri(clientId);
-      console.log("Discord token exchange retry redirectUri:", redirectUri);
-      tokenResponse = await exchangeDiscordToken({
-        clientId,
-        clientSecret,
-        code,
-        redirectUri
-      });
-
-      if (!tokenResponse.ok) {
-        const retryErrorBody = await tokenResponse.text();
-        console.warn("Discord token exchange with redirect_uri failed:", tokenResponse.status, retryErrorBody);
-        res.status(502).json({ error: "Discord token exchange failed." });
-        return;
-      }
+      console.warn("Discord token exchange failed:", tokenResponse.status, errorBody);
+      res.status(502).json({ error: "Discord token exchange failed." });
+      return;
     }
 
     const tokenData = await tokenResponse.json();
@@ -150,11 +136,7 @@ function renderIndexHtml() {
     .replaceAll("__BUILD_VERSION__", BUILD_VERSION);
 }
 
-function getDiscordProxyRedirectUri(clientId) {
-  return `https://${clientId}.discordsays.com/.proxy/api/discord/callback`;
-}
-
-function exchangeDiscordToken({ clientId, clientSecret, code, redirectUri = "" }) {
+function exchangeDiscordToken({ clientId, clientSecret, code }) {
   const body = new URLSearchParams({
     client_id: clientId,
     client_secret: clientSecret,
@@ -162,12 +144,11 @@ function exchangeDiscordToken({ clientId, clientSecret, code, redirectUri = "" }
     code
   });
 
-  if (redirectUri) {
-    body.set("redirect_uri", redirectUri);
-    console.log("Discord token exchange using redirect_uri:", redirectUri);
-  } else {
-    console.log("Discord token exchange without redirect_uri");
-  }
+  console.log("Discord token exchange body", {
+    client_id: clientId,
+    grant_type: "authorization_code",
+    hasCode: Boolean(code)
+  });
 
   return fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
