@@ -380,7 +380,7 @@ li {
   align-items: start;
 }
 
-.jeopardy-board {
+.trivia-showdown-board {
   display: grid;
   grid-template-columns: repeat(6, minmax(44px, 1fr));
   gap: clamp(3px, 0.8vw, 8px);
@@ -1454,7 +1454,7 @@ li {
     gap: 8px;
   }
 
-  .jeopardy-board {
+  .trivia-showdown-board {
     grid-template-columns: repeat(6, minmax(36px, 1fr));
     gap: clamp(2px, 0.65vw, 6px);
   }

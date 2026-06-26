@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Discord Jeopardy</title>
+  <title>Discord Trivia Showdown</title>
 
   <link rel="stylesheet" href="style.css?v=__BUILD_VERSION__" />
 </head>
@@ -13,8 +13,8 @@
   <main class="app">
 
     <section id="role-screen" class="screen card">
-      <h1>Jeopardy</h1>
-      <h2>Welcome to Jeopardy!</h2>
+      <h1>Trivia Showdown</h1>
+      <h2>Welcome to Trivia Showdown!</h2>
       <p>Choose how you'd like to join.</p>
 
       <div class="role-list">
@@ -45,7 +45,7 @@
     </section>
 
     <section id="waiting-room" class="screen card hidden">
-      <h1>Jeopardy</h1>
+      <h1>Trivia Showdown</h1>
       <h2 id="welcome-text">Welcome!</h2>
       <p class="subtle">Waiting Room</p>
 
@@ -91,19 +91,19 @@
     <section id="game-screen" class="screen card hidden">
       <div class="game-header">
         <div>
-          <h1>Jeopardy</h1>
-          <p id="round-status" class="round-status">Jeopardy</p>
+          <h1>Trivia Showdown</h1>
+          <p id="round-status" class="round-status">Trivia Showdown</p>
           <p id="board-status" class="subtle">Loading board...</p>
         </div>
         <div class="board-actions">
-          <button id="start-double-jeopardy-btn" class="secondary-button board-action-button hidden">Start Double Jeopardy</button>
-          <button id="start-final-jeopardy-btn" class="secondary-button board-action-button hidden">Start Final Jeopardy</button>
+          <button id="start-double-trivia-showdown-btn" class="secondary-button board-action-button hidden">Start Second Trivia Showdown</button>
+          <button id="start-final-trivia-showdown-btn" class="secondary-button board-action-button hidden">Start Final Trivia Showdown</button>
           <button id="reset-board-btn" class="secondary-button board-action-button hidden">Reset Board</button>
         </div>
       </div>
 
       <div class="board-layout">
-        <div id="jeopardy-board" class="jeopardy-board" aria-label="Jeopardy board"></div>
+        <div id="trivia-showdown-board" class="trivia-showdown-board" aria-label="Trivia Showdown board"></div>
 
         <aside class="score-panel" aria-label="Player scores">
           <h2>Scores</h2>
@@ -171,9 +171,9 @@
       <p id="daily-double-waiting" class="daily-double-waiting"></p>
     </section>
 
-    <section id="final-jeopardy-screen" class="screen card hidden">
-      <p class="final-kicker">Final Jeopardy</p>
-      <h1>Final Jeopardy</h1>
+    <section id="final-trivia-showdown-screen" class="screen card hidden">
+      <p class="final-kicker">Final Trivia Showdown</p>
+      <h1>Final Trivia Showdown</h1>
       <p id="final-category" class="final-category"></p>
       <p id="final-clue" class="final-clue hidden"></p>
       <p id="final-status" class="final-status"></p>
@@ -254,7 +254,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     window.BUILD_VERSION = "__BUILD_VERSION__";
-    console.log("Discord Jeopardy Build:", window.BUILD_VERSION);
+    console.log("Discord Trivia Showdown Build:", window.BUILD_VERSION);
   </script>
   <script src="discord-sdk.js?v=__BUILD_VERSION__"></script>
   <script src="app.js?v=__BUILD_VERSION__"></script>

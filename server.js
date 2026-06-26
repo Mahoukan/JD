@@ -434,22 +434,22 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "startDoubleJeopardy", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Double Jeopardy.");
+      socket.emit("actionRejected", "Only the host can start Double Trivia Showdown.");
       return;
     }
 
     if (gameState.phase !== "board") {
-      socket.emit("actionRejected", "Double Jeopardy can only start from the board.");
+      socket.emit("actionRejected", "Double Trivia Showdown can only start from the board.");
       return;
     }
 
     if (gameState.currentRound !== "jeopardy") {
-      socket.emit("actionRejected", "Double Jeopardy has already started.");
+      socket.emit("actionRejected", "Double Trivia Showdown has already started.");
       return;
     }
 
     if (!hasRoundBoard("doubleJeopardy")) {
-      socket.emit("actionRejected", "This board does not include Double Jeopardy.");
+      socket.emit("actionRejected", "This board does not include Double Trivia Showdown.");
       return;
     }
 
@@ -466,12 +466,12 @@ io.on("connection", (socket) => {
     }
 
     if (gameState.phase !== "board" || gameState.currentRound !== "doubleJeopardy") {
-      socket.emit("actionRejected", "Final Jeopardy can only start from the Double Jeopardy board.");
+      socket.emit("actionRejected", "Final Trivia Showdown can only start from the Second Trivia Showdown board.");
       return;
     }
 
     if (!gameState.board.finalJeopardy) {
-      socket.emit("actionRejected", "This board does not include Final Jeopardy.");
+      socket.emit("actionRejected", "This board does not include Final Trivia Showdown.");
       return;
     }
 
@@ -483,14 +483,14 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "submitFinalWager", ({ wager } = {}) => {
     if (gameState.phase !== "finalWager") {
-      socket.emit("actionRejected", "Final Jeopardy wagering is not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown wagering is not active.");
       return;
     }
 
     const player = getEligibleFinalPlayer(socket.id);
 
     if (!player) {
-      socket.emit("actionRejected", "You are not eligible for Final Jeopardy.");
+      socket.emit("actionRejected", "You are not eligible for Final Trivia Showdown.");
       return;
     }
 
@@ -517,7 +517,7 @@ io.on("connection", (socket) => {
     }
 
     if (gameState.phase !== "finalWager") {
-      socket.emit("actionRejected", "Final Jeopardy wagering is not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown wagering is not active.");
       return;
     }
 
@@ -532,7 +532,7 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "submitFinalAnswer", ({ answer } = {}) => {
     if (gameState.phase !== "finalAnswers") {
-      socket.emit("actionRejected", "Final Jeopardy answers are not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown answers are not active.");
       return;
     }
 
@@ -546,7 +546,7 @@ io.on("connection", (socket) => {
     const trimmedAnswer = String(answer || "").trim();
 
     if (!trimmedAnswer) {
-      socket.emit("actionRejected", "Final Jeopardy answer cannot be empty.");
+      socket.emit("actionRejected", "Final Trivia Showdown answer cannot be empty.");
       return;
     }
 
@@ -556,12 +556,12 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "startFinalReview", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Final Jeopardy review.");
+      socket.emit("actionRejected", "Only the host can start Final Trivia Showdown review.");
       return;
     }
 
     if (gameState.phase !== "finalAnswers") {
-      socket.emit("actionRejected", "Final Jeopardy answers are not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown answers are not active.");
       return;
     }
 
@@ -576,17 +576,17 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "revealFinalAnswerForPlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reveal Final Jeopardy answers.");
+      socket.emit("actionRejected", "Only the host can reveal Final Trivia Showdown answers.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Jeopardy review is not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
       return;
     }
 
     if (!isEligibleFinalPlayerId(playerId) || !gameState.finalJeopardyState.answers[playerId]) {
-      socket.emit("actionRejected", "That player does not have a Final Jeopardy answer.");
+      socket.emit("actionRejected", "That player does not have a Final Trivia Showdown answer.");
       return;
     }
 
@@ -599,17 +599,17 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "judgeFinalAnswer", ({ playerId, result } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can judge Final Jeopardy answers.");
+      socket.emit("actionRejected", "Only the host can judge Final Trivia Showdown answers.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Jeopardy review is not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
       return;
     }
 
     if (!["correct", "incorrect"].includes(result)) {
-      socket.emit("actionRejected", "Invalid Final Jeopardy judgement.");
+      socket.emit("actionRejected", "Invalid Final Trivia Showdown judgement.");
       return;
     }
 
@@ -622,7 +622,7 @@ io.on("connection", (socket) => {
     }
 
     if (gameState.finalJeopardyState.judged[playerId]) {
-      socket.emit("actionRejected", "That Final Jeopardy answer has already been judged.");
+      socket.emit("actionRejected", "That Final Trivia Showdown answer has already been judged.");
       return;
     }
 
@@ -633,17 +633,17 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "showFinalResults", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can show Final Jeopardy results.");
+      socket.emit("actionRejected", "Only the host can show Final Trivia Showdown results.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Jeopardy review is not active.");
+      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
       return;
     }
 
     if (!allFinalAnswersJudged()) {
-      socket.emit("actionRejected", "All Final Jeopardy answers must be judged first.");
+      socket.emit("actionRejected", "All Final Trivia Showdown answers must be judged first.");
       return;
     }
 
