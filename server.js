@@ -47,7 +47,8 @@ app.use(express.static("public", {
 
 app.get("/api/discord/config", (req, res) => {
   res.json({
-    clientId: process.env.DISCORD_CLIENT_ID || ""
+    clientId: process.env.DISCORD_CLIENT_ID || "",
+    redirectUri: process.env.REDIRECT_URI || ""
   });
 });
 
@@ -61,6 +62,7 @@ app.post("/api/discord/token", async (req, res) => {
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
   const code = typeof req.body?.code === "string" ? req.body.code : "";
+  const redirectUri = sanitizeRedirectUri(req.body?.redirectUri);
 
   if (!clientId || !clientSecret) {
     console.warn("Discord token exchange blocked: DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is missing.");
@@ -74,6 +76,12 @@ app.post("/api/discord/token", async (req, res) => {
     return;
   }
 
+  if (!redirectUri) {
+    console.warn("Discord token exchange blocked: REDIRECT_URI is missing or invalid.");
+    res.status(400).json({ error: "Discord redirect URI is missing or invalid." });
+    return;
+  }
+
   try {
     const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
@@ -84,7 +92,8 @@ app.post("/api/discord/token", async (req, res) => {
         client_id: clientId,
         client_secret: clientSecret,
         grant_type: "authorization_code",
-        code
+        code,
+        redirect_uri: redirectUri
       })
     });
 
@@ -1037,6 +1046,21 @@ function sanitizeDisplayName(value) {
 
 function sanitizeAvatarUrl(value) {
   const url = sanitizePlainText(value, 300);
+
+  if (!url) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    return ["https:", "http:"].includes(parsedUrl.protocol) ? parsedUrl.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function sanitizeRedirectUri(value) {
+  const url = sanitizePlainText(value, 500);
 
   if (!url) {
     return "";
