@@ -461,7 +461,7 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "startFinalJeopardy", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Final Jeopardy.");
+      socket.emit("actionRejected", "Only the host can start Final Trivia Showdown.");
       return;
     }
 
@@ -512,7 +512,7 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "revealFinalClue", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reveal the Final Jeopardy clue.");
+      socket.emit("actionRejected", "Only the host can reveal the Final Trivia Showdown clue.");
       return;
     }
 
@@ -1358,7 +1358,7 @@ function validateBoardSchema(board) {
   }
 
   if (!Array.isArray(board.jeopardy?.board) || board.jeopardy.board.length === 0) {
-    return "Board must include jeopardy.board with at least one category.";
+    return "Board must include Trivia Showdown board with at least one category.";
   }
 
   for (const round of ["jeopardy", "doubleJeopardy"]) {
@@ -1374,7 +1374,7 @@ function validateBoardSchema(board) {
   }
 
   if (board.finalJeopardy !== undefined && (!isNonEmptyString(board.finalJeopardy.category) || !isNonEmptyString(board.finalJeopardy.clue) || !isNonEmptyString(board.finalJeopardy.answer))) {
-    return "finalJeopardy must include category, clue, and answer.";
+    return "final Trivia Showdown must include category, clue, and answer.";
   }
 
   return "";
@@ -1539,7 +1539,16 @@ function hasRoundBoard(round) {
 }
 
 function getRoundDisplayName(round = gameState.currentRound) {
-  return round === "doubleJeopardy" ? "Double Jeopardy" : "Jeopardy";
+  switch (round) {
+    case "jeopardy":
+      return "Round One";
+
+    case "doubleJeopardy":
+      return "Round Two";
+
+    default:
+      return "Trivia Showdown";
+  }
 }
 
 function resetRoundAnsweredTracking(round) {
@@ -1934,6 +1943,6 @@ function getVisibleCurrentClue() {
 }
 
 server.listen(PORT, () => {
-  console.log(`Discord Jeopardy Build: ${BUILD_VERSION}`);
+  console.log(`Discord Trivia Showdown Build: ${BUILD_VERSION}`);
   console.log(`Server running on http://localhost:${PORT}`);
 });

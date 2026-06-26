@@ -1357,7 +1357,7 @@ function renderFinalJeopardy(state) {
     !isEligible &&
     currentUser?.role === "player"
   ) {
-    finalStatus.textContent = "You are not eligible for Final Jeopardy.";
+    finalStatus.textContent = "You are not eligible for Final Trivia Showdown.";
   } else if (state.phase === "finalWager") {
     finalStatus.textContent = "Eligible players are submitting wagers.";
   } else if (state.phase === "finalAnswers") {
@@ -1365,7 +1365,7 @@ function renderFinalJeopardy(state) {
       ? "Submit your answer."
       : "Eligible players are submitting answers.";
   } else if (state.phase === "finalReview") {
-    finalStatus.textContent = "Host is reviewing Final Jeopardy answers.";
+    finalStatus.textContent = "Host is reviewing Final Trivia Showdown answers.";
   } else if (state.phase === "finalResults") {
     finalStatus.textContent = "Final rankings";
   } else {
