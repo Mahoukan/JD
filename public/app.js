@@ -132,19 +132,11 @@ async function initialiseDiscordIdentity() {
   try {
     const config = await fetch("/api/discord/config").then((response) => response.json());
     console.log("Discord identity: config loaded", {
-      hasClientId: Boolean(config.clientId),
-      hasRedirectUri: Boolean(config.redirectUri)
+      hasClientId: Boolean(config.clientId)
     });
 
     if (!config.clientId) {
       console.warn("Discord identity: DISCORD_CLIENT_ID missing, using guest identity");
-      return;
-    }
-
-    if (!isValidRedirectUri(config.redirectUri)) {
-      const errorMessage = "Discord REDIRECT_URI is missing or invalid.";
-      console.warn(`Discord identity: ${errorMessage}`);
-      showToast(errorMessage, "error");
       return;
     }
 
@@ -160,14 +152,7 @@ async function initialiseDiscordIdentity() {
       instanceId
     });
 
-    try {
-      const participants = await discordSdk.commands.getInstanceConnectedParticipants();
-      console.log("Discord activity: connected participants", participants);
-    } catch (participantsError) {
-      console.warn("Discord activity: connected participants unavailable", participantsError);
-    }
-
-    const authCode = await getDiscordAuthCode(discordSdk, config.clientId, config.redirectUri);
+    const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
 
     if (!authCode) {
       console.warn("Discord identity: authorize did not return a code");
@@ -182,8 +167,7 @@ async function initialiseDiscordIdentity() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        code: authCode,
-        redirectUri: config.redirectUri
+        code: authCode
       })
     });
 
@@ -196,11 +180,14 @@ async function initialiseDiscordIdentity() {
     console.log("Discord identity: access token received", {
       hasAccessToken: Boolean(tokenData.access_token)
     });
+    console.log("Discord identity: token exchange success");
     const auth = await discordSdk.commands.authenticate({
       access_token: tokenData.access_token
     });
     console.log("Discord identity: authentication success", {
-      hasUser: Boolean(auth?.user)
+      hasUser: Boolean(auth?.user),
+      username: auth?.user?.username || "",
+      discordUserId: auth?.user?.id || ""
     });
     const user = auth?.user;
 
@@ -216,6 +203,8 @@ async function initialiseDiscordIdentity() {
       discriminator: user.discriminator,
       hasAvatar: Boolean(user.avatar)
     });
+    console.log("Discord identity: authenticated username", getDiscordDisplayName(user));
+    console.log("Discord identity: authenticated Discord ID", user.id);
 
     if (discordIdentityEmitted) {
       console.log("Discord identity: setUserIdentity already emitted");
@@ -234,6 +223,14 @@ async function initialiseDiscordIdentity() {
       hasAvatarUrl: Boolean(identityPayload.avatarUrl),
       discordUserId: identityPayload.discordUserId
     });
+
+    try {
+      const participants = await discordSdk.commands.getInstanceConnectedParticipants();
+      console.log("Discord activity: participants retrieved", participants);
+      console.log("Discord activity: connected participants", participants);
+    } catch (participantsError) {
+      console.warn("Discord activity: connected participants unavailable", participantsError);
+    }
   } catch (error) {
     console.warn("Discord identity: authentication failure, using guest identity.", error);
   }
@@ -257,11 +254,10 @@ function loadDiscordSdk() {
   return window.DiscordSDK;
 }
 
-async function getDiscordAuthCode(discordSdk, clientId, redirectUri) {
+async function getDiscordAuthCode(discordSdk, clientId) {
   console.log("Discord identity: requesting authorization");
   const response = await discordSdk.commands.authorize({
     client_id: clientId,
-    redirect_uri: redirectUri,
     response_type: "code",
     state: "",
     prompt: "none",
@@ -269,19 +265,6 @@ async function getDiscordAuthCode(discordSdk, clientId, redirectUri) {
   });
 
   return response?.code || "";
-}
-
-function isValidRedirectUri(value) {
-  if (typeof value !== "string" || !value.trim()) {
-    return false;
-  }
-
-  try {
-    const redirectUrl = new URL(value);
-    return redirectUrl.protocol === "https:" || redirectUrl.protocol === "http:";
-  } catch {
-    return false;
-  }
 }
 
 function getDiscordAvatarUrl(user) {

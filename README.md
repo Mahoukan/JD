@@ -71,13 +71,13 @@ The default port is `3001`. Set `PORT` in `.env` or your hosting provider if you
 PORT=3001
 DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
-REDIRECT_URI=
+DISCORD_REDIRECT_URI=
 BUILD_VERSION=
 ```
 
 Discord variables are optional for local browser testing. If they are not configured, the app still works with `Guest xxxx` names.
 
-For Discord Activity identity, set `REDIRECT_URI` to the exact OAuth2 redirect URL configured in the Discord Developer Portal. Use the same deployed HTTPS URL format in both places, for example `https://your-app.up.railway.app/`.
+Discord Activity identity uses the Embedded App SDK RPC OAuth flow and does not require a redirect URI. `DISCORD_REDIRECT_URI` is optional and reserved for a future non-Activity browser OAuth flow.
 
 `BUILD_VERSION` is optional. If omitted, the server uses the Railway commit hash when available plus a startup timestamp, or falls back to the package version plus a startup timestamp.
 
@@ -188,7 +188,7 @@ Recommended setup:
   - `PORT` is usually provided by Railway automatically
   - `DISCORD_CLIENT_ID` if using Discord identity
   - `DISCORD_CLIENT_SECRET` if using Discord identity
-  - `REDIRECT_URI` if using Discord identity
+  - `DISCORD_REDIRECT_URI` only if you later add non-Activity browser OAuth
   - `BUILD_VERSION` only if you want to override automatic build versioning
 
 Make sure your Discord application settings use the deployed Railway URL when you begin configuring the Discord Activity launch flow.
@@ -208,21 +208,18 @@ The visible build badge in the app should match this value.
 1. Create an application in the Discord Developer Portal.
 2. Enable Embedded App / Activity support for the application.
 3. Configure the Activity URL to point at your Railway deployment URL.
-4. In OAuth2 settings, add the redirect URL required by Discord for your deployed Activity URL.
+4. In OAuth2 settings, no redirect URI is required for the Embedded App SDK Activity RPC flow.
 5. Copy the application client ID and client secret into Railway:
    - `DISCORD_CLIENT_ID`
    - `DISCORD_CLIENT_SECRET`
-6. Copy the exact OAuth2 redirect URL into Railway:
-   - `REDIRECT_URI`
-7. Redeploy the Railway service.
-8. Open the app in Discord and check the build badge so you know the newest deployment is running.
+6. Redeploy the Railway service.
+7. Open the app in Discord and check the build badge so you know the newest deployment is running.
 
 Identity behavior:
 
 - In Discord, the client loads the Discord Embedded App SDK and requests `identify`.
-- The client sends the configured `REDIRECT_URI` to Discord `authorize()`.
 - The OAuth token exchange happens through the server at `POST /api/discord/token`.
-- The server sends the same `REDIRECT_URI` during token exchange.
+- Activity auth does not send `redirect_uri` to `authorize()` or token exchange.
 - The client sends only display identity fields through `setUserIdentity`.
 - The server sanitizes display name, avatar URL, and Discord user ID.
 - Roles, scores, host status, and game state remain server-authoritative.
