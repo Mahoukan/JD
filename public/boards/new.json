@@ -1,0 +1,380 @@
+{
+  "id": "TRIVIA-QUIZ-RUSH",
+  "name": "Trivia Quiz Rush",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "PUT IT ON THE MAP",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Earth's official 0° longitude line is measured at this London-area location.",
+            "answer": "What is Greenwich?"
+          },
+          {
+            "value": 400,
+            "clue": "The American naval base at Guantanamo Bay is located in this country.",
+            "answer": "What is Cuba?"
+          },
+          {
+            "value": 600,
+            "clue": "The historic Alhambra palace complex is found in this Spanish city.",
+            "answer": "What is Granada?"
+          },
+          {
+            "value": 800,
+            "clue": "This African nation currently has the largest population.",
+            "answer": "What is Nigeria?"
+          },
+          {
+            "value": 1000,
+            "clue": "This country contains more pyramids than any other nation.",
+            "answer": "What is Sudan?"
+          }
+        ]
+      },
+      {
+        "category": "PAGE TURNERS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This author wrote Pride and Prejudice.",
+            "answer": "Who is Jane Austen?"
+          },
+          {
+            "value": 400,
+            "clue": "Bram Stoker is best known for writing this Gothic vampire novel.",
+            "answer": "What is Dracula?"
+          },
+          {
+            "value": 600,
+            "clue": "Daniel Defoe wrote this adventure novel about a castaway.",
+            "answer": "What is Robinson Crusoe?"
+          },
+          {
+            "value": 800,
+            "clue": "This Russian author wrote War and Peace.",
+            "answer": "Who is Leo Tolstoy?"
+          },
+          {
+            "value": 1000,
+            "clue": "This Spanish author wrote Don Quixote.",
+            "answer": "Who is Miguel de Cervantes?"
+          }
+        ]
+      },
+      {
+        "category": "LIGHTS, CAMERA...",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "In Disney's The Lion King, this young lion is heir to the throne.",
+            "answer": "Who is Simba?"
+          },
+          {
+            "value": 400,
+            "clue": "This award is widely considered the film industry's most prestigious prize.",
+            "answer": "What is an Oscar?"
+          },
+          {
+            "value": 600,
+            "clue": "Roger Moore portrayed this spy in the highest number of official films.",
+            "answer": "Who is James Bond?"
+          },
+          {
+            "value": 800,
+            "clue": "Francis Ford Coppola directed this classic crime film about the Corleone family.",
+            "answer": "What is The Godfather?"
+          },
+          {
+            "value": 1000,
+            "clue": "This actress starred in both Roman Holiday and Breakfast at Tiffany's.",
+            "answer": "Who is Audrey Hepburn?"
+          }
+        ]
+      },
+      {
+        "category": "PLAY IT LOUD",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Yo-Yo Ma is world famous for playing this string instrument.",
+            "answer": "What is the cello?"
+          },
+          {
+            "value": 400,
+            "clue": "John Williams composed the music for this space-opera film franchise.",
+            "answer": "What is Star Wars?"
+          },
+          {
+            "value": 600,
+            "clue": "The Beatles' first released UK single was this song.",
+            "answer": "What is Love Me Do?"
+          },
+          {
+            "value": 800,
+            "clue": "Simon & Garfunkel released this famous 1968 song from The Graduate.",
+            "answer": "What is Mrs. Robinson?"
+          },
+          {
+            "value": 1000,
+            "clue": "Known as the 'Queen of Soul,' this singer became the first woman inducted into the Rock & Roll Hall of Fame in 1987.",
+            "answer": "Who is Aretha Franklin?"
+          }
+        ]
+      },
+      {
+        "category": "MYTH-TAKEN",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "In Roman mythology, this god ruled the underworld.",
+            "answer": "Who is Pluto?"
+          },
+          {
+            "value": 400,
+            "clue": "In Greek mythology, this king of the gods ruled from Mount Olympus.",
+            "answer": "Who is Zeus?"
+          },
+          {
+            "value": 600,
+            "clue": "This Egyptian jackal-headed god guided the dead.",
+            "answer": "Who is Anubis?",
+            "dailyDouble": true
+          },
+          {
+            "value": 800,
+            "clue": "This Titan was punished by being forced to hold up the sky.",
+            "answer": "Who is Atlas?"
+          },
+          {
+            "value": 1000,
+            "clue": "This mortal woman was transformed into a spider after challenging Athena.",
+            "answer": "Who is Arachne?"
+          }
+        ]
+      },
+      {
+        "category": "YOU LEARNED THIS... RIGHT?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This subatomic particle carries a negative electric charge.",
+            "answer": "What is an electron?"
+          },
+          {
+            "value": 400,
+            "clue": "This protein in red blood cells carries oxygen.",
+            "answer": "What is hemoglobin?"
+          },
+          {
+            "value": 600,
+            "clue": "This planet has the hottest average temperature in the solar system.",
+            "answer": "What is Venus?"
+          },
+          {
+            "value": 800,
+            "clue": "This electronic device converts alternating current (AC) into direct current (DC).",
+            "answer": "What is a rectifier?"
+          },
+          {
+            "value": 1000,
+            "clue": "This particle discovered at CERN in 2012 helped confirm the Standard Model.",
+            "answer": "What is the Higgs boson?"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "YESTERDAY'S NEWS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 1963 event is where Martin Luther King Jr. delivered his famous 'I Have a Dream' speech.",
+            "answer": "What is the March on Washington?"
+          },
+          {
+            "value": 800,
+            "clue": "This historic event marked the end of World War II in Europe.",
+            "answer": "What is VE Day?"
+          },
+          {
+            "value": 1200,
+            "clue": "The French Revolution officially began in this year.",
+            "answer": "What is 1789?"
+          },
+          {
+            "value": 1600,
+            "clue": "This man served as president of the Confederacy during the American Civil War.",
+            "answer": "Who is Jefferson Davis?"
+          },
+          {
+            "value": 2000,
+            "clue": "The Watergate scandal centered on the cover-up of a break-in at the headquarters of this U.S. political party.",
+            "answer": "What is the Democratic Party?"
+          }
+        ]
+      },
+      {
+        "category": "HANG IT IN A MUSEUM",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Grant Wood painted this iconic American artwork featuring a farmer and his daughter.",
+            "answer": "What is American Gothic?"
+          },
+          {
+            "value": 800,
+            "clue": "This Dutch post-impressionist artist painted The Starry Night.",
+            "answer": "Who is Vincent van Gogh?"
+          },
+          {
+            "value": 1200,
+            "clue": "Michelangelo created this famous Renaissance sculpture of a biblical hero.",
+            "answer": "What is David?"
+          },
+          {
+            "value": 1600,
+            "clue": "Leonardo da Vinci created this famous drawing showing ideal human proportions.",
+            "answer": "What is Vitruvian Man?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This abstract artist painted Broadway Boogie Woogie.",
+            "answer": "Who is Piet Mondrian?"
+          }
+        ]
+      },
+      {
+        "category": "WORLD OF WONDER",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Sharks have this many bones in their bodies.",
+            "answer": "What is none?"
+          },
+          {
+            "value": 800,
+            "clue": "This galaxy is the closest major galaxy to the Milky Way.",
+            "answer": "What is the Andromeda Galaxy?"
+          },
+          {
+            "value": 1200,
+            "clue": "This smallest of Earth's major oceans surrounds the North Pole.",
+            "answer": "What is the Arctic Ocean?"
+          },
+          {
+            "value": 1600,
+            "clue": "Mount Fuji is found on this Japanese island.",
+            "answer": "What is Honshu?"
+          },
+          {
+            "value": 2000,
+            "clue": "At any given moment, about this many thunderstorms are happening around the world.",
+            "answer": "What is 2,000?"
+          }
+        ]
+      },
+      {
+        "category": "WHO'S THAT?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This biblical figure built an ark to survive the great flood.",
+            "answer": "Who is Noah?"
+          },
+          {
+            "value": 800,
+            "clue": "This man became the first president of post-apartheid South Africa.",
+            "answer": "Who is Nelson Mandela?"
+          },
+          {
+            "value": 1200,
+            "clue": "This boxer said, 'Float like a butterfly, sting like a bee.'",
+            "answer": "Who is Muhammad Ali?"
+          },
+          {
+            "value": 1600,
+            "clue": "This man became the first African-American to win Best Actor at the Oscars.",
+            "answer": "Who is Sidney Poitier?"
+          },
+          {
+            "value": 2000,
+            "clue": "This man became famous for eating an entire Cessna 150 airplane.",
+            "answer": "Who is Michel Lotito?"
+          }
+        ]
+      },
+      {
+        "category": "WAIT... REALLY?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Candy-coated chocolates launched by Mars in 1954 are known by this name.",
+            "answer": "What are M&M's?"
+          },
+          {
+            "value": 800,
+            "clue": "Buckingham Palace officially contains this many bathrooms.",
+            "answer": "What is 78?"
+          },
+          {
+            "value": 1200,
+            "clue": "This country is recognized as the world's top ginger producer.",
+            "answer": "What is India?"
+          },
+          {
+            "value": 1600,
+            "clue": "Swanson first widely introduced this convenience food product.",
+            "answer": "What are TV dinners?"
+          },
+          {
+            "value": 2000,
+            "clue": "Some species of this arachnid have been observed keeping tiny frogs alive in their burrows because the frogs eat parasites.",
+            "answer": "What are spiders?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "WORDS, WORDS, WORDS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Repeating vowel sounds in nearby words is called this.",
+            "answer": "What is assonance?"
+          },
+          {
+            "value": 800,
+            "clue": "This academic field studies language structure and its evolution.",
+            "answer": "What is linguistics?"
+          },
+          {
+            "value": 1200,
+            "clue": "The earliest picture-based systems of writing are called these.",
+            "answer": "What are pictograms?"
+          },
+          {
+            "value": 1600,
+            "clue": "This Japanese writing system primarily uses Chinese characters.",
+            "answer": "What is kanji?"
+          },
+          {
+            "value": 2000,
+            "clue": "In Shakespeare's Macbeth, these three supernatural figures chant, 'Double, double, toil and trouble.'",
+            "answer": "Who are the Weird Sisters?"
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "GREAT WORKS",
+    "clue": "Traditionally attributed to Homer, this epic poem begins with the words, 'Sing, goddess, the anger...'",
+    "answer": "What is the Iliad?"
+  }
+}

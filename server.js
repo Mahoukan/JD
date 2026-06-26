@@ -51,6 +51,12 @@ app.get("/api/discord/config", (req, res) => {
   });
 });
 
+app.get("/version", (req, res) => {
+  res.json({
+    build: BUILD_VERSION
+  });
+});
+
 app.post("/api/discord/token", async (req, res) => {
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
@@ -170,6 +176,7 @@ io.on("connection", (socket) => {
       avatarUrl,
       discordUserId
     });
+    const restoredRole = restoreDiscordSession(socket, identity);
 
     if (identity.name) {
       socket.data.name = identity.name;
@@ -177,6 +184,7 @@ io.on("connection", (socket) => {
 
     socket.data.avatarUrl = identity.avatarUrl;
     socket.data.discordUserId = identity.discordUserId;
+    socket.data.role = restoredRole || socket.data.role;
     updateUserIdentity(socket.id, identity);
     socket.emit("identityUpdated", getUser(socket));
     sendGameState();
@@ -546,6 +554,8 @@ io.on("connection", (socket) => {
     const buzz = {
       id: player.id,
       name: player.name,
+      avatarUrl: player.avatarUrl || "",
+      discordUserId: player.discordUserId || "",
       timestamp,
       delayMs: timestamp - firstBuzzTimestamp
     };
@@ -628,7 +638,9 @@ io.on("connection", (socket) => {
     player.score -= gameState.currentClue.value;
     gameState.lockedOutPlayers.push({
       id: player.id,
-      name: player.name
+      name: player.name,
+      avatarUrl: player.avatarUrl || "",
+      discordUserId: player.discordUserId || ""
     });
     gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -$${gameState.currentClue.value}`;
     gameState.buzzedPlayer = null;
@@ -938,6 +950,104 @@ function updateUserIdentity(socketId, identity) {
   if (gameState.dailyDouble.playerId === socketId && identity.name) {
     gameState.dailyDouble.playerName = identity.name;
   }
+}
+
+function restoreDiscordSession(socket, identity) {
+  if (!identity.discordUserId) {
+    return null;
+  }
+
+  const existingSession = findSessionByDiscordUserId(identity.discordUserId);
+
+  if (!existingSession || existingSession.user.id === socket.id) {
+    return existingSession?.role || null;
+  }
+
+  const previousSocketId = existingSession.user.id;
+  removeUserFromAllRoles(socket.id);
+  replaceUserSocketId(previousSocketId, socket.id, identity);
+  return existingSession.role;
+}
+
+function findSessionByDiscordUserId(discordUserId) {
+  if (gameState.host?.discordUserId === discordUserId) {
+    return {
+      role: "host",
+      user: gameState.host
+    };
+  }
+
+  const player = gameState.players.find((currentPlayer) => currentPlayer.discordUserId === discordUserId);
+
+  if (player) {
+    return {
+      role: "player",
+      user: player
+    };
+  }
+
+  const spectator = gameState.spectators.find((currentSpectator) => currentSpectator.discordUserId === discordUserId);
+
+  if (spectator) {
+    return {
+      role: "spectator",
+      user: spectator
+    };
+  }
+
+  return null;
+}
+
+function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
+  const applyReplacement = (user) => {
+    if (!user || user.id !== previousSocketId) {
+      return user;
+    }
+
+    return {
+      ...user,
+      id: nextSocketId,
+      name: identity.name || user.name,
+      avatarUrl: identity.avatarUrl,
+      discordUserId: identity.discordUserId
+    };
+  };
+
+  gameState.host = applyReplacement(gameState.host);
+  gameState.players = gameState.players.map(applyReplacement);
+  gameState.spectators = gameState.spectators.map(applyReplacement);
+  gameState.buzzedPlayer = applyReplacement(gameState.buzzedPlayer);
+  gameState.buzzes = gameState.buzzes.map(applyReplacement);
+  gameState.lockedOutPlayers = gameState.lockedOutPlayers.map(applyReplacement);
+
+  if (gameState.dailyDouble.playerId === previousSocketId) {
+    gameState.dailyDouble.playerId = nextSocketId;
+    gameState.dailyDouble.playerName = identity.name || gameState.dailyDouble.playerName;
+  }
+
+  replaceFinalJeopardyPlayerId(previousSocketId, nextSocketId);
+}
+
+function replaceFinalJeopardyPlayerId(previousSocketId, nextSocketId) {
+  const finalState = gameState.finalJeopardyState;
+  finalState.eligiblePlayerIds = finalState.eligiblePlayerIds.map((playerId) =>
+    playerId === previousSocketId ? nextSocketId : playerId
+  );
+  finalState.revealedPlayerIds = finalState.revealedPlayerIds.map((playerId) =>
+    playerId === previousSocketId ? nextSocketId : playerId
+  );
+  rekeyObject(finalState.wagers, previousSocketId, nextSocketId);
+  rekeyObject(finalState.answers, previousSocketId, nextSocketId);
+  rekeyObject(finalState.judged, previousSocketId, nextSocketId);
+}
+
+function rekeyObject(target, previousKey, nextKey) {
+  if (target[previousKey] === undefined) {
+    return;
+  }
+
+  target[nextKey] = target[previousKey];
+  delete target[previousKey];
 }
 
 function discoverAvailableBoards() {

@@ -799,11 +799,7 @@ function renderQuestion(state) {
 
   revealAnswerBtn.disabled = Boolean(state.answerRevealed);
   resultMessage.textContent = state.resultMessage || "";
-  buzzMessage.textContent = isDailyDoubleQuestion
-    ? getDailyDoubleQuestionMessage(state)
-    : state.buzzedPlayer
-      ? `Current answering: ${state.buzzedPlayer.name}`
-      : "";
+  renderBuzzMessage(state, isDailyDoubleQuestion);
   buzzingStatus.textContent = isDailyDoubleQuestion ? "No buzzing for Daily Double." : getBuzzingStatus(state);
   lockedOutMessage.textContent = state.lockedOutPlayers?.length
     ? `Locked out: ${state.lockedOutPlayers.map((player) => player.name).join(", ")}`
@@ -900,6 +896,22 @@ function getDailyDoubleQuestionMessage(state) {
   }
 
   return `${dailyDouble.playerName} wagered ${formatScore(dailyDouble.wager)}.`;
+}
+
+function renderBuzzMessage(state, isDailyDoubleQuestion) {
+  buzzMessage.innerHTML = "";
+
+  if (isDailyDoubleQuestion) {
+    buzzMessage.textContent = getDailyDoubleQuestionMessage(state);
+    return;
+  }
+
+  if (!state.buzzedPlayer) {
+    return;
+  }
+
+  buzzMessage.appendChild(document.createTextNode("Current answering: "));
+  buzzMessage.appendChild(createUserIdentity(state.buzzedPlayer));
 }
 
 function renderFinalJeopardy(state) {
@@ -1042,7 +1054,7 @@ function renderFinalReview(state) {
     row.className = "final-review-row";
 
     const name = document.createElement("h3");
-    name.textContent = player.name;
+    name.appendChild(createUserIdentity(player));
     row.appendChild(name);
 
     const revealed = finalState.revealedPlayerIds?.includes(playerId);
@@ -1111,7 +1123,17 @@ function renderFinalRankings(state) {
     const item = document.createElement("li");
     item.className = "final-ranking-row";
     item.classList.toggle("winner", player.score === winningScore);
-    item.textContent = `${index + 1}. ${player.name} - ${formatScore(player.score)}`;
+    const place = document.createElement("span");
+    place.className = "final-ranking-place";
+    place.textContent = `${index + 1}.`;
+
+    const score = document.createElement("span");
+    score.className = "final-ranking-score";
+    score.textContent = formatScore(player.score);
+
+    item.appendChild(place);
+    item.appendChild(createUserIdentity(player));
+    item.appendChild(score);
     finalRankings.appendChild(item);
   });
 }
@@ -1192,11 +1214,13 @@ function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
     item.classList.toggle("locked-out-buzz", lockedOutPlayerIds.has(buzz.id));
 
     const status = getBuzzStatus(buzz, buzzedPlayer, lockedOutPlayerIds);
-    const buzzText = index === 0
-      ? `${buzz.name} buzzed first!`
-      : `${buzz.name} was ${formatDelay(buzz.delayMs)} late`;
-
-    item.textContent = status ? `${buzzText} (${status})` : buzzText;
+    item.appendChild(createUserIdentity(buzz));
+    const detail = document.createElement("span");
+    detail.className = "buzz-detail";
+    detail.textContent = index === 0
+      ? `buzzed first${status ? ` (${status})` : ""}`
+      : `was ${formatDelay(buzz.delayMs)} late${status ? ` (${status})` : ""}`;
+    item.appendChild(detail);
     buzzList.appendChild(item);
   });
 }

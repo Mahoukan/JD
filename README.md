@@ -71,9 +71,12 @@ The default port is `3001`. Set `PORT` in `.env` or your hosting provider if you
 PORT=3001
 DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
+BUILD_VERSION=
 ```
 
-Discord variables are optional. If they are not configured, local browser testing still works with `Guest xxxx` names.
+Discord variables are optional for local browser testing. If they are not configured, the app still works with `Guest xxxx` names.
+
+`BUILD_VERSION` is optional. If omitted, the server uses the Railway commit hash when available, or falls back to the package version plus a startup timestamp.
 
 ## Board JSON Format
 
@@ -182,8 +185,40 @@ Recommended setup:
   - `PORT` is usually provided by Railway automatically
   - `DISCORD_CLIENT_ID` if using Discord identity
   - `DISCORD_CLIENT_SECRET` if using Discord identity
+  - `BUILD_VERSION` only if you want to override automatic build versioning
 
 Make sure your Discord application settings use the deployed Railway URL when you begin configuring the Discord Activity launch flow.
+
+The app exposes `GET /version`, which returns:
+
+```json
+{
+  "build": "1.0.0-..."
+}
+```
+
+The visible build badge in the app should match this value.
+
+## Discord Activity Setup
+
+1. Create an application in the Discord Developer Portal.
+2. Enable Embedded App / Activity support for the application.
+3. Configure the Activity URL to point at your Railway deployment URL.
+4. In OAuth2 settings, add the redirect/origin settings required by Discord for your deployed Activity URL.
+5. Copy the application client ID and client secret into Railway:
+   - `DISCORD_CLIENT_ID`
+   - `DISCORD_CLIENT_SECRET`
+6. Redeploy the Railway service.
+7. Open the app in Discord and check the build badge so you know the newest deployment is running.
+
+Identity behavior:
+
+- In Discord, the client loads the Discord Embedded App SDK and requests `identify`.
+- The OAuth token exchange happens through the server at `POST /api/discord/token`.
+- The client sends only display identity fields through `setUserIdentity`.
+- The server sanitizes display name, avatar URL, and Discord user ID.
+- Roles, scores, host status, and game state remain server-authoritative.
+- If Discord identity fails or variables are missing, gameplay continues with Guest names.
 
 ## License
 

@@ -802,12 +802,23 @@ li {
 }
 
 .buzz-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
   margin: 0;
   border: 1px solid #374151;
   background: #111827;
   color: #f9fafb;
   font-size: 15px;
   font-weight: 700;
+}
+
+.buzz-detail {
+  color: #d1d5db;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
 }
 
 .buzz-result:first-child {
@@ -1136,6 +1147,10 @@ li {
   font-size: 17px;
 }
 
+.final-review-row h3 .user-name {
+  color: #fbbf24;
+}
+
 .final-revealed-answer {
   color: #f9fafb;
   font-size: 18px;
@@ -1161,9 +1176,18 @@ li {
 }
 
 .final-ranking-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
   border: 1px solid #374151;
   background: #111827;
   font-weight: 900;
+}
+
+.final-ranking-place,
+.final-ranking-score {
+  color: #fbbf24;
 }
 
 .final-ranking-row.winner {
