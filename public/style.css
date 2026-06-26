@@ -492,7 +492,7 @@ li {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -613,7 +613,7 @@ li {
   position: fixed;
   top: 12px;
   right: 12px;
-  z-index: 30;
+  z-index: 10000;
   display: grid;
   gap: 8px;
   width: min(320px, calc(100vw - 24px));
@@ -686,6 +686,7 @@ li {
   align-items: center;
   gap: 10px;
   max-width: 520px;
+  min-height: 43px;
   margin: 0 auto 8px;
   border: 1px solid #374151;
   border-radius: 8px;
@@ -695,7 +696,7 @@ li {
 }
 
 .timer-panel.hidden {
-  display: none;
+  visibility: hidden;
 }
 
 .timer-label {
@@ -724,7 +725,7 @@ li {
 }
 
 .buzzing-status {
-  min-height: 22px;
+  min-height: 24px;
   margin: 0 auto 12px;
   color: #bfdbfe;
   font-size: 15px;
@@ -752,7 +753,7 @@ li {
 }
 
 .result-message {
-  min-height: 24px;
+  min-height: 31px;
   margin: 0 auto 8px;
   color: #f9fafb;
   font-size: clamp(17px, 2.6vw, 24px);
@@ -760,7 +761,7 @@ li {
 }
 
 .buzz-message {
-  min-height: 28px;
+  min-height: 32px;
   margin: 0 auto 8px;
   color: #fbbf24;
   font-size: clamp(18px, 3vw, 26px);
@@ -771,6 +772,7 @@ li {
   display: grid;
   gap: 6px;
   max-width: 520px;
+  min-height: 49px;
   margin: 0 auto 16px;
 }
 
@@ -801,7 +803,7 @@ li {
 }
 
 .locked-out-message {
-  min-height: 20px;
+  min-height: 23px;
   margin: -6px auto 14px;
   color: #fca5a5;
   font-size: 14px;
@@ -1157,6 +1159,33 @@ li {
   .card {
     border-radius: 12px;
     padding: 14px 10px;
+  }
+
+  .question-category {
+    margin-bottom: 7px;
+  }
+
+  .question-value {
+    margin-bottom: 10px;
+  }
+
+  .question-clue {
+    margin-bottom: 10px;
+    font-size: clamp(20px, 7vw, 30px);
+  }
+
+  .question-answer {
+    margin-bottom: 12px;
+  }
+
+  .buzz-list {
+    min-height: 45px;
+    margin-bottom: 12px;
+  }
+
+  .buzz-controls {
+    min-height: 104px;
+    margin-bottom: 10px;
   }
 
   .timer-panel {
