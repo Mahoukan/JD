@@ -1,0 +1,470 @@
+{
+  "id": "POP-GAME-3",
+  "name": "Pop Culture Jeopardy!",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "WHO'S THAT POKÉMON?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Who's that Pokémon?",
+            "answer": "Charmander",
+            "media": {
+              "type": "image",
+              "url": "https://quizizz.com/_optimized/_media/quizzes/a303d001-3846-4ed0-8279-6d20eb639f38.webp"
+            }
+          },
+          {
+            "value": 400,
+            "clue": "Who's that Pokémon?",
+            "answer": "Squirtle",
+            "media": {
+              "type": "image",
+              "url": "https://quizizz.com/_media/quizzes/fb453f7c-c00d-4dad-9a71-09419e043536"
+            }
+          },
+          {
+            "value": 600,
+            "clue": "Who's that Pokémon?",
+            "answer": "Meowth",
+            "media": {
+              "type": "image",
+              "url": "https://quizizz.com/_optimized/_media/quizzes/735b9553-2db0-4ed3-a9e7-3760e1365a71.webp"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "Who's that Pokémon?",
+            "answer": "Togepi",
+            "media": {
+              "type": "image",
+              "url": "https://quizizz.com/_media/quizzes/74d4bffa-b278-4637-948d-02e626e1a366"
+            }
+          },
+          {
+            "value": 1000,
+            "clue": "Who's that Pokémon?",
+            "answer": "Rayquaza",
+            "media": {
+              "type": "image",
+              "url": "https://quizizz.com/_optimized/_media/quizzes/f00a56f7-05e6-4980-812e-fd60321ce674.webp"
+            },
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "NAME THE FANDOM",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "SW_FT_ES",
+            "answer": "Swifties",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "P_TT_RH_ADS",
+            "answer": "Potterheads",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "WH_VI_NS",
+            "answer": "Whovians",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "D_R_CT_ON_RS",
+            "answer": "Directioners",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "BR_N_ES",
+            "answer": "Bronies",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HORRIBLE LIFE ADVICE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "If a magical ring starts talking to you, keep carrying it for several thousand kilometres.",
+            "answer": "The Lord of the Rings",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "If your boss looks suspiciously evil, help him build a planet-killing superweapon.",
+            "answer": "Star Wars",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Trust the strange voice in the walls that nobody else can hear.",
+            "answer": "Harry Potter and the Chamber of Secrets",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Take legal advice from a rabbit.",
+            "answer": "Alice in Wonderland",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Accept candy from a mysterious recluse you've never met.",
+            "answer": "Charlie and the Chocolate Factory",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WHO'S OLDER?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Which is older: YouTube or Minecraft?",
+            "answer": "YouTube",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Which is older: Google or Netflix?",
+            "answer": "Netflix",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Which is older: The Nintendo Wii or the first iPhone?",
+            "answer": "Nintendo Wii",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Which is older: The Eiffel Tower or Coca-Cola?",
+            "answer": "Coca-Cola",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Which is older: Oxford University or the Aztec Empire?",
+            "answer": "Oxford University",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "OUT OF CONTEXT WIKIPEDIA",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "\"After a dispute over pigs, military forces were deployed.\"",
+            "answer": "The Pig War",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "\"The birds won.\"",
+            "answer": "The Emu War",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "\"Several people danced until they collapsed from exhaustion.\"",
+            "answer": "The Dancing Plague",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "\"A flood of molasses moved at approximately 56 km/h.\"",
+            "answer": "The Great Molasses Flood",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "\"The attack was ultimately repelled with carrots.\"",
+            "answer": "Napoleon's Rabbit Hunt",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WAIT, THAT'S THE SAME PERSON?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Mufasa and Darth Vader.",
+            "answer": "James Earl Jones",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Gandalf and Magneto.",
+            "answer": "Ian McKellen",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Frodo Baggins and Happy Feet.",
+            "answer": "Elijah Wood",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Professor X, and the voice of the Poop Emoji in The Emoji Movie.",
+            "answer": "Patrick Stewart",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Prince George in Blackadder, and the father in Stuart Little.",
+            "answer": "Hugh Laurie",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "MOVIES IN 3 EMOJIS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "🦁👑🌅",
+            "answer": "The Lion King",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "🧙💍🌋",
+            "answer": "The Lord of the Rings",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "🦖🏝️🚁",
+            "answer": "Jurassic Park",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "💊🕶️🤖",
+            "answer": "The Matrix",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "🤡🎈🚲",
+            "answer": "IT",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WEIRD FLEX BUT OKAY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This actor learned to spin nunchucks so well that they had to slow down footage to make it visible on screen.",
+            "answer": "Bruce Lee",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This conqueror controlled territory stretching from Korea to Eastern Europe.",
+            "answer": "Genghis Khan",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This actor broke his toe during filming and stayed in character, with the footage making it into the movie.",
+            "answer": "Viggo Mortensen",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This man was struck by lightning seven times and lived to tell the tale.",
+            "answer": "Roy Sullivan",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This man survived both the Hiroshima and Nagasaki atomic bombings.",
+            "answer": "Tsutomu Yamaguchi",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HOW IS THIS A REAL HEADLINE?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "\"Town forced to cancel annual event after competitive cheating scandal involving giant ________.\"",
+            "answer": "Pumpkins",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "\"Thousands flee as giant wheel of ______ rolls down hill at high speed.\"",
+            "answer": "Cheese",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "\"_______ steals GoPro, accidentally films its own migration.\"",
+            "answer": "Seagull",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "\"Village terrorized by aggressive ______.\"",
+            "answer": "Swan",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "\"Police called after residents report suspicious tiger roaming neighbourhood, turns out to be a _____ _______ ___.\"",
+            "answer": "A large stuffed toy",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THEY HAD ONE JOB",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This supposedly unsinkable ship hit an iceberg on its maiden voyage.",
+            "answer": "Titanic",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This city accepted a giant wooden horse from an enemy army.",
+            "answer": "Troy",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This security team failed to stop two men from reaching the complex in 1972.",
+            "answer": "Watergate",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This theme park spared no expense except for making sure its attractions couldn't reproduce.",
+            "answer": "Jurassic Park",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This company lost a 4 billion dollar Mars mission because one team used metric units and the other used imperial units.",
+            "answer": "NASA",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "INVENTED BY ACCIDENT",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This snack food was invented when a chef sarcastically sliced potatoes impossibly thin to annoy a customer.",
+            "answer": "Potato Chips",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Alexander Fleming accidentally discovered this life-saving antibiotic.",
+            "answer": "Penicillin",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "These office supplies were created after a scientist failed to make a strong adhesive.",
+            "answer": "Post-it Notes",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This drink was originally marketed as a medicinal tonic.",
+            "answer": "Coca-Cola",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Percy Spencer accidentally invented this kitchen appliance after a chocolate bar melted in his pocket.",
+            "answer": "Microwave Oven",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "GUESS THAT LOGO",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Name this logo.",
+            "answer": "McDonald's",
+            "media": {
+              "type": "image",
+              "url": "https://www.jetpunk.com/img/user-img/17/172b27c63b-450.webp"
+            }
+          },
+          {
+            "value": 400,
+            "clue": "Name this logo.",
+            "answer": "LG",
+            "media": {
+              "type": "image",
+              "url": "https://www.jetpunk.com/img/user-img/10/10f607512f-450.webp"
+            }
+          },
+          {
+            "value": 600,
+            "clue": "Name this logo.",
+            "answer": "DreamWorks",
+            "media": {
+              "type": "image",
+              "url": "https://www.jetpunk.com/img/user-img/a7/a7dd6d4025-450.webp"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "Name this logo.",
+            "answer": "Lacoste",
+            "media": {
+              "type": "image",
+              "url": "https://www.jetpunk.com/img/user-img/a1/a1ca4c4b0b-450.webp"
+            }
+          },
+          {
+            "value": 1000,
+            "clue": "Name this logo.",
+            "answer": "AOL",
+            "media": {
+              "type": "image",
+              "url": "https://www.jetpunk.com/img/user-img/5a/5a8919165e-450.webp"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "RECORD BREAKERS",
+    "clue": "This music video became the first YouTube video to reach one billion views.",
+    "answer": "What is Gangnam Style?"
+  }
+}

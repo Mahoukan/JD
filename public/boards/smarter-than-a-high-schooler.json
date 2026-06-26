@@ -1,0 +1,440 @@
+{
+  "id": "SMARTER-THAN-A-HIGH-SCHOOLER",
+  "name": "Are You Smarter Than a High Schooler?",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "GEOGRAPHY",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This line of latitude passes through Ecuador, Kenya, and Indonesia.",
+            "answer": "The Equator",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This country contains both Mount Everest and Lumbini, the birthplace of Buddha.",
+            "answer": "Nepal",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This sea lies between Europe and Africa.",
+            "answer": "Mediterranean Sea",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This Russian mountain range traditionally separates Europe from Asia.",
+            "answer": "Ural Mountains",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This country's capital is Ottawa.",
+            "answer": "Canada",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SCIENCE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This organelle is known as the powerhouse of the cell.",
+            "answer": "Mitochondria",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This particle has the same mass as a proton but carries no electric charge.",
+            "answer": "Neutron",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This process allows plants to convert sunlight into chemical energy.",
+            "answer": "Photosynthesis",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This scientist developed the periodic table.",
+            "answer": "Dmitri Mendeleev",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This law states that for every action there is an equal and opposite reaction.",
+            "answer": "Newton's Third Law",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HISTORY",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This agreement signed in 1919 officially ended World War I.",
+            "answer": "Treaty of Versailles",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This city was destroyed by Mount Vesuvius in 79 AD.",
+            "answer": "Pompeii",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This Carthaginian general crossed the Alps with elephants.",
+            "answer": "Hannibal",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This Byzantine capital fell to the Ottomans in 1453.",
+            "answer": "Constantinople",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This king of Macedon was taught by Aristotle.",
+            "answer": "Alexander the Great",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SPACE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This planet was reclassified as a dwarf planet in 2006.",
+            "answer": "Pluto",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This planet has the largest moon in the Solar System, Ganymede.",
+            "answer": "Jupiter",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This region between Mars and Jupiter contains most of the Solar System's asteroids.",
+            "answer": "Asteroid Belt",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This planet is tilted on its side by about 98 degrees.",
+            "answer": "Uranus",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This region beyond Neptune contains Pluto and many icy bodies.",
+            "answer": "Kuiper Belt",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ANIMALS & NATURE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This biological term describes an animal that eats only plants.",
+            "answer": "Herbivore",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This process describes a caterpillar becoming a butterfly.",
+            "answer": "Metamorphosis",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This green pigment allows plants to absorb light for photosynthesis.",
+            "answer": "Chlorophyll",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This tree produces acorns.",
+            "answer": "Oak Tree",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This class of animal includes frogs, toads, salamanders, and newts.",
+            "answer": "Amphibians",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MATH",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "The sum of the angles in a triangle is this many degrees.",
+            "answer": "180 degrees",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This number is the square root of 81.",
+            "answer": "9",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This is pi rounded to two decimal places.",
+            "answer": "3.14",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This is the area of a right triangle with a height of 6 and a base of 8.",
+            "answer": "24",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "If a car travels at 60 mph, this is how long it takes to go 390 miles.",
+            "answer": "6 hours, 30 minutes",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "LANGUAGE ARTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This term refers to a word or phrase that reads the same forward and backward.",
+            "answer": "Palindrome",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "“Peter Piper picked a peck of pickled peppers” is an example of this literary device.",
+            "answer": "Alliteration",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "The figurative language in “The classroom was a zoo” is this.",
+            "answer": "Metaphor",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This type of story conveys a moral lesson, often through animals or simple characters.",
+            "answer": "Fable",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "A haiku traditionally has this syllable pattern across its three lines.",
+            "answer": "5-7-5",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HUMAN BODY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This is the largest organ of the human body.",
+            "answer": "Skin",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This is the longest bone in the human body.",
+            "answer": "Femur",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "The adult human skeleton contains this many bones.",
+            "answer": "206",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This gas is transported by red blood cells from the lungs to body tissues.",
+            "answer": "Oxygen",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This system includes the brain, spinal cord, and nerves.",
+            "answer": "Nervous System",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "PLANETS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This planet is closest to the Sun.",
+            "answer": "Mercury",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This planet is known as the Red Planet.",
+            "answer": "Mars",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This is the largest planet in the Solar System.",
+            "answer": "Jupiter",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This planet is often considered the coldest planet in the Solar System.",
+            "answer": "Neptune",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This planet was discovered in 1781 by William Herschel.",
+            "answer": "Uranus",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WORLD FACTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This is the world's largest tropical rainforest.",
+            "answer": "The Amazon",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This is the world's largest desert.",
+            "answer": "The Sahara Desert",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This continent is the driest.",
+            "answer": "Antarctica",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This is the largest country in the world by area.",
+            "answer": "Russia",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "The Tropic of Capricorn is located in this hemisphere.",
+            "answer": "Southern Hemisphere",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "SCHOOLYARD BASICS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "There are this many colors in a rainbow.",
+            "answer": "Seven",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "There are this many teaspoons in 5 tablespoons.",
+            "answer": "15",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This is the plural form of the word “moose.”",
+            "answer": "Moose",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This is what IQ stands for.",
+            "answer": "Intelligence Quotient",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This is the whole number closest to the square root of 65.",
+            "answer": "8",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MIXED BAG",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This famous ship sank on its first voyage in 1912.",
+            "answer": "The Titanic",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This country gifted the Statue of Liberty to the United States.",
+            "answer": "France",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This scientist developed the theory of relativity.",
+            "answer": "Albert Einstein",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This is the name of Earth's only natural satellite.",
+            "answer": "The Moon",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This was the name of the first satellite put into orbit by the United States.",
+            "answer": "Explorer",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "ELEMENTARY SCHOOL",
+    "clue": "Before being reclassified in 2006, students commonly used the mnemonic “My Very Educated Mother Just Served Us Nine Pizzas” to remember this object.",
+    "answer": "What is Pluto?"
+  }
+}

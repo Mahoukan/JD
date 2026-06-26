@@ -1,0 +1,380 @@
+{
+  "id": "Y9-JEOPARDY-1",
+  "name": "Year 9 Fun Jeopardy",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "GUESS THE SONG",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "🦈 👶 🎵",
+            "answer": "Baby Shark"
+          },
+          {
+            "value": 400,
+            "clue": "❄️ 👸 🎤",
+            "answer": "Let It Go"
+          },
+          {
+            "value": 600,
+            "clue": "🐒 🎶 🤪",
+            "answer": "Dance Monkey"
+          },
+          {
+            "value": 800,
+            "clue": "🎤 💔 😢",
+            "answer": "Drivers License"
+          },
+          {
+            "value": 1000,
+            "clue": "🦸‍♂️ 🎶 🕷️",
+            "answer": "Sunflower"
+          }
+        ]
+      },
+      {
+        "category": "ODD ONE OUT",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Dog, Cat, Rabbit, Lion",
+            "answer": "Lion"
+          },
+          {
+            "value": 400,
+            "clue": "Apple, Banana, Carrot, Orange",
+            "answer": "Carrot"
+          },
+          {
+            "value": 600,
+            "clue": "Fortnite, Minecraft, Roblox, FIFA",
+            "answer": "FIFA"
+          },
+          {
+            "value": 800,
+            "clue": "Snapchat, TikTok, Instagram, YouTube",
+            "answer": "YouTube"
+          },
+          {
+            "value": 1000,
+            "clue": "Taylor Swift, Billie Eilish, Drake, The Beatles",
+            "answer": "The Beatles"
+          }
+        ]
+      },
+      {
+        "category": "WHICH IS REAL?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Flying snake / Invisible frog / Giant sand hamster",
+            "answer": "Flying snake"
+          },
+          {
+            "value": 400,
+            "clue": "Professional sleeper / Cloud watcher / Pillow tester",
+            "answer": "Professional sleeper"
+          },
+          {
+            "value": 600,
+            "clue": "Most socks on one foot / Eating a wall / Longest blink",
+            "answer": "Most socks on one foot"
+          },
+          {
+            "value": 800,
+            "clue": "Goat Simulator / Bread Jump Arena / Frog Dentist Pro",
+            "answer": "Goat Simulator",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "Rabbits invade town / Direct Volcano survival / Exploding whale",
+            "answer": "Exploding whale"
+          }
+        ]
+      },
+      {
+        "category": "GENERAL KNOWLEDGE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "What planet do we live on?",
+            "answer": "Earth"
+          },
+          {
+            "value": 400,
+            "clue": "How many days are in a week?",
+            "answer": "7"
+          },
+          {
+            "value": 600,
+            "clue": "Largest animal on Earth?",
+            "answer": "Blue whale"
+          },
+          {
+            "value": 800,
+            "clue": "Country famous for kangaroos?",
+            "answer": "Australia"
+          },
+          {
+            "value": 1000,
+            "clue": "Capital city of New Zealand?",
+            "answer": "Wellington"
+          }
+        ]
+      },
+      {
+        "category": "FASTEST FIRST",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Colour of bananas?",
+            "answer": "Yellow"
+          },
+          {
+            "value": 400,
+            "clue": "How many legs does a spider have?",
+            "answer": "8"
+          },
+          {
+            "value": 600,
+            "clue": "Capital of Australia?",
+            "answer": "Canberra"
+          },
+          {
+            "value": 800,
+            "clue": "9 × 7?",
+            "answer": "63"
+          },
+          {
+            "value": 1000,
+            "clue": "Fastest land animal?",
+            "answer": "Cheetah"
+          }
+        ]
+      },
+      {
+        "category": "GUESS THE CHARACTER",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Lives in a pineapple under the sea",
+            "answer": "SpongeBob SquarePants"
+          },
+          {
+            "value": 400,
+            "clue": "Red and blue superhero who shoots webs",
+            "answer": "Spider-Man"
+          },
+          {
+            "value": 600,
+            "clue": "Wizard with a lightning bolt scar",
+            "answer": "Harry Potter"
+          },
+          {
+            "value": 800,
+            "clue": "Green ogre living in a swamp",
+            "answer": "Shrek"
+          },
+          {
+            "value": 1000,
+            "clue": "Blue alien, 'Ohana means family'",
+            "answer": "Stitch"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "EMOJI MOVIES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "🚢 🧊 💔",
+            "answer": "Titanic"
+          },
+          {
+            "value": 800,
+            "clue": "🧙‍♂️ 🏫 ⚡",
+            "answer": "Harry Potter"
+          },
+          {
+            "value": 1200,
+            "clue": "🦖 🏝️ ⚡",
+            "answer": "Jurassic Park"
+          },
+          {
+            "value": 1600,
+            "clue": "🕷️ 🧑‍🎓 🏙️",
+            "answer": "Spider-Man"
+          },
+          {
+            "value": 2000,
+            "clue": "🟡 👨 👨 🍌",
+            "answer": "Minions"
+          }
+        ]
+      },
+      {
+        "category": "GUESS THE CELEBRITY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Singer of 'Bad Guy'",
+            "answer": "Billie Eilish"
+          },
+          {
+            "value": 800,
+            "clue": "Eras Tour pop star",
+            "answer": "Taylor Swift"
+          },
+          {
+            "value": 1200,
+            "clue": "Plays Wednesday Addams",
+            "answer": "Jenna Ortega"
+          },
+          {
+            "value": 1600,
+            "clue": "Singer of 'Espresso'",
+            "answer": "Sabrina Carpenter"
+          },
+          {
+            "value": 2000,
+            "clue": "Rapper known for 'Munch'",
+            "answer": "Ice Spice"
+          }
+        ]
+      },
+      {
+        "category": "TREND OR NOT",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Strawberry makeup",
+            "answer": "Real"
+          },
+          {
+            "value": 800,
+            "clue": "Cloud skin",
+            "answer": "Real"
+          },
+          {
+            "value": 1200,
+            "clue": "Glow cloud fashion",
+            "answer": "Fake"
+          },
+          {
+            "value": 1600,
+            "clue": "Clean girl aesthetic",
+            "answer": "Real"
+          },
+          {
+            "value": 2000,
+            "clue": "Digital freckles filter challenge",
+            "answer": "Real"
+          }
+        ]
+      },
+      {
+        "category": "FACT OR CAP",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Octopuses have three hearts",
+            "answer": "Fact"
+          },
+          {
+            "value": 800,
+            "clue": "You can sneeze while asleep",
+            "answer": "Cap"
+          },
+          {
+            "value": 1200,
+            "clue": "Bananas are berries",
+            "answer": "Fact"
+          },
+          {
+            "value": 1600,
+            "clue": "Goldfish have a 3-second memory",
+            "answer": "Cap"
+          },
+          {
+            "value": 2000,
+            "clue": "Sharks existed before trees",
+            "answer": "Fact"
+          }
+        ]
+      },
+      {
+        "category": "WHATS THE CONNECTION",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Dog, Cat, Rabbit",
+            "answer": "Pets"
+          },
+          {
+            "value": 800,
+            "clue": "Apple, Banana, Orange",
+            "answer": "Fruits"
+          },
+          {
+            "value": 1200,
+            "clue": "Snapchat, TikTok, Instagram",
+            "answer": "Social media"
+          },
+          {
+            "value": 1600,
+            "clue": "Taylor Swift, Billie Eilish, Olivia Rodrigo",
+            "answer": "Female singers"
+          },
+          {
+            "value": 2000,
+            "clue": "Mercury, Venus, Earth, Mars",
+            "answer": "Inner planets",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "GUESS THE APP",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Short videos and trends",
+            "answer": "TikTok"
+          },
+          {
+            "value": 800,
+            "clue": "Disappearing messages",
+            "answer": "Snapchat"
+          },
+          {
+            "value": 1200,
+            "clue": "Photos, reels, stories",
+            "answer": "Instagram"
+          },
+          {
+            "value": 1600,
+            "clue": "Videos and subscribers",
+            "answer": "YouTube"
+          },
+          {
+            "value": 2000,
+            "clue": "Save ideas to boards",
+            "answer": "Pinterest",
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "TRICK QUESTION",
+    "clue": "How many months have 28 days?",
+    "answer": "All of them"
+  }
+}

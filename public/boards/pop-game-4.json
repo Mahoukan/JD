@@ -1,0 +1,454 @@
+{
+  "id": "POP-GAME-4",
+  "name": "Pop Culture Jeopardy! 4",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "MOVIE VILLAINS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This villain sought the six Infinity Stones.",
+            "answer": "Thanos",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This Batman villain's true identity is usually unknown.",
+            "answer": "The Joker",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Before becoming a Sith Lord, he was a Jedi Knight.",
+            "answer": "Darth Vader",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This Disney villain transformed into a dragon while battling Prince Phillip.",
+            "answer": "Maleficent",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This is the main villain from The Silence of the Lambs.",
+            "answer": "Hannibal Lecter",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "VIDEO GAMES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This sandbox game became the best-selling video game of all time.",
+            "answer": "Minecraft",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This game series features a yellow creature that can capture others in small red-and-white balls.",
+            "answer": "Pokémon",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This game franchise features the factions Terran, Protoss, and Zerg.",
+            "answer": "StarCraft",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This game introduced the Companion Cube.",
+            "answer": "Portal",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This 2007 game shocked players with the phrase, \"Would you kindly?\"",
+            "answer": "BioShock",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "INTERNET LEGENDS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This singer became the face of an internet prank where users were unexpectedly redirected to his music video.",
+            "answer": "Rick Astley",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This rainbow-trailing flying cat became one of the internet's most recognizable animated memes.",
+            "answer": "Nyan Cat",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This viral YouTube video featured a young boy saying, \"he bit me!\"",
+            "answer": "Charlie Bit My Finger",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This dog from a 2010 photograph inspired the \"much wow\" meme.",
+            "answer": "Doge",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This meme features a stock-photo model smiling despite clearly looking exhausted.",
+            "answer": "Hide the Pain Harold",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "GUESS THE FLAG",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Name this flag.",
+            "answer": "Canada",
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Canada_%28Pantone%29.svg"
+            }
+          },
+          {
+            "value": 400,
+            "clue": "Name this flag.",
+            "answer": "Brazil",
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg"
+            }
+          },
+          {
+            "value": 600,
+            "clue": "Name this flag.",
+            "answer": "Wales",
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Flag_of_Wales.svg"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "Name this flag.",
+            "answer": "Sweden",
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/en/4/4c/Flag_of_Sweden.svg"
+            }
+          },
+          {
+            "value": 1000,
+            "clue": "Name this flag.",
+            "answer": "Bhutan",
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Flag_of_Bhutan.svg"
+            }
+          }
+        ]
+      },
+      {
+        "category": "AITA?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "AITA for making my nephew destroy a piece of family jewellery instead of doing it myself?",
+            "answer": "Gandalf",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "AITA for lying about my identity to train with an army that specifically banned people like me?",
+            "answer": "Mulan",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "AITA for letting a complete stranger onto a piece of floating debris instead of sharing it?",
+            "answer": "Rose",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "AITA for pretending to be a dead man because I didn't want to marry the king?",
+            "answer": "Aragorn",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "AITA for abandoning my nephew on a desert planet because I thought his father might come looking for him?",
+            "answer": "Obi-Wan Kenobi",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "OUT OF CONTEXT QUOTES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "\"I am the Senate.\"",
+            "answer": "Palpatine",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "\"Why is Gamora?\"",
+            "answer": "Drax",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "\"There is no Easter Bunny, there is no Tooth Fairy, and there is no Queen of England.\"",
+            "answer": "Donkey",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "\"Some of you may die, but it's a sacrifice I am willing to make.\"",
+            "answer": "Lord Farquaad",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "\"Good. Twice the pride, double the fall.\"",
+            "answer": "Count Dooku",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "SONGS BY ONE LYRIC",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "\"Is this the real life? Is this just fantasy?\"",
+            "answer": "Bohemian Rhapsody",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "\"Wake me up inside\"",
+            "answer": "Bring Me To Life",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "\"I walk a lonely road\"",
+            "answer": "Boulevard of Broken Dreams",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "\"Do you have the time to listen to me whine?\"",
+            "answer": "Basket Case",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "\"Somebody once told me\"",
+            "answer": "All Star",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "FICTIONAL PLACES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This desert planet is the homeworld of Luke Skywalker.",
+            "answer": "Tatooine",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This hidden African nation is ruled by Black Panther.",
+            "answer": "Wakanda",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This city-state from Game of Thrones is home to the Iron Throne.",
+            "answer": "King's Landing",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This kingdom is ruled by Princess Zelda.",
+            "answer": "Hyrule",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This city from The Lord of the Rings is known as the White City and serves as the capital of Gondor.",
+            "answer": "Minas Tirith",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "OH NO, IT'S CANON",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Mario's full name is this.",
+            "answer": "Mario Mario",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In Star Wars, Yoda's first name is simply this.",
+            "answer": "Yoda",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "According to Pokémon canon, this fish Pokémon can supposedly leap over mountains.",
+            "answer": "Magikarp",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "In The Simpsons, Homer's middle name is this.",
+            "answer": "J",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "According to The Lord of the Rings, this wizard's real name is Olórin.",
+            "answer": "Gandalf",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MEMES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This meme features a frog often associated with the phrase \"feels bad man.\"",
+            "answer": "Pepe the Frog",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This meme features a burning room and the phrase \"This is fine.\"",
+            "answer": "This Is Fine Dog",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This meme shows a woman yelling while sitting across from a confused white cat.",
+            "answer": "Woman Yelling at a Cat",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This meme features a man looking at another woman while his girlfriend looks on in disgust.",
+            "answer": "Distracted Boyfriend",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This meme features a young child clenching his fist in victory on a beach.",
+            "answer": "Success Kid",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "BAD EXPLANATIONS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Archaeologist repeatedly ignores museum policies.",
+            "answer": "Indiana Jones",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Local tradesman repeatedly assaults wildlife to save royalty.",
+            "answer": "Super Mario Bros.",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Farm boy vandalizes government property.",
+            "answer": "Star Wars",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Man becomes obsessed with whale, forgets his actual job.",
+            "answer": "Moby-Dick",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Rich man adopts several children and gives them severe emotional issues.",
+            "answer": "Batman",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "TV SHOWS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This show features characters named Homelander, Butcher, and Hughie.",
+            "answer": "The Boys",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Walter White adopts this alias while building his methamphetamine empire.",
+            "answer": "Heisenberg",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This mystery series begins with the crash of Oceanic Flight 815.",
+            "answer": "Lost",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This sci-fi series features the planet Skaro.",
+            "answer": "Doctor Who",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This television series follows the Roy family as they compete for control of Waystar Royco.",
+            "answer": "Succession",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "ACTORS",
+    "clue": "This actor has played a Jedi, a Guinness World Record holder, a Lumière brother, and Obi-Wan Kenobi.",
+    "answer": "Who is Ewan McGregor?"
+  }
+}

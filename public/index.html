@@ -62,6 +62,14 @@
         </div>
       </div>
 
+      <div class="board-selection">
+        <div id="board-selector-panel" class="board-selector-panel hidden">
+          <label for="board-select">Board</label>
+          <select id="board-select"></select>
+        </div>
+        <p id="selected-board-name" class="selected-board-name">Selected board: Loading...</p>
+      </div>
+
       <div id="host-controls" class="host-controls hidden">
         <button id="start-game-btn" class="primary-button">Start Game</button>
       </div>
@@ -77,7 +85,13 @@
       <div class="game-header">
         <div>
           <h1>Jeopardy</h1>
+          <p id="round-status" class="round-status">Jeopardy</p>
           <p id="board-status" class="subtle">Loading board...</p>
+        </div>
+        <div class="board-actions">
+          <button id="start-double-jeopardy-btn" class="secondary-button board-action-button hidden">Start Double Jeopardy</button>
+          <button id="start-final-jeopardy-btn" class="secondary-button board-action-button hidden">Start Final Jeopardy</button>
+          <button id="reset-board-btn" class="secondary-button board-action-button hidden">Reset Board</button>
         </div>
       </div>
 
@@ -125,6 +139,76 @@
         <button id="back-to-board-btn" class="primary-button">Back to Board</button>
       </div>
     </section>
+
+    <section id="daily-double-screen" class="screen card hidden">
+      <p class="daily-double-kicker">Daily Double!</p>
+      <h1>Daily Double</h1>
+      <p id="daily-double-detail" class="daily-double-detail"></p>
+
+      <div id="daily-double-player-panel" class="daily-double-panel hidden">
+        <label for="daily-double-player-select">Player</label>
+        <select id="daily-double-player-select"></select>
+        <button id="daily-double-player-btn" class="primary-button" type="button">Choose Player</button>
+      </div>
+
+      <form id="daily-double-wager-form" class="daily-double-panel hidden">
+        <label for="daily-double-wager-input">Wager</label>
+        <input id="daily-double-wager-input" type="number" step="1" min="0" inputmode="numeric" />
+        <p id="daily-double-wager-error" class="daily-double-error" aria-live="polite"></p>
+        <button id="daily-double-wager-btn" class="primary-button" type="submit">Submit Wager</button>
+      </form>
+
+      <p id="daily-double-waiting" class="daily-double-waiting"></p>
+    </section>
+
+    <section id="final-jeopardy-screen" class="screen card hidden">
+      <p class="final-kicker">Final Jeopardy</p>
+      <h1>Final Jeopardy</h1>
+      <p id="final-category" class="final-category"></p>
+      <p id="final-clue" class="final-clue hidden"></p>
+      <p id="final-status" class="final-status"></p>
+
+      <form id="final-wager-form" class="final-panel hidden">
+        <label for="final-wager-input">Wager</label>
+        <input id="final-wager-input" type="number" step="1" min="0" inputmode="numeric" />
+        <p id="final-wager-error" class="final-error" aria-live="polite"></p>
+        <button id="final-wager-btn" class="primary-button" type="submit">Submit Wager</button>
+      </form>
+
+      <form id="final-answer-form" class="final-panel hidden">
+        <label for="final-answer-input">Answer</label>
+        <textarea id="final-answer-input" rows="3"></textarea>
+        <p id="final-answer-error" class="final-error" aria-live="polite"></p>
+        <button id="final-answer-btn" class="primary-button" type="submit">Submit Answer</button>
+      </form>
+
+      <div id="final-host-panel" class="final-panel hidden">
+        <h2>Host Controls</h2>
+        <ul id="final-status-list" class="final-status-list"></ul>
+        <button id="reveal-final-clue-btn" class="primary-button hidden" type="button">Reveal Final Clue</button>
+        <button id="start-final-review-btn" class="primary-button hidden" type="button">Start Review</button>
+        <button id="show-final-results-btn" class="primary-button hidden" type="button">Show Final Results</button>
+      </div>
+
+      <div id="final-review-panel" class="final-review-panel hidden"></div>
+      <ol id="final-rankings" class="final-rankings hidden"></ol>
+    </section>
+
+    <div id="score-edit-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="score-edit-title">
+      <form id="score-edit-form" class="score-edit-modal">
+        <h2 id="score-edit-title">Edit Score</h2>
+        <p id="score-edit-player-name" class="score-edit-player"></p>
+
+        <label class="score-edit-label" for="score-edit-input">Score</label>
+        <input id="score-edit-input" class="score-edit-input" type="number" step="1" inputmode="numeric" />
+        <p id="score-edit-error" class="score-edit-error" aria-live="polite"></p>
+
+        <div class="score-edit-actions">
+          <button id="score-edit-cancel-btn" class="secondary-button" type="button">Cancel</button>
+          <button id="score-edit-save-btn" class="primary-button" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
 
   </main>
 

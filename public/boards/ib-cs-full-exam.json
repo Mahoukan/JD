@@ -1,0 +1,441 @@
+{
+  "id": "IB-CS-FULL-EXAM",
+  "name": "IB Computer Science Exam Jeopardy",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "KEY DEFINITIONS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Define algorithm",
+            "answer": "A finite step-by-step process to solve a problem",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Define protocol",
+            "answer": "A set of rules governing communication between devices",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Define URL",
+            "answer": "An address used to locate a resource on the internet",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Define search engine",
+            "answer": "A system that searches the web and returns results",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Define legacy system",
+            "answer": "An old system still in use",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HARDWARE & CPU",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Function of the CPU",
+            "answer": "Executes instructions and processes data",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Purpose of MDR",
+            "answer": "Stores data being transferred to or from memory",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Role of ALU",
+            "answer": "Performs arithmetic and logical operations",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Function of Program Counter",
+            "answer": "Stores address of next instruction",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "What is RAM used for?",
+            "answer": "Temporary storage of data and programs in use",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "ALGORITHMS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Define iteration",
+            "answer": "Repeating instructions",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Define selection",
+            "answer": "Decision making using conditions",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "What is Boolean?",
+            "answer": "Data type with True or False values",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "What is linear search?",
+            "answer": "Checks each item sequentially",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "What is binary search?",
+            "answer": "Searches by dividing sorted list in half",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "NETWORKS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "What does DNS do?",
+            "answer": "Converts domain names to IP addresses",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "What is HTTP used for?",
+            "answer": "Requesting and loading web pages",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "What is an IP address?",
+            "answer": "Unique identifier for a device on a network",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "What is packet switching?",
+            "answer": "Data split into packets and sent separately",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "What is HTTPS?",
+            "answer": "Secure version of HTTP using encryption",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "DATA REPRESENTATION",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "What is a bit?",
+            "answer": "Smallest unit of data (0 or 1)",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "What is a byte?",
+            "answer": "8 bits",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Why do computers use binary?",
+            "answer": "It represents electrical states (on/off)",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "How many values can 12 bits represent?",
+            "answer": "4096",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "What is hexadecimal?",
+            "answer": "Base 16 number system",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SYSTEMS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "What is user acceptance testing?",
+            "answer": "Testing by users to confirm requirements are met",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "What is data migration?",
+            "answer": "Transfer of data from old system to new",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "What is parallel running?",
+            "answer": "Running old and new systems together",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "What is direct changeover?",
+            "answer": "Switching immediately to new system",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "One risk of data migration",
+            "answer": "Data loss or corruption",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "EXPLAIN",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Explain why client-side scripting is important",
+            "answer": "Allows interaction, reduces server load, improves user experience",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Explain how a web crawler indexes pages",
+            "answer": "Visits pages, scans content, stores indexed results",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Explain how DNS and HTTP work together",
+            "answer": "DNS finds IP, HTTP requests webpage",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1600,
+            "clue": "Explain connectionless communication",
+            "answer": "Data sent without establishing a dedicated connection",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Explain why HTTPS is secure",
+            "answer": "Uses encryption to protect data in transit",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "EVALUATE",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Evaluate lossless vs lossy for text",
+            "answer": "Lossless keeps quality; lossy unsuitable",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Evaluate lossy for music",
+            "answer": "Smaller files but reduced quality",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Evaluate lossy for textbooks",
+            "answer": "Compression reduces clarity so not ideal",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Evaluate parallel vs direct changeover",
+            "answer": "Parallel safer, direct cheaper but risky",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "Evaluate digital protection methods",
+            "answer": "Login restricts access; disabling save is weak",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SCENARIO",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Identify URL components",
+            "answer": "Protocol, domain, path",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Identify HTTPS characteristics",
+            "answer": "Encryption and secure communication",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Outline connectionless web request",
+            "answer": "Data sent in packets without connection",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Explain keyword search benefit",
+            "answer": "Improves relevance and reduces noise",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Discuss black hat SEO impact",
+            "answer": "Misleading results and poor research quality",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "NETWORKS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Two fibre optic features",
+            "answer": "High speed, low interference",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Two wireless features",
+            "answer": "Mobile, prone to interference",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Describe encryption",
+            "answer": "Data converted to unreadable form using a key",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Explain packet switching",
+            "answer": "Packets sent separately then reassembled",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Explain P2P pros and cons",
+            "answer": "Decentralised but security risks",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SYSTEMS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "One requirements method",
+            "answer": "Interview / observation",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Explain importance of user roles",
+            "answer": "Different needs affect system design",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Explain migration issue",
+            "answer": "Data loss or incompatibility",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Evaluate training method",
+            "answer": "Improves skills but costly",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Discuss VPN impact",
+            "answer": "Enables remote work but reduces interaction",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ALGORITHMS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Explain trace table",
+            "answer": "Tracks variables step-by-step",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Purpose of odd count algorithm",
+            "answer": "Counts numbers not divisible by 2",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Compare linear vs binary search",
+            "answer": "Linear checks all; binary faster but needs sorted data",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Why binary needs sorted data",
+            "answer": "Eliminates half based on order",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Bubble sort advantage/disadvantage",
+            "answer": "Simple but inefficient",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "NETWORKS",
+    "clue": "Explain why packet switching is efficient for data transmission",
+    "answer": "Packets take different routes, improving efficiency and reliability"
+  }
+}

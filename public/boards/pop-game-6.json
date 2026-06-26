@@ -1,0 +1,424 @@
+{
+  "id": "POP-GAME-6",
+  "name": "Pop Culture Jeopardy! 6",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "FICTIONAL COMPANIES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This company from Fallout built many of the underground Vaults.",
+            "answer": "Vault-Tec",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This company runs the dangerous testing facility in Portal.",
+            "answer": "Aperture Science",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This corporation secretly creates biological weapons in the Resident Evil franchise.",
+            "answer": "Umbrella Corporation",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This company from RoboCop is usually shortened to OCP.",
+            "answer": "Omni Consumer Products",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This corporation from Alien is famous for the phrase, \"Building Better Worlds.\"",
+            "answer": "Weyland-Yutani",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "CHARACTER'S PETS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This Pokémon trainer's yellow companion is Pikachu.",
+            "answer": "Ash Ketchum",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Probably the most famous fictional owl in the world.",
+            "answer": "Hedwig",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This character's pet monkey is named Jack.",
+            "answer": "Captain Barbossa",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This Disney princess has a pet named Pascal.",
+            "answer": "Rapunzel",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This Disney villain keeps a raven named Diablo.",
+            "answer": "Maleficent",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "FAMOUS WEAPONS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This hammer can usually only be lifted by those deemed worthy.",
+            "answer": "Mjolnir",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This glowing weapon is the signature armament of the Jedi.",
+            "answer": "Lightsaber",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This hidden wrist-mounted weapon is the trademark tool of the Assassin Brotherhood.",
+            "answer": "Hidden Blade",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This oversized sword is wielded by Cloud Strife in Final Fantasy VII.",
+            "answer": "Buster Sword",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This is the ancient name of Excalibur, derived from the Welsh Caledfwlch.",
+            "answer": "Excalibur",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "HISTORICAL MEMES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Other than the Vietnam war, Australia is historically recognized to have only lost in this war.",
+            "answer": "The Emu War",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This future U.S. president gave a speech after being shot because, as he explained, \"it takes more than that to kill a Bull Moose.\"",
+            "answer": "Theodore Roosevelt",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This man survived both the Hiroshima and Nagasaki atomic bombings.",
+            "answer": "Tsutomu Yamaguchi",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In 1518, residents of this European city reportedly danced for days without stopping.",
+            "answer": "Strasbourg",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "In 1325, a war between Bologna and Modena reportedly began after one city stole this common household item.",
+            "answer": "A Bucket",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WEIRD LAWS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "In Singapore, the ban was implemented as part of the government's efforts to maintain public cleanliness after widespread complaints of sidewalks littered with the sticky substance.",
+            "answer": "Chewing Gum",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "In this country, electrical safety was once taken so seriously that even minor household tasks like changing a light bulb had to be performed by trained electricians.",
+            "answer": "Australia",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "In alignment with the country's broader efforts to maintain moral standards, a glimpse of nudity through your window can lead to a fine.",
+            "answer": "Singapore",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The law describes chicken as a “culinary delicacy sacred to its municipality.” Perhaps this is why chicken deserves a specific transport safety law.",
+            "answer": "It’s illegal to let your chickens cross the road",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "In Samoa, forgetting this special date could technically break the law. (Later confirmed as a myth)",
+            "answer": "Your Wife's Birthday",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "CELEBRITY SIDE HUSTLES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Before becoming a famous wrestler and actor, this celebrity played football for the Calgary Stampeders.",
+            "answer": "Dwayne \"The Rock\" Johnson",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Before becoming a world-famous chef, this celebrity played professional football for Rangers FC youth teams.",
+            "answer": "Gordon Ramsay",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This singer helped found the streaming service Tidal.",
+            "answer": "Jay-Z",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This actor owns a tequila company called Casamigos.",
+            "answer": "George Clooney",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This singer successfully launched the cosmetics brand Fenty Beauty.",
+            "answer": "Rihanna",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "FAMOUS VEHICLES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This time-traveling car from Back to the Future was built from this.",
+            "answer": "The DeLorean",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This van belongs to Scooby-Doo and the Mystery Inc. gang.",
+            "answer": "The Mystery Machine",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This starship made the Kessel Run in less than twelve parsecs.",
+            "answer": "The Millennium Falcon",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "From ghostbusters this ghost-hunting car was referred to as.",
+            "answer": "Ecto-1/Ectomobile",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This AI-powered spaceship serves as the primary vessel in Mass Effect.",
+            "answer": "The Normandy",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THE TITLE WAS TAKEN",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Rich Man Cosplays Bat To Avoid Therapy",
+            "answer": "Batman",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Unlicensed Wildlife Relocation Program",
+            "answer": "Pokémon",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Local Government Ignores Giant Lizard Problem",
+            "answer": "Godzilla",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Several Robots and People Make Poor Decisions Because Of A Cube",
+            "answer": "Transformers",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Archaeological Survey Accidentally Awakens Ancient HR Problem",
+            "answer": "The Mummy",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "FAMOUS DUOS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This pair of robots spend most of Star Wars arguing while saving the galaxy.",
+            "answer": "C-3PO and R2-D2",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This duo hosts the myth-busting experiments on MythBusters.",
+            "answer": "Adam Savage and Jamie Hyneman",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This duo starred in the films Rush Hour and Rush Hour 2.",
+            "answer": "Jackie Chan and Chris Tucker",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "These two brothers founded the first powered aircraft company after their historic flight in 1903. (Full names)",
+            "answer": "Orville and Wilbur Wright",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "These two criminals accidentally become one of the most famous duos in cinema after robbing banks across America in the 1930s.",
+            "answer": "Bonnie and Clyde",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "CELEBRITY REAL NAMES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Destiny Hope Cyrus",
+            "answer": "Miley Cyrus",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Marshall Mathers",
+            "answer": "Eminem",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Farrokh Bulsara",
+            "answer": "Freddie Mercury",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Onika Tanya Maraj",
+            "answer": "Nicki Minaj",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Reginald Kenneth Dwight",
+            "answer": "Elton John",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MOVIES FROM ONE SCREENSHOT",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "",
+            "answer": "The Grinch/Who stole christmas",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "/images/pj06-grinch.avif"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "",
+            "answer": "Edward Scissorhands",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "/images/pj06-EdwardScissorhands.avif"
+            }
+          },
+          {
+            "value": 1200,
+            "clue": "",
+            "answer": "Santa Clause",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "/images/pj06-SantaClause.avif"
+            }
+          },
+          {
+            "value": 1600,
+            "clue": "",
+            "answer": "Bad Santa",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "/images/pj06-BadSanta.avif"
+            }
+          },
+          {
+            "value": 2000,
+            "clue": "",
+            "answer": "Christmas Carol",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "/images/pj06-ChristmasCarol.avif"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "HISTORICAL MEMES",
+    "clue": "This war was fought between Britain and Zanzibar and lasted less than 40 minutes.",
+    "answer": "What is the Anglo-Zanzibar War?"
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "id": "CLASS-IS-IN-SESSION",
+  "name": "Class is in Session",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "READING, WRITING & REGRET",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This punctuation mark is used at the end of a question.",
+            "answer": "Question Mark",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "The main character of a story is known by this term.",
+            "answer": "Protagonist",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This literary device compares two things using \"like\" or \"as.\"",
+            "answer": "Simile",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "A word that means the opposite of another word is called this.",
+            "answer": "Antonym",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "A word that sounds the same as another word but has a different meaning and spelling is called this.",
+            "answer": "Homophone",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "SHOW YOUR WORKING",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "A number divisible only by 1 and itself is called this.",
+            "answer": "Prime Number",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This shape has eight sides.",
+            "answer": "Octagon",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This number sequence begins 1, 1, 2, 3, 5, 8...",
+            "answer": "Fibonacci Sequence",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The average of a set of numbers is also known as this.",
+            "answer": "Mean",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "A number that can be written as a fraction of two integers is called this.",
+            "answer": "Rational Number",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "DON'T TRY THIS AT HOME",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This organelle is often called \"the powerhouse of the cell.\"",
+            "answer": "Mitochondria",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This law states that for every action, there is an equal and opposite reaction.",
+            "answer": "Newton's Third Law",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This region beyond Neptune contains dwarf planets such as Pluto.",
+            "answer": "The Kuiper Belt",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This type of plate boundary is responsible for the Southern Alps and many of New Zealand's earthquakes.",
+            "answer": "Convergent Plate Boundary",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This Russian scientist is credited with creating the modern periodic table.",
+            "answer": "Dmitri Mendeleev",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SOCIALS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This document, signed in 1840, is considered New Zealand's founding agreement.",
+            "answer": "The Treaty of Waitangi",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This term describes a person who moves permanently to a new country.",
+            "answer": "Immigrant",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This term describes the beliefs, customs, and way of life shared by a group of people.",
+            "answer": "Culture",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This New Zealand government branch is responsible for interpreting and applying the law.",
+            "answer": "Judiciary",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "New Zealand uses this voting system, commonly shortened to MMP.",
+            "answer": "Mixed Member Proportional",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "BONJOUR, HOLA & KIA ORA",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This language is the most widely spoken first language in the world.",
+            "answer": "Mandarin Chinese",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Another name for New Zealand is this.",
+            "answer": "Aotearoa",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This French word means \"Sorry\"",
+            "answer": "désolée",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The only official language of Brazil.",
+            "answer": "Portuguese",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This Spanish phrase literally translates to \"good day.\"",
+            "answer": "Buenos Días",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THE BEEP TEST",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This exercise involves moving your body up and down from a plank position.",
+            "answer": "Push-Up",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This food guide was once commonly shown as a sectioned triangle.",
+            "answer": "Food Pyramid",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This test requires students to run back and forth between two lines before a series of timed beeps.",
+            "answer": "The Beep Test",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This vitamin is produced when your skin is exposed to sunlight.",
+            "answer": "Vitamin D",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This term describes the body's ability to take in and use oxygen during exercise.",
+            "answer": "VO₂ Max",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "THE ART ROOM",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This colour is made by mixing red and blue paint.",
+            "answer": "Purple",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This painting by Leonardo da Vinci is displayed in the Louvre and is famous for its smile.",
+            "answer": "Mona Lisa",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This artist painted the ceiling of the Sistine Chapel.",
+            "answer": "Michelangelo",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This Dutch artist famously cut off part of his ear.",
+            "answer": "Vincent van Gogh",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This art movement, associated with artists such as Salvador Dalí, featured dreamlike and often bizarre imagery.",
+            "answer": "Surrealism",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SAFETY GLASSES REQUIRED",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This tool is used to drive screws into wood.",
+            "answer": "Screwdriver",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This manufacturing process involves joining materials together by melting a filler metal.",
+            "answer": "Soldering",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This type of drawing shows an object as a three-dimensional sketch while keeping parallel lines parallel.",
+            "answer": "Isometric Drawing",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This machine-controlled manufacturing process uses computer instructions to cut or shape materials.",
+            "answer": "CNC (Computer Numerical Control)",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This programming concept allows a section of code to call itself.",
+            "answer": "Recursion",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ACTUAL SCIENCE NOW",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This process produces four genetically unique sex cells from one parent cell.",
+            "answer": "Meiosis",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This number identifies how many protons are found in the nucleus of an atom.",
+            "answer": "Atomic Number",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This phenomenon causes light from distant galaxies to shift toward longer wavelengths, providing evidence that the universe is expanding.",
+            "answer": "Redshift",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This enzyme is responsible for unwinding DNA during replication.",
+            "answer": "Helicase",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This quantum principle states that it is impossible to simultaneously know both the exact position and momentum of a particle.",
+            "answer": "Heisenberg Uncertainty Principle",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "DEAD PEOPLE & DATES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This Roman city was destroyed by the eruption of Mount Vesuvius in 79 AD.",
+            "answer": "Pompeii",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This agreement signed in 1919 officially ended World War I.",
+            "answer": "Treaty of Versailles",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This king of Macedon created one of the largest empires of the ancient world before the age of 33.",
+            "answer": "Alexander the Great",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This Byzantine capital fell to the Ottoman Empire in 1453.",
+            "answer": "Constantinople",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This Carthaginian general famously crossed the Alps with elephants.",
+            "answer": "Hannibal",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "MONEY, MONEY, MONEY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This term describes the amount of money earned from a job before tax is deducted.",
+            "answer": "Gross Income",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This term describes owning a small part of a company.",
+            "answer": "Share / Stock",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This New Zealand government department is responsible for collecting tax. (No acronyms)",
+            "answer": "Inland Revenue Department (IRD)",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This document shows a business's income, expenses, and profit over a period of time.",
+            "answer": "Income Statement",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This economic term describes the total value of goods and services produced within a country in a year. (The full expansion, not the acronym)",
+            "answer": "Gross Domestic Product (GDP)",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "THE LIBRARY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This decimal classification system is used by many libraries to organize nonfiction books.",
+            "answer": "Dewey Decimal System",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This ancient library in Egypt was one of the largest and most famous of the ancient world.",
+            "answer": "Library of Alexandria",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "In this Louis Sachar novel, Stanley Yelnats is sent to Camp Green Lake.",
+            "answer": "Holes",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This William Golding novel follows a group of stranded schoolboys on an island.",
+            "answer": "Lord of the Flies",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This New Zealand-born author wrote The Whale Rider.",
+            "answer": "Witi Ihimaera",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "CLASSICS",
+    "clue": "This student of Plato taught Alexander the Great and later founded the Lyceum in Athens.",
+    "answer": "Who is Aristotle?"
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "id": "POP-CULTURE-SET-3",
+  "name": "Pop Culture Set 3",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "THAT'S WHY WE CALL IT THAT",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This keyboard layout was designed in part to slow typists down and reduce mechanical jams on early typewriters.",
+            "answer": "QWERTY",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "The term \"spam\" for unwanted messages comes from a sketch by this British comedy group.",
+            "answer": "Monty Python",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "The Pokémon creature Ekans gets its name from this animal.",
+            "answer": "Snake",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This famous search engine began life under the much less catchy name \"BackRub.\"",
+            "answer": "Google",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "The Bluetooth logo combines two runes representing the initials of this Viking king.",
+            "answer": "Harald Bluetooth",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THE INTERNET REMEMBERS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "\"They're taking the hobbits to Isengard!\" became an early viral remix featuring clips from this film trilogy.",
+            "answer": "The Lord of the Rings",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This 2004 internet phenomenon featured a badly animated dancing baby peanut-butter enthusiast.",
+            "answer": "Peanut Butter Jelly Time",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Before becoming a billionaire entrepreneur, this person was best known online for creating the website Facemash.",
+            "answer": "Mark Zuckerberg",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This phrase, originating from a 2014 Tumblr post, became shorthand for unexpectedly encountering something emotionally devastating online.",
+            "answer": "I was not emotionally prepared for this",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "This 1998 fan-created webpage is often cited as the oldest continuously updated webcomic on the internet.",
+            "answer": "Kevin and Kell",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "POP-CULTURE BACKSTABBERS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This villain promised his nephew he'd 'always be there for him' before throwing his father off a cliff.",
+            "answer": "Scar",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This Disney prince pretended to be in love with Anna to seize a kingdom.",
+            "answer": "Prince Hans",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This character sold out Neo and the crew of the Nebuchadnezzar in exchange for being reinserted into the Matrix.",
+            "answer": "Cypher",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In The Dark Knight, this district attorney became a villain after feeling betrayed by the system.",
+            "answer": "Harvey Dent",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This advisor spent eight seasons manipulating rulers before finally being executed by Daenerys Targaryen.",
+            "answer": "Lord Varys",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ALL ABOARD!",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This game has ruined friendships through four simple words: 'Do not pass Go.'",
+            "answer": "Monopoly",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "The unofficial slogan of this game is often 'It's basically friendship-ending Risk.'",
+            "answer": "Risk",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This game asks players to convince everyone they are not secretly a fascist.",
+            "answer": "Secret Hitler",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In this game, players race to connect cities using colored train cards.",
+            "answer": "Ticket to Ride",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This board game's title refers to a region of southern France and features tile placement as its core mechanic.",
+            "answer": "Carcassonne",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ARE YOU SURE YOU'RE A NEW ZEALANDER?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "What colour are the stars on the New Zealand flag?",
+            "answer": "Red",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Which island is larger by area: the North Island or the South Island?",
+            "answer": "South Island",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This town hosts the annual Burt Munro Challenge.",
+            "answer": "Invercargill",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Before decimal currency was introduced in 1967, New Zealand used pounds, shillings, and this smaller unit.",
+            "answer": "Penny",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Name either of the two New Zealand territories that use the New Zealand dollar but are not part of New Zealand proper.",
+            "answer": "Cook Islands or Niue",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "POP CULTURE LAST WORDS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "\"Mr. Stark, I don't feel so good.\"",
+            "answer": "Peter Parker",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "\"Always.\"",
+            "answer": "Severus Snape",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "\"You were my brother, Anakin! I loved you!\"",
+            "answer": "Obi-Wan Kenobi",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "\"Tell Cersei. I want her to know it was me.\"",
+            "answer": "Olenna Tyrell",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "\"My friends... you bow to no one.\"",
+            "answer": "Aragorn",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "AND THEN IT GOT WORSE",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "The citizens of Pompeii were dealing with earthquakes before this volcano buried their city under ash.",
+            "answer": "Mount Vesuvius",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This theme park's dinosaurs escaped their enclosures. Then the power went out.",
+            "answer": "Jurassic Park",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This NASA mission suffered an oxygen tank explosion; then the crew had to use the lunar module as a lifeboat to survive.",
+            "answer": "Apollo 13",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "In 1871, this city was already dealing with a drought when a fire broke out and destroyed much of the city.",
+            "answer": "Chicago",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "During his invasion of Russia, his army captured Moscow, only for the city to burn and winter to arrive before they could secure victory.",
+            "answer": "Napoleon Bonaparte",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "TASK FAILED SUCCESSFULLY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "A failed online dating website pivoted into what became the world's largest video-sharing platform.",
+            "answer": "YouTube",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Nintendo originally created this character as a carpenter before changing his profession.",
+            "answer": "Mario",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "The first version of this game was created because its developer wanted to make a cave-exploration game, not a global phenomenon.",
+            "answer": "Minecraft",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This social media platform began as an internal communication tool for employees of a podcast company.",
+            "answer": "Twitter",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This company started as an online bookstore before expanding into almost everything else.",
+            "answer": "Amazon",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WAIT, THEY'RE RELATED?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This singer's godmother is Dolly Parton.",
+            "answer": "Miley Cyrus",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Actors Chris, Liam, and Luke share this surname.",
+            "answer": "Hemsworth",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This actress from Mad Max: Fury Road and The Queen's Gambit is related to nobody famous at all.",
+            "answer": "Anya Taylor-Joy",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Nicolas Cage changed his surname to avoid benefiting from his famous uncle, this director.",
+            "answer": "Francis Ford Coppola",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This actor, famous for playing Superman, is the cousin of actor Nicolas Cage.",
+            "answer": "Christopher Reeve",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SEQUELS NOBODY ASKED FOR",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 2021 sequel revealed that a basketball movie starring Michael Jordan somehow needed a multiverse.",
+            "answer": "Space Jam: A New Legacy",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This 2023 shark movie answered the question nobody asked: 'What if there were even more giant sharks?'",
+            "answer": "Meg 2: The Trench",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This 2024 film was the sequel to a movie released 36 years earlier and once again featured a mischievous ghost.",
+            "answer": "Beetlejuice Beetlejuice",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1600,
+            "clue": "This franchise somehow reached a tenth main installment despite starting as a film about street racing.",
+            "answer": "Fast X",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This franchise has released so many films that the titles now include words like 'Dominion' and 'Rebirth.'",
+            "answer": "Jurassic World",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "WHO APPROVED THIS?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Despite becoming an internet joke, this 2022 superhero film was re-released after fans jokingly demanded it.",
+            "answer": "Morbius",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This social media platform briefly changed its name to a single letter in 2023.",
+            "answer": "X",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "In 1992, this clear version of Coca-Cola's rival was released to great confusion and poor sales.",
+            "answer": "Crystal Pepsi",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This movie studio released Cats in 2019 complete with unsettling digital fur technology.",
+            "answer": "Universal Pictures",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This company released a ketchup-and-ranch combination called 'Kranch.'",
+            "answer": "Heinz",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "EXCUSE ME?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This country's national animal is technically a unicorn.",
+            "answer": "Scotland",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Bananas are naturally slightly radioactive because they contain this element.",
+            "answer": "Potassium",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This bird can imitate chainsaws, camera shutters, car alarms, and human speech.",
+            "answer": "Lyrebird",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Octopuses have this many hearts.",
+            "answer": "Three",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This planet experiences rain made of diamonds, according to current scientific models.",
+            "answer": "Neptune (also accepted: Uranus)",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "SCIENCE",
+    "clue": "This element, discovered in 1868, was first identified in the Sun before it was found on Earth.",
+    "answer": "Helium"
+  }
+}

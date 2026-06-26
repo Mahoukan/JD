@@ -1,0 +1,455 @@
+{
+  "id": "PUB-QUIZ-JEOPARDY",
+  "name": "Pub Quiz Jeopardy",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "CELEBRITY BUSINESS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This actor owns Aviation Gin and previously co-owned Mint Mobile.",
+            "answer": "Ryan Reynolds",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This former Disney star runs his own mead business.",
+            "answer": "Dylan Sprouse",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This singer successfully launched the cosmetics brand Fenty Beauty.",
+            "answer": "Rihanna",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This celebrity owns the supplement brand Lemme.",
+            "answer": "Kourtney Kardashian",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This celebrity owns the beauty brand About-Face.",
+            "answer": "Halsey",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "REAL NAMES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This rapper's real name is Marshall Mathers.",
+            "answer": "Eminem",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This NZ singer was born Ella Marija Lani Yelich-O'Connor.",
+            "answer": "Lorde",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This singer was born Stefani Germanotta.",
+            "answer": "Lady Gaga",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Billie Eilish's full name includes these middle names.",
+            "answer": "Pirate Baird",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Bad Bunny's full name is this.",
+            "answer": "Benito Antonio Martínez Ocasio",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "TV TRIVIA",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This actor voices Meg on Family Guy.",
+            "answer": "Mila Kunis",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Kramer's first name on Seinfeld is this.",
+            "answer": "Cosmo",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This Euphoria character writes a dramatic play about her classmates.",
+            "answer": "Lexi Howard",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This was Sarah Palin's costume name on The Masked Singer.",
+            "answer": "Bear",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This person was the first winner of Survivor.",
+            "answer": "Richard Hatch",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MUSIC MOMENTS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This musical features the characters Elphaba, Galinda, and Fiyero",
+            "answer": "Wicked",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Selena Gomez, Gigi Hadid, Cara Delevigne, and Hailee Steinfeld all appeared in this music video",
+            "answer": "Bad Blood (ft. Kendrick Lamar) by Taylor Swift",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "ABBA's Eurovision-winning song was named after this battle, where Napoleon suffered his final defeat.",
+            "answer": "Waterloo",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This singer famously performed with an albino Burmese python at the MTV Video Music Awards",
+            "answer": "Britney Spears",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This legendary singer helped Eminem recover from drug addiction.",
+            "answer": "Elton John",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MOVIE CONNECTIONS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This 2005 Jane Austen adaptation starred Keira Knightley.",
+            "answer": "Pride & Prejudice",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "In Michael Bay's Transformers films, Bumblebee is this type of car.",
+            "answer": "Chevrolet Camaro",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "The Lion King, 10 Things I Hate About You, and West Side Story are all loosely based on works by this writer.",
+            "answer": "William Shakespeare",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "These men are three of the most well known Bond actors",
+            "answer": "Sean Connery, Daniel Craig, Pierce Brosnan",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "These films all feature Paris Hilton: Zoolander, House of Wax, Repo! The Genetic Opera, and this 2013 film.",
+            "answer": "The Bling Ring",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "ANIMATED & FICTIONAL",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Baby Yoda's real name is this.",
+            "answer": "Grogu",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This movie won the first ever Oscar for Best Animated Film",
+            "answer": "Shrek",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Sandy Cheeks hails from this state.",
+            "answer": "Texas",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The fictional town where 'It' takes place is this.",
+            "answer": "Derry, Maine",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "The four cartoon members of Gorillaz are these.",
+            "answer": "2D, Noodle, Murdoc, and Russel",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "WHO PLAYED WHO?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This actor played this character.",
+            "answer": "Tom Hanks",
+            "media": {
+              "type": "image",
+              "url": "https://static.wikia.nocookie.net/disney/images/2/22/Profile_-_Woody.jpeg/revision/latest?cb=20200711052417"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "This actor played this character.",
+            "answer": "Eddie Murphy",
+            "media": {
+              "type": "image",
+              "url": "https://miro.medium.com/v2/1*5DPI3KDUloeXSX5p0_dThA.jpeg"
+            }
+          },
+          {
+            "value": 1200,
+            "clue": "This actor played this character.",
+            "answer": "Andy Serkis",
+            "media": {
+              "type": "image",
+              "url": "https://static.wikia.nocookie.net/lotr/images/6/64/Gollum_-_Two_Towers.png/revision/latest/scale-to-width-down/1000?cb=20210117024459"
+            }
+          },
+          {
+            "value": 1600,
+            "clue": "This actor played this character.",
+            "answer": "John Goodman",
+            "media": {
+              "type": "image",
+              "url": "https://static.wikia.nocookie.net/disney/images/3/3c/Profile_-_Sulley.jpg/revision/latest/scale-to-width-down/1000?cb=20200817112818"
+            }
+          },
+          {
+            "value": 2000,
+            "clue": "This actor played this character.",
+            "answer": "Jeremy Irons",
+            "media": {
+              "type": "image",
+              "url": "https://static.wikia.nocookie.net/true-villains/images/1/11/Scar-HD.png/revision/latest?cb=20170207124518"
+            }
+          }
+        ]
+      },
+      {
+        "category": "Most Quotable",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Life is like a box of chocolates. You never know what you’re gonna get.",
+            "answer": "Forrest Gump",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Not all those who wander are lost.",
+            "answer": "J. R. R. Tolkein",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Knowledge is power.",
+            "answer": "Sir Francis Bacon",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "A rose by any other name would smell as sweet.",
+            "answer": "William Shakespeare",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "I think therefore I am.",
+            "answer": "Rene Descartes",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Yesterday is history",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Highly respected and loved, what animal had considerable importance in ancient Egypt",
+            "answer": "Cat",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This seasoning doubles as both food and money in ancient Greece and Rome",
+            "answer": "Salt",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This ancient civilization was the first to use democracy.",
+            "answer": "Ancient Greece",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This metal is associated with the end of the Stone Age",
+            "answer": "Bronze",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Who colonized Tunisia in ancient times?",
+            "answer": "Phoenicians",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "TOMORROW IS A MYSTERY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This animated sitcom predicted smart watches and many other events years before they became common.",
+            "answer": "The Simpsons",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This film featured self-lacing shoes and hoverboards in the year 2015.",
+            "answer": "Back to the Future Part II",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This Isaac Asimov concept describes robots obeying three fundamental rules.",
+            "answer": "The Three Laws of Robotics",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This franchise predicted communicators that closely resemble modern flip phones.",
+            "answer": "Star Trek",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This magazine famously declared in 1995 that the internet would soon go 'spectacularly supernova and collapse.'",
+            "answer": "Newsweek",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Today is a gift",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This antibiotic was discovered when Alexander Fleming noticed mold growing in a petri dish.",
+            "answer": "Penicillin",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This blue medicine was originally being tested as a treatment for high blood pressure before becoming famous for a very different use.",
+            "answer": "Viagra",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This video-sharing website was originally conceived as a dating site.",
+            "answer": "YouTube",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This actress co-invented a frequency-hopping communication system that later contributed to Wi-Fi and Bluetooth technology.",
+            "answer": "Hedy Lamarr",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This sweetener was discovered when a chemist forgot to wash his hands after working in a laboratory.",
+            "answer": "Saccharin",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "That is bad news",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This wall was accidentally demolished in 1989 after a confused official announced new travel rules.",
+            "answer": "Berlin Wall",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In 1986, operators conducting a safety test caused the worst nuclear accident in history at this power plant.",
+            "answer": "Chernobyl Nuclear Power Plant",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This Austrian archduke took a wrong turn in Sarajevo, leading to the assassination that helped trigger World War I.",
+            "answer": "Franz Ferdinand",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This emperor discovered that conquering Russia is much easier on a map than during winter.",
+            "answer": "Napoleon Bonaparte",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This company paid $5 billion in stock to acquire a startup called Broadcast.com shortly before the dot-com crash.",
+            "answer": "Yahoo!",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "POP CULTURE TRIVIA",
+    "clue": "This performer became the most-watched Super Bowl Halftime Show headliner.",
+    "answer": "Who is Kendrick Lamar?"
+  }
+}

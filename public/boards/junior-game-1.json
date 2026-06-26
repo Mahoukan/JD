@@ -1,0 +1,480 @@
+{
+  "id": "JUNIOR-GAME-1",
+  "name": "Junior Jeopardy!",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "ANIMALS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This is the largest animal on Earth.",
+            "answer": "Blue Whale",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This mammal is famous for carrying its babies in a pouch.",
+            "answer": "Kangaroo",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Despite its name, this black-and-white bear mainly eats bamboo.",
+            "answer": "Giant Panda",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This bird is the national symbol of New Zealand and cannot fly.",
+            "answer": "Kiwi",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This reptile can change its skin colour to help communicate and regulate its temperature.",
+            "answer": "Chameleon",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MOVIES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This blue fish forgets things very easily in Finding Nemo and Finding Dory.",
+            "answer": "Dory",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "In Frozen, this character has the power to create ice and snow.",
+            "answer": "Elsa",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This wizard receives a letter inviting him to attend Hogwarts School of Witchcraft and Wizardry.",
+            "answer": "Harry Potter",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In Shrek, this talkative companion joins Shrek on his quest to rescue Princess Fiona.",
+            "answer": "Donkey",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This Pixar movie follows a young musician named Miguel who travels to the Land of the Dead.",
+            "answer": "Coco",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SCIENCE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This organ pumps blood around the human body.",
+            "answer": "Heart",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Humans breathe in this gas and breathe out carbon dioxide.",
+            "answer": "Oxygen",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Water freezes at this temperature on the Celsius scale.",
+            "answer": "0°C",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This force keeps your feet on the ground and causes objects to fall toward Earth.",
+            "answer": "Gravity",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This part of a plant absorbs water and nutrients from the soil.",
+            "answer": "Roots",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "EMOJI MOVIES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "🦁👑",
+            "answer": "The Lion King",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "❄️👭☃️",
+            "answer": "Frozen",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "🐟🔍",
+            "answer": "Finding Nemo",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "🎈🏠",
+            "answer": "Up",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "🟨👖🍍",
+            "answer": "SpongeBob SquarePants Movie",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "LOGOS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Name this logo.",
+            "answer": "McDonald's",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/3/36/McDonald%27s_Golden_Arches.svg"
+            }
+          },
+          {
+            "value": 400,
+            "clue": "Name this logo.",
+            "answer": "YouTube",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"
+            }
+          },
+          {
+            "value": 600,
+            "clue": "Name this logo.",
+            "answer": "Nike",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "Name this logo.",
+            "answer": "Spotify",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+            }
+          },
+          {
+            "value": 1000,
+            "clue": "Name this logo.",
+            "answer": "Discord",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/fr/4/4f/Discord_Logo_sans_texte.svg"
+            }
+          }
+        ]
+      },
+      {
+        "category": "FOOD",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This Italian food is made with dough, sauce, and cheese.",
+            "answer": "Pizza",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This Mexican food consists of a folded tortilla filled with meat, beans, cheese, or vegetables.",
+            "answer": "Taco",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This spread made from chickpeas is popular in Middle Eastern cuisine.",
+            "answer": "Hummus",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This tropical fruit has a spiky exterior and a sweet yellow interior.",
+            "answer": "Pineapple",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This fruit has its seeds on the outside.",
+            "answer": "Strawberry",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "DISNEY",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This wooden puppet dreamed of becoming a real boy.",
+            "answer": "Pinocchio",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This Disney princess has a chameleon named Pascal.",
+            "answer": "Rapunzel",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This villain steals the voice of Ariel in The Little Mermaid.",
+            "answer": "Ursula",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This demigod is voiced by Dwayne Johnson in Moana.",
+            "answer": "Maui",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This Disney character sings \"I'll Make a Man Out of You.\"",
+            "answer": "Li Shang",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "CAN YOU BEAT A YEAR 3?",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "What is 7 × 8?",
+            "answer": "56",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "What color do you get when you mix blue and yellow?",
+            "answer": "Green",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "How many sides does a hexagon have?",
+            "answer": "6",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Which planet is closest to the Sun?",
+            "answer": "Mercury",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "If a train leaves Auckland and travels south, which island of New Zealand is it on?",
+            "answer": "North Island",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "FLAGS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Name this flag.",
+            "answer": "New Zealand",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg"
+            }
+          },
+          {
+            "value": 800,
+            "clue": "Name this flag.",
+            "answer": "Australia",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Flag_of_Australia.svg"
+            }
+          },
+          {
+            "value": 1200,
+            "clue": "Name this flag.",
+            "answer": "Japan",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Flag_of_Japan.svg"
+            }
+          },
+          {
+            "value": 1600,
+            "clue": "Name this flag.",
+            "answer": "Brazil",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg"
+            }
+          },
+          {
+            "value": 2000,
+            "clue": "Name this flag.",
+            "answer": "Bhutan",
+            "used": false,
+            "media": {
+              "type": "image",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Flag_of_Bhutan.svg"
+            }
+          }
+        ]
+      },
+      {
+        "category": "SCHOOL STUFF",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This punctuation mark is used at the end of a question.",
+            "answer": "Question Mark",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In mathematics, this shape has three sides.",
+            "answer": "Triangle",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This element has the chemical symbol O.",
+            "answer": "Oxygen",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This literary device compares two things using \"like\" or \"as.\"",
+            "answer": "Simile",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This branch of mathematics deals with unknown values often represented by letters.",
+            "answer": "Algebra",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "SPORTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "In this sport, players try to score goals using their feet.",
+            "answer": "Football (Soccer)",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This sport uses a bat, a ball, and wickets.",
+            "answer": "Cricket",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This sport includes the positions point guard, shooting guard, and center.",
+            "answer": "Basketball",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This sport features events such as the 100m sprint, long jump, and javelin.",
+            "answer": "Athletics (Track and Field)",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This sport features the Grand Slam tournaments Wimbledon, Roland-Garros, the US Open, and the Australian Open.",
+            "answer": "Tennis",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "EMOJIS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Which singer is this: 🐈👁️",
+            "answer": "Katseye",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "What movie is this: 🦁👑",
+            "answer": "Lion King",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Which is this flag: 🇦🇷",
+            "answer": "Argentina",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "What country is this: 🇳🇵",
+            "answer": "Nepal",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "What movie is this: 🔙2🔮🚗",
+            "answer": "Back to the Future",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "SCIENCE",
+    "clue": "This planet is known for its rings and is the second-largest planet in our Solar System.",
+    "answer": "What is Saturn?"
+  }
+}

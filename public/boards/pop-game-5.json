@@ -1,0 +1,437 @@
+{
+  "id": "POP-GAME-5",
+  "name": "Pop Culture Jeopardy! 5",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "FRANCHISES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This franchise's mascot is a blue hedgehog.",
+            "answer": "Sonic the Hedgehog",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This franchise includes regions such as Kanto, Johto, and Paldea.",
+            "answer": "Pokémon",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This franchise features Spartans and the Covenant.",
+            "answer": "Halo",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This franchise includes the Brotherhood of Steel and Vault-Tec.",
+            "answer": "Fallout",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This franchise includes the races Khajiit, Argonian, and Dunmer.",
+            "answer": "The Elder Scrolls",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "BOARD GAMES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "In this game, players ask yes-or-no questions to identify a mystery person.",
+            "answer": "Guess Who?",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "In this game, players try to prove who committed a murder, where it happened, and with what weapon.",
+            "answer": "Cluedo (Clue)",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "In this game, players build roads, settlements, and cities using resources such as brick and wheat.",
+            "answer": "Catan",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "In this game, players attempt to conquer territories and eliminate opponents' armies.",
+            "answer": "Risk",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "In this cooperative game, players work together to stop deadly diseases from spreading around the world.",
+            "answer": "Pandemic",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "VIDEO GAME ITEMS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This red-and-white ball is used to catch Pokémon.",
+            "answer": "Poké Ball",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This item allows Mario to throw fireballs after picking it up.",
+            "answer": "Fire Flower",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This blue shell targets the player in first place in Mario Kart.",
+            "answer": "Blue Shell",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This item allows Link to travel quickly between locations in The Legend of Zelda.",
+            "answer": "Ocarina",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This item is used to revive a fallen teammate in Fortnite.",
+            "answer": "Reboot Card",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "INTERNET HISTORY",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This video-sharing website was founded in 2005 and is now owned by Google.",
+            "answer": "YouTube",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This singer became famous for an internet prank known as \"Rickrolling.\"",
+            "answer": "Rick Astley",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This website, founded by Jimmy Wales, allows anyone to edit its articles.",
+            "answer": "Wikipedia",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This challenge raised over $100 million for ALS research in 2014.",
+            "answer": "Ice Bucket Challenge",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This social media platform was originally limited to 140 characters per post.",
+            "answer": "Twitter",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "NAME THE CHARACTER",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This character's best friend is named Tails.",
+            "answer": "Sonic the Hedgehog",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This character carries a shield named Aegis and a sword named Riptide.",
+            "answer": "Percy Jackson",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This pirate captain's compass points not north, but toward whatever he wants most.",
+            "answer": "Jack Sparrow",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This character was crowned King Elessar after the War of the Ring.",
+            "answer": "Aragorn",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This character commands the Normandy against the Reapers.",
+            "answer": "Commander Shepard",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "AWFUL SUPERPOWERS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Got bitten by a bug and never stopped talking about it.",
+            "answer": "Spider-Man",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Can run so fast that time, physics, and common sense become optional.",
+            "answer": "The Flash",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Can solve almost any problem by getting angry enough.",
+            "answer": "Hulk",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Can control metal because somebody gave him a really bad childhood.",
+            "answer": "Magneto",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Controls the weather but somehow still loses fights.",
+            "answer": "Storm",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "OBJECTS OF POWER",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This wand was one of the three Deathly Hallows and was said to be unbeatable in a duel.",
+            "answer": "The Elder Wand",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This cube from Transformers is responsible for creating and sustaining Cybertronian life.",
+            "answer": "The AllSpark",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "These seven gemstones grant near-unlimited power when gathered together.",
+            "answer": "Chaos Emeralds",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This artifact from World of Warcraft was wielded by Arthas Menethil.",
+            "answer": "Frostmourne",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This relic from The Legend of Zelda is split into Wisdom, Courage, and Power.",
+            "answer": "The Triforce",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "FINAL BOSS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This scientist controls the robots in Sonic the Hedgehog and is usually the final boss.",
+            "answer": "Dr. Robotnik (Eggman)",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This AI attempts to kill the player throughout Portal.",
+            "answer": "GLaDOS",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This dragon is the final boss of The Elder Scrolls V: Skyrim.",
+            "answer": "Alduin",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This leader of the Covenant serves as the final boss of Halo 2.",
+            "answer": "Tartarus",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This Sephiroth-cloned antagonist is the final boss of Kingdom Hearts.",
+            "answer": "Ansem",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "VILLAIN MOTIVATION",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Wanted to steal Christmas from Whoville.",
+            "answer": "The Grinch",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Wanted half of all life in the universe erased.",
+            "answer": "Thanos",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Wanted to become Sultan by using a magical lamp.",
+            "answer": "Jafar",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Wanted to turn all puppies in London into a fashion statement.",
+            "answer": "Cruella de Vil",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Wanted to destroy the world because he believed suffering was inevitable.",
+            "answer": "Sephiroth",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THE INTERNET REMEMBERS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This internet debate asked whether you heard \"Yanny\" or this other word.",
+            "answer": "Laurel",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This song was used in one of the internet's most famous bait-and-switch pranks.",
+            "answer": "Never Gonna Give You Up",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This internet phenomenon convinced millions that a movie starring Morbius was far more successful than it actually was.",
+            "answer": "Morbius / \"It's Morbin' Time\"",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This dance craze saw people freeze in place while a camera moved around them.",
+            "answer": "The Mannequin Challenge",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This 2013 dance trend often involved groups suddenly dancing to a song by Baauer.",
+            "answer": "Harlem Shake",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "THAT'S NOT THEIR NAME",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Many people call this character \"Baby Yoda.\"",
+            "answer": "Grogu",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Many people call this bounty hunter \"The Mandalorian.\"",
+            "answer": "Din Djarin",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Many people call this Pokémon \"God.\"",
+            "answer": "Arceus",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Many people call this Disney villain \"The Beast.\"",
+            "answer": "Prince Adam",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Many people call this Transformers leader \"Optimus Prime.\"",
+            "answer": "Orion Pax",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "MOVIES BY THE LAST SCENE",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "A green ogre and a princess celebrate their wedding.",
+            "answer": "Shrek",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "An old woman throws a priceless necklace into the ocean.",
+            "answer": "Titanic",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "A shark explodes after eating a scuba tank.",
+            "answer": "Jaws",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "A spinning top continues spinning as the screen cuts to black.",
+            "answer": "Inception",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "An old man sits on a bench and finally reveals where he has been all along.",
+            "answer": "Forrest Gump",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "INTERNET HISTORY",
+    "clue": "Before becoming a noun, verb, and one of the world's largest companies, this name originally referred to the number.",
+    "answer": "What is Google?"
+  }
+}

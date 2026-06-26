@@ -1,0 +1,514 @@
+{
+  "id": "HARRY-POTTER-BOOKS",
+  "name": "Harry Potter Books Jeopardy",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "philosopher",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This professor teaches History of Magic.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Dudley thought he had received this many birthday presents.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "The first term at Hogwarts starts on this day.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The Dursleys live at this address.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "This person first visits Harry and Ron in their train compartment.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Stone",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Ronan and Bane remark that this planet is bright in the Forbidden Forest that night.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This is the first trap Harry, Ron, and Hermione have to get past under the trap door.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Malfoy uses this spell on Neville to bully him.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Lee Jordan says this Quidditch player is attractive during the match.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Dumbledore gives Gryffindor this many total extra points at the end-of-term feast.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Chamber",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Mrs. Weasley makes Fred, George, and Ron do this chore as punishment for flying the car.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Gilderoy Lockhart lets this type of creature loose on his class.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This was the password to enter the Gryffindor Common Room in Harry's second year.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Fred and George fly this brand of broomstick.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "Harry interrupts Uncle Vernon from completing this joke during the dinner party.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "Secrets",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This person finds the petrified Colin Creevey.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "This is the first spell Harry uses against Malfoy during the dueling club.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This is the name of Aragog's wife.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Immediately after waking up in the Chamber of Secrets, Ginny is most worried about this.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This was Percy Weasley's secret.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Prisoner",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Harry is reading this book under the covers at the beginning of Prisoner of Azkaban.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "Hermione buys this animal at the magical pet shop.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This professor was the Care of Magical Creatures teacher before Hagrid.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of the Hippogriff Harry bonds with.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This portrait replaces the Fat Lady as the entrance to Gryffindor Common Room.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Azkaban",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Hermione's boggart turns into this during her final Defense Against the Dark Arts exam.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "As students, Sirius Black pulls this prank on Snape.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "This character is revealed to have stolen the passwords from Neville's bedside table.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Harry and Hermione turn the Time-Turner this many times to go back and save Sirius.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This was James Potter's Animagus form.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Goblet",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Voldemort uses this as nourishment while staying in the Riddle House with Wormtail.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 400,
+            "clue": "These are the mascots of the Bulgarian National Quidditch Team.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 600,
+            "clue": "Dennis Creevey is sorted into this Hogwarts house.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Professor Moody says everyone needs this above all else.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1000,
+            "clue": "This is the order of the participants in the first round of the Triwizard Tournament.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "Fire",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "After Harry is saved from Snape and Filch, Moody asks to borrow this object.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This character gives Harry the gillyweed.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1200,
+            "clue": "This curse was used on Neville Longbottom's parents.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This creature is the answer to the Sphinx's riddle about one you would be unwilling to kiss.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This phrase completes the quote: \"...it matters not what someone is born, _________.\"",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Order",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This was written in the Howler sent to Aunt Petunia.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This person acted as a witness for Harry during his trial at the Ministry of Magic.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "Professor Umbridge forces Harry to write this during his detention.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1600,
+            "clue": "This character was Ginny's first boyfriend.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "Hermione suggests using this spell so Dumbledore's Army can know the time and date of meetings.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Phoenix",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Tonks gives Harry this for Christmas.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Harry and Cho go to this place for their Valentine's date.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This centaur becomes the new Divination teacher after Professor Trelawney is sacked.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Harry has his vision during this O.W.L. exam.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This was in the package Sirius gave to Harry.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "Half-blood",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Narcissa ensures Snape will protect Draco throughout the year by making him do this.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Harry receives this O.W.L. grade in Defense Against the Dark Arts.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "This is Harry's witty retort to Snape during their first Defense Against the Dark Arts class.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Dumbledore theorizes that Merope and Tom Riddle Sr. became a couple because of this.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "Voldemort stole this item while living at the orphanage as a child.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Prince",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "These are the three most important things to remember when Apparating.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "Years earlier, Voldemort requested this position from Dumbledore in his office.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "According to Tom Riddle, this is the most powerfully magical number.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This person is revealed to have been placed under the Imperius Curse by Draco Malfoy.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "These were Dumbledore's last words.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Deathly",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Albus Dumbledore was already notorious on his first day at Hogwarts because of this family fact.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "The Death Eaters recognize Harry during his flight with Hagrid because he does this.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1200,
+            "clue": "At the wedding, Auntie Muriel reveals this about Ariana Dumbledore.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "Besides Dumbledore, this person also drank the potion in the Horcrux cave.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This is the first of the five Principal Exceptions to Gamp's Law of Elemental Transfiguration.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      },
+      {
+        "category": "Hallows",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This character destroys the Locket Horcrux.",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of the secret radio show hosted by Lee Jordan.",
+            "answer": "tbd",
+            "used": false,
+            "dailyDouble": true
+          },
+          {
+            "value": 1200,
+            "clue": "This is the answer to the Ravenclaw dorm riddle: \"Which came first, the phoenix or the flame?\"",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 1600,
+            "clue": "This is the correct response to: \"After all this time?\"",
+            "answer": "tbd",
+            "used": false
+          },
+          {
+            "value": 2000,
+            "clue": "This is the final spell Harry uses against Voldemort.",
+            "answer": "tbd",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "MAGICAL LAW",
+    "clue": "According to Gamp's Law of Elemental Transfiguration, the first Principal Exception is this everyday necessity.",
+    "answer": "tbd"
+  }
+}
