@@ -23,8 +23,12 @@ const jeopardyBoard = document.getElementById("jeopardy-board");
 const roundStatus = document.getElementById("round-status");
 const boardStatus = document.getElementById("board-status");
 const resetBoardBtn = document.getElementById("reset-board-btn");
-const startDoubleJeopardyBtn = document.getElementById("start-double-jeopardy-btn");
-const startFinalJeopardyBtn = document.getElementById("start-final-jeopardy-btn");
+const startDoubleJeopardyBtn = document.getElementById(
+  "start-double-jeopardy-btn",
+);
+const startFinalJeopardyBtn = document.getElementById(
+  "start-final-jeopardy-btn",
+);
 const scoreList = document.getElementById("score-list");
 const scoreEditModal = document.getElementById("score-edit-modal");
 const scoreEditForm = document.getElementById("score-edit-form");
@@ -64,12 +68,20 @@ const addTimeBtn = document.getElementById("add-time-btn");
 const revealAnswerBtn = document.getElementById("reveal-answer-btn");
 const backToBoardBtn = document.getElementById("back-to-board-btn");
 const dailyDoubleDetail = document.getElementById("daily-double-detail");
-const dailyDoublePlayerPanel = document.getElementById("daily-double-player-panel");
-const dailyDoublePlayerSelect = document.getElementById("daily-double-player-select");
+const dailyDoublePlayerPanel = document.getElementById(
+  "daily-double-player-panel",
+);
+const dailyDoublePlayerSelect = document.getElementById(
+  "daily-double-player-select",
+);
 const dailyDoublePlayerBtn = document.getElementById("daily-double-player-btn");
 const dailyDoubleWagerForm = document.getElementById("daily-double-wager-form");
-const dailyDoubleWagerInput = document.getElementById("daily-double-wager-input");
-const dailyDoubleWagerError = document.getElementById("daily-double-wager-error");
+const dailyDoubleWagerInput = document.getElementById(
+  "daily-double-wager-input",
+);
+const dailyDoubleWagerError = document.getElementById(
+  "daily-double-wager-error",
+);
 const dailyDoubleWagerBtn = document.getElementById("daily-double-wager-btn");
 const dailyDoubleWaiting = document.getElementById("daily-double-waiting");
 const finalCategory = document.getElementById("final-category");
@@ -114,7 +126,7 @@ async function initialiseDiscordIdentity() {
     isDiscordActivity,
     referrer: document.referrer,
     search: window.location.search,
-    inIframe: window.parent !== window
+    inIframe: window.parent !== window,
   });
 
   if (discordIdentityInitialised) {
@@ -123,20 +135,26 @@ async function initialiseDiscordIdentity() {
   }
 
   if (!isDiscordActivity) {
-    console.log("Discord identity: not running inside Discord, using guest identity");
+    console.log(
+      "Discord identity: not running inside Discord, using guest identity",
+    );
     return;
   }
 
   discordIdentityInitialised = true;
 
   try {
-    const config = await fetch("/api/discord/config").then((response) => response.json());
+    const config = await fetch("/api/discord/config").then((response) =>
+      response.json(),
+    );
     console.log("Discord identity: config loaded", {
-      hasClientId: Boolean(config.clientId)
+      hasClientId: Boolean(config.clientId),
     });
 
     if (!config.clientId) {
-      console.warn("Discord identity: DISCORD_CLIENT_ID missing, using guest identity");
+      console.warn(
+        "Discord identity: DISCORD_CLIENT_ID missing, using guest identity",
+      );
       return;
     }
 
@@ -149,12 +167,10 @@ async function initialiseDiscordIdentity() {
     const instanceId = discordSdk.instanceId || "";
     console.log("Discord activity: instanceId", instanceId || "(missing)");
     socket.emit("setGameInstance", {
-      instanceId
+      instanceId,
     });
-    const redirectUri = getDiscordProxyRedirectUri(config.clientId);
-    console.log("Discord identity: redirectUri used for authorize", redirectUri);
 
-    const authCode = await getDiscordAuthCode(discordSdk, config.clientId, redirectUri);
+    const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
 
     if (!authCode) {
       console.warn("Discord identity: authorize did not return a code");
@@ -166,36 +182,40 @@ async function initialiseDiscordIdentity() {
     const tokenResponse = await fetch("/api/discord/token", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         code: authCode,
-        redirectUri
-      })
+      }),
     });
 
     if (!tokenResponse.ok) {
-      console.warn("Discord identity: token exchange failed", tokenResponse.status);
+      console.warn(
+        "Discord identity: token exchange failed",
+        tokenResponse.status,
+      );
       return;
     }
 
     const tokenData = await tokenResponse.json();
     console.log("Discord identity: access token received", {
-      hasAccessToken: Boolean(tokenData.access_token)
+      hasAccessToken: Boolean(tokenData.access_token),
     });
     console.log("Discord identity: token exchange success");
     const auth = await discordSdk.commands.authenticate({
-      access_token: tokenData.access_token
+      access_token: tokenData.access_token,
     });
     console.log("Discord identity: authentication success", {
       hasUser: Boolean(auth?.user),
       username: auth?.user?.username || "",
-      discordUserId: auth?.user?.id || ""
+      discordUserId: auth?.user?.id || "",
     });
     const user = auth?.user;
 
     if (!user) {
-      console.warn("Discord identity: authenticated response did not include a user");
+      console.warn(
+        "Discord identity: authenticated response did not include a user",
+      );
       return;
     }
 
@@ -204,9 +224,12 @@ async function initialiseDiscordIdentity() {
       username: user.username,
       globalName: user.global_name,
       discriminator: user.discriminator,
-      hasAvatar: Boolean(user.avatar)
+      hasAvatar: Boolean(user.avatar),
     });
-    console.log("Discord identity: authenticated username", getDiscordDisplayName(user));
+    console.log(
+      "Discord identity: authenticated username",
+      getDiscordDisplayName(user),
+    );
     console.log("Discord identity: authenticated Discord ID", user.id);
 
     if (discordIdentityEmitted) {
@@ -217,34 +240,50 @@ async function initialiseDiscordIdentity() {
     const identityPayload = {
       name: getDiscordDisplayName(user),
       avatarUrl: getDiscordAvatarUrl(user),
-      discordUserId: user.id
+      discordUserId: user.id,
     };
     socket.emit("setUserIdentity", identityPayload);
     discordIdentityEmitted = true;
     console.log("Discord identity: emitted setUserIdentity", {
       name: identityPayload.name,
       hasAvatarUrl: Boolean(identityPayload.avatarUrl),
-      discordUserId: identityPayload.discordUserId
+      discordUserId: identityPayload.discordUserId,
     });
 
     try {
-      const participants = await discordSdk.commands.getInstanceConnectedParticipants();
+      const participants =
+        await discordSdk.commands.getInstanceConnectedParticipants();
       console.log("Discord activity: participants retrieved", participants);
       console.log("Discord activity: connected participants", participants);
     } catch (participantsError) {
-      console.warn("Discord activity: connected participants unavailable", participantsError);
+      console.warn(
+        "Discord activity: connected participants unavailable",
+        participantsError,
+      );
     }
   } catch (error) {
-    console.warn("Discord identity: authentication failure, using guest identity.", error);
+    console.warn(
+      "Discord identity: authentication failure, using guest identity.",
+      error,
+    );
   }
 }
 
 function isLikelyDiscordActivity() {
   const params = new URLSearchParams(window.location.search);
-  const discordParamNames = ["frame_id", "instance_id", "guild_id", "channel_id", "platform", "activity_id"];
-  return document.referrer.includes("discord.com") ||
+  const discordParamNames = [
+    "frame_id",
+    "instance_id",
+    "guild_id",
+    "channel_id",
+    "platform",
+    "activity_id",
+  ];
+  return (
+    document.referrer.includes("discord.com") ||
     discordParamNames.some((paramName) => params.has(paramName)) ||
-    window.parent !== window;
+    window.parent !== window
+  );
 }
 
 function loadDiscordSdk() {
@@ -257,22 +296,16 @@ function loadDiscordSdk() {
   return window.DiscordSDK;
 }
 
-async function getDiscordAuthCode(discordSdk, clientId, redirectUri) {
+async function getDiscordAuthCode(discordSdk, clientId) {
   console.log("Discord identity: requesting authorization");
   const response = await discordSdk.commands.authorize({
     client_id: clientId,
-    redirect_uri: redirectUri,
     response_type: "code",
     state: "",
     prompt: "none",
-    scope: ["identify"]
+    scope: ["identify"],
   });
-
   return response?.code || "";
-}
-
-function getDiscordProxyRedirectUri(clientId) {
-  return `https://${clientId}.discordsays.com/.proxy/api/discord/callback`;
 }
 
 function getDiscordAvatarUrl(user) {
@@ -321,13 +354,22 @@ function showToast(messageText, type = "info") {
 
   setTimeout(() => {
     toast.classList.add("toast-exiting");
-    toast.addEventListener("transitionend", () => {
-      toast.remove();
-    }, { once: true });
+    toast.addEventListener(
+      "transitionend",
+      () => {
+        toast.remove();
+      },
+      { once: true },
+    );
   }, 3500);
 }
 
-function showConfirm({ title, message: modalMessage, confirmText = "Confirm", onConfirm }) {
+function showConfirm({
+  title,
+  message: modalMessage,
+  confirmText = "Confirm",
+  onConfirm,
+}) {
   pendingConfirmAction = typeof onConfirm === "function" ? onConfirm : null;
   confirmTitle.textContent = title || "Confirm";
   confirmMessage.textContent = modalMessage || "";
@@ -356,7 +398,10 @@ function logDiscordIdentityGameState(state) {
     return;
   }
 
-  const visibleUser = findGameStateUserByDiscordId(state, currentUser.discordUserId);
+  const visibleUser = findGameStateUserByDiscordId(
+    state,
+    currentUser.discordUserId,
+  );
 
   if (!visibleUser) {
     return;
@@ -367,7 +412,7 @@ function logDiscordIdentityGameState(state) {
     role: visibleUser.role,
     name: visibleUser.user.name,
     hasAvatarUrl: Boolean(visibleUser.user.avatarUrl),
-    discordUserId: visibleUser.user.discordUserId
+    discordUserId: visibleUser.user.discordUserId,
   });
 }
 
@@ -375,25 +420,29 @@ function findGameStateUserByDiscordId(state, discordUserId) {
   if (state.host?.discordUserId === discordUserId) {
     return {
       role: "host",
-      user: state.host
+      user: state.host,
     };
   }
 
-  const player = state.players.find((currentPlayer) => currentPlayer.discordUserId === discordUserId);
+  const player = state.players.find(
+    (currentPlayer) => currentPlayer.discordUserId === discordUserId,
+  );
 
   if (player) {
     return {
       role: "player",
-      user: player
+      user: player,
     };
   }
 
-  const spectator = state.spectators.find((currentSpectator) => currentSpectator.discordUserId === discordUserId);
+  const spectator = state.spectators.find(
+    (currentSpectator) => currentSpectator.discordUserId === discordUserId,
+  );
 
   if (spectator) {
     return {
       role: "spectator",
-      user: spectator
+      user: spectator,
     };
   }
 
@@ -407,7 +456,7 @@ socket.on("connected", (user) => {
 
 socket.on("gameInstanceConfirmed", ({ gameId } = {}) => {
   console.log("Discord activity: game instance confirmed", {
-    gameId: gameId || "development"
+    gameId: gameId || "development",
   });
 });
 
@@ -469,19 +518,19 @@ startGameBtn.addEventListener("click", () => {
 socket.on("identityUpdated", (user) => {
   currentUser = {
     ...currentUser,
-    ...user
+    ...user,
   };
   console.log("Discord identity: identityUpdated received", {
     name: currentUser.name,
     hasAvatarUrl: Boolean(currentUser.avatarUrl),
     discordUserId: currentUser.discordUserId,
-    role: currentUser.role
+    role: currentUser.role,
   });
 });
 
 boardSelect.addEventListener("change", () => {
   socket.emit("selectBoard", {
-    filename: boardSelect.value
+    filename: boardSelect.value,
   });
 });
 
@@ -540,7 +589,7 @@ addTimeBtn.addEventListener("click", () => {
 
 dailyDoublePlayerBtn.addEventListener("click", () => {
   socket.emit("selectDailyDoublePlayer", {
-    playerId: dailyDoublePlayerSelect.value
+    playerId: dailyDoublePlayerSelect.value,
   });
 });
 
@@ -644,7 +693,10 @@ function updateScreen(state) {
     return;
   }
 
-  if (state.phase === "dailyDoublePlayerSelect" || state.phase === "dailyDoubleWager") {
+  if (
+    state.phase === "dailyDoublePlayerSelect" ||
+    state.phase === "dailyDoubleWager"
+  ) {
     showScreen("dailyDouble");
     return;
   }
@@ -692,11 +744,17 @@ function renderBoardSelection(state) {
 }
 
 function getSelectedBoard(state) {
-  return state.availableBoards?.find((board) => board.filename === state.selectedBoardFilename) ||
-    (state.board ? {
-      name: state.board.name || "Jeopardy Board",
-      filename: state.selectedBoardFilename
-    } : null);
+  return (
+    state.availableBoards?.find(
+      (board) => board.filename === state.selectedBoardFilename,
+    ) ||
+    (state.board
+      ? {
+          name: state.board.name || "Jeopardy Board",
+          filename: state.selectedBoardFilename,
+        }
+      : null)
+  );
 }
 
 function renderBoard(state) {
@@ -730,7 +788,9 @@ function renderBoard(state) {
     return;
   }
 
-  const rows = Math.max(...categories.map((category) => category.questions.length));
+  const rows = Math.max(
+    ...categories.map((category) => category.questions.length),
+  );
 
   categories.forEach((category) => {
     const heading = document.createElement("div");
@@ -758,14 +818,20 @@ function renderBoard(state) {
         square.classList.add("used");
         square.textContent = "";
         square.disabled = true;
-        square.setAttribute("aria-label", `${category.category} for ${question.value}, already used`);
+        square.setAttribute(
+          "aria-label",
+          `${category.category} for ${question.value}, already used`,
+        );
         jeopardyBoard.appendChild(square);
         return;
       }
 
       square.textContent = `$${question.value}`;
       square.disabled = !isHost;
-      square.setAttribute("aria-label", `${category.category} for ${question.value}`);
+      square.setAttribute(
+        "aria-label",
+        `${category.category} for ${question.value}`,
+      );
 
       if (isHost) {
         square.addEventListener("click", () => {
@@ -785,7 +851,10 @@ function getCurrentRoundCategories(state) {
 }
 
 function hasDoubleJeopardyBoard(state) {
-  return Array.isArray(state.board?.doubleJeopardy?.board) && state.board.doubleJeopardy.board.length > 0;
+  return (
+    Array.isArray(state.board?.doubleJeopardy?.board) &&
+    state.board.doubleJeopardy.board.length > 0
+  );
 }
 
 function getRoundName(round) {
@@ -872,13 +941,13 @@ function saveScoreEdit() {
   const roundedScore = Math.round(parsedScore);
   pendingScoreEdit = {
     playerId: activeScoreEditPlayerId,
-    score: roundedScore
+    score: roundedScore,
   };
   scoreEditError.textContent = "";
   scoreEditSaveBtn.disabled = true;
   socket.emit("editPlayerScore", {
     playerId: activeScoreEditPlayerId,
-    newScore: roundedScore
+    newScore: roundedScore,
   });
 }
 
@@ -887,7 +956,9 @@ function updateScoreEditModal(state) {
     return;
   }
 
-  const player = state.players.find((currentPlayer) => currentPlayer.id === activeScoreEditPlayerId);
+  const player = state.players.find(
+    (currentPlayer) => currentPlayer.id === activeScoreEditPlayerId,
+  );
 
   if (!player || currentUser?.role !== "host") {
     closeScoreEditModal();
@@ -896,7 +967,11 @@ function updateScoreEditModal(state) {
 
   scoreEditPlayerName.textContent = player.name;
 
-  if (pendingScoreEdit && player.id === pendingScoreEdit.playerId && player.score === pendingScoreEdit.score) {
+  if (
+    pendingScoreEdit &&
+    player.id === pendingScoreEdit.playerId &&
+    player.score === pendingScoreEdit.score
+  ) {
     closeScoreEditModal();
   }
 }
@@ -906,8 +981,12 @@ function renderQuestion(state) {
   const isHost = currentUser?.role === "host";
   const isPlayer = currentUser?.role === "player";
   const isDailyDoubleQuestion = state.phase === "dailyDoubleQuestion";
-  const playerHasBuzzed = state.buzzes?.some((buzz) => buzz.id === currentUser?.id);
-  const playerIsLockedOut = state.lockedOutPlayers?.some((player) => player.id === currentUser?.id);
+  const playerHasBuzzed = state.buzzes?.some(
+    (buzz) => buzz.id === currentUser?.id,
+  );
+  const playerIsLockedOut = state.lockedOutPlayers?.some(
+    (player) => player.id === currentUser?.id,
+  );
   const hasActiveBuzz = isDailyDoubleQuestion
     ? Boolean(state.dailyDouble?.submitted) && !state.dailyDouble?.judged
     : Boolean(state.buzzedPlayer) && !state.answerRevealed;
@@ -921,7 +1000,10 @@ function renderQuestion(state) {
     Boolean(currentClue);
 
   questionHostControls.classList.toggle("hidden", !isHost);
-  playerBuzzControls.classList.toggle("hidden", !isPlayer || isDailyDoubleQuestion);
+  playerBuzzControls.classList.toggle(
+    "hidden",
+    !isPlayer || isDailyDoubleQuestion,
+  );
   buzzBtn.disabled = !buzzingAvailable;
   correctBtn.disabled = !hasActiveBuzz;
   incorrectBtn.disabled = !hasActiveBuzz;
@@ -957,11 +1039,17 @@ function renderQuestion(state) {
   revealAnswerBtn.disabled = Boolean(state.answerRevealed);
   resultMessage.textContent = state.resultMessage || "";
   renderBuzzMessage(state, isDailyDoubleQuestion);
-  buzzingStatus.textContent = isDailyDoubleQuestion ? "No buzzing for Daily Double." : getBuzzingStatus(state);
+  buzzingStatus.textContent = isDailyDoubleQuestion
+    ? "No buzzing for Daily Double."
+    : getBuzzingStatus(state);
   lockedOutMessage.textContent = state.lockedOutPlayers?.length
     ? `Locked out: ${state.lockedOutPlayers.map((player) => player.name).join(", ")}`
     : "";
-  renderBuzzes(state.buzzes || [], state.buzzedPlayer, state.lockedOutPlayers || []);
+  renderBuzzes(
+    state.buzzes || [],
+    state.buzzedPlayer,
+    state.lockedOutPlayers || [],
+  );
 }
 
 function renderDailyDouble(state) {
@@ -969,16 +1057,24 @@ function renderDailyDouble(state) {
   const isHost = currentUser?.role === "host";
   const isSelectedPlayer = dailyDouble.playerId === currentUser?.id;
 
-  dailyDoublePlayerPanel.classList.toggle("hidden", !isHost || state.phase !== "dailyDoublePlayerSelect");
-  dailyDoubleWagerForm.classList.toggle("hidden", !isSelectedPlayer || state.phase !== "dailyDoubleWager");
+  dailyDoublePlayerPanel.classList.toggle(
+    "hidden",
+    !isHost || state.phase !== "dailyDoublePlayerSelect",
+  );
+  dailyDoubleWagerForm.classList.toggle(
+    "hidden",
+    !isSelectedPlayer || state.phase !== "dailyDoubleWager",
+  );
   dailyDoubleWaiting.textContent = "";
 
   if (state.phase === "dailyDoublePlayerSelect") {
-    dailyDoubleDetail.textContent = "Choose the player who found the Daily Double.";
+    dailyDoubleDetail.textContent =
+      "Choose the player who found the Daily Double.";
     renderDailyDoublePlayerOptions(state.players || []);
 
     if (!isHost) {
-      dailyDoubleWaiting.textContent = "Waiting for the host to choose a player.";
+      dailyDoubleWaiting.textContent =
+        "Waiting for the host to choose a player.";
     }
     return;
   }
@@ -1023,7 +1119,11 @@ function submitDailyDoubleWager() {
   const trimmedInput = dailyDoubleWagerInput.value.trim();
   const parsedWager = Number(trimmedInput);
 
-  if (trimmedInput === "" || !Number.isFinite(parsedWager) || !Number.isInteger(parsedWager)) {
+  if (
+    trimmedInput === "" ||
+    !Number.isFinite(parsedWager) ||
+    !Number.isInteger(parsedWager)
+  ) {
     dailyDoubleWagerError.textContent = "Enter a whole number.";
     return;
   }
@@ -1041,7 +1141,7 @@ function submitDailyDoubleWager() {
   dailyDoubleWagerError.textContent = "";
   dailyDoubleWagerBtn.disabled = true;
   socket.emit("submitDailyDoubleWager", {
-    wager: parsedWager
+    wager: parsedWager,
   });
 }
 
@@ -1075,33 +1175,64 @@ function renderFinalJeopardy(state) {
   const finalState = state.finalJeopardyState || {};
   const finalClueData = state.board?.finalJeopardy || {};
   const eligiblePlayerIds = finalState.eligiblePlayerIds || [];
-  const currentPlayer = state.players.find((player) => player.id === currentUser?.id);
+  const currentPlayer = state.players.find(
+    (player) => player.id === currentUser?.id,
+  );
   const isHost = currentUser?.role === "host";
   const isEligible = eligiblePlayerIds.includes(currentUser?.id);
 
-  finalCategory.textContent = finalClueData.category ? `Category: ${finalClueData.category}` : "Category unavailable";
+  finalCategory.textContent = finalClueData.category
+    ? `Category: ${finalClueData.category}`
+    : "Category unavailable";
   finalClue.textContent = finalClueData.clue || "";
-  finalClue.classList.toggle("hidden", !["finalAnswers", "finalReview", "finalResults"].includes(state.phase));
-  finalHostPanel.classList.toggle("hidden", !isHost || !isFinalJeopardyPhase(state.phase));
+  finalClue.classList.toggle(
+    "hidden",
+    !["finalAnswers", "finalReview", "finalResults"].includes(state.phase),
+  );
+  finalHostPanel.classList.toggle(
+    "hidden",
+    !isHost || !isFinalJeopardyPhase(state.phase),
+  );
   finalReviewPanel.classList.toggle("hidden", state.phase !== "finalReview");
   finalRankings.classList.toggle("hidden", state.phase !== "finalResults");
 
-  finalWagerForm.classList.toggle("hidden", !(state.phase === "finalWager" && isEligible));
-  finalAnswerForm.classList.toggle("hidden", !(state.phase === "finalAnswers" && isEligible));
-  revealFinalClueBtn.classList.toggle("hidden", !(isHost && state.phase === "finalWager"));
-  startFinalReviewBtn.classList.toggle("hidden", !(isHost && state.phase === "finalAnswers"));
-  showFinalResultsBtn.classList.toggle("hidden", !(isHost && state.phase === "finalReview" && allFinalJudged(state)));
+  finalWagerForm.classList.toggle(
+    "hidden",
+    !(state.phase === "finalWager" && isEligible),
+  );
+  finalAnswerForm.classList.toggle(
+    "hidden",
+    !(state.phase === "finalAnswers" && isEligible),
+  );
+  revealFinalClueBtn.classList.toggle(
+    "hidden",
+    !(isHost && state.phase === "finalWager"),
+  );
+  startFinalReviewBtn.classList.toggle(
+    "hidden",
+    !(isHost && state.phase === "finalAnswers"),
+  );
+  showFinalResultsBtn.classList.toggle(
+    "hidden",
+    !(isHost && state.phase === "finalReview" && allFinalJudged(state)),
+  );
 
   if (state.phase === "finalWager" && isEligible && currentPlayer) {
     finalWagerInput.max = String(currentPlayer.score);
   }
 
-  if (state.phase === "finalWager" && !isEligible && currentUser?.role === "player") {
+  if (
+    state.phase === "finalWager" &&
+    !isEligible &&
+    currentUser?.role === "player"
+  ) {
     finalStatus.textContent = "You are not eligible for Final Jeopardy.";
   } else if (state.phase === "finalWager") {
     finalStatus.textContent = "Eligible players are submitting wagers.";
   } else if (state.phase === "finalAnswers") {
-    finalStatus.textContent = isEligible ? "Submit your answer." : "Eligible players are submitting answers.";
+    finalStatus.textContent = isEligible
+      ? "Submit your answer."
+      : "Eligible players are submitting answers.";
   } else if (state.phase === "finalReview") {
     finalStatus.textContent = "Host is reviewing Final Jeopardy answers.";
   } else if (state.phase === "finalResults") {
@@ -1116,11 +1247,18 @@ function renderFinalJeopardy(state) {
 }
 
 function submitFinalWager() {
-  const currentPlayer = currentState?.players.find((player) => player.id === currentUser?.id);
+  const currentPlayer = currentState?.players.find(
+    (player) => player.id === currentUser?.id,
+  );
   const trimmedInput = finalWagerInput.value.trim();
   const parsedWager = Number(trimmedInput);
 
-  if (!currentPlayer || trimmedInput === "" || !Number.isFinite(parsedWager) || !Number.isInteger(parsedWager)) {
+  if (
+    !currentPlayer ||
+    trimmedInput === "" ||
+    !Number.isFinite(parsedWager) ||
+    !Number.isInteger(parsedWager)
+  ) {
     finalWagerError.textContent = "Enter a whole number.";
     return;
   }
@@ -1133,7 +1271,7 @@ function submitFinalWager() {
   finalWagerError.textContent = "";
   finalWagerBtn.disabled = true;
   socket.emit("submitFinalWager", {
-    wager: parsedWager
+    wager: parsedWager,
   });
   setTimeout(() => {
     finalWagerBtn.disabled = false;
@@ -1151,7 +1289,7 @@ function submitFinalAnswer() {
   finalAnswerError.textContent = "";
   finalAnswerBtn.disabled = true;
   socket.emit("submitFinalAnswer", {
-    answer: trimmedAnswer
+    answer: trimmedAnswer,
   });
   setTimeout(() => {
     finalAnswerBtn.disabled = false;
@@ -1201,7 +1339,9 @@ function renderFinalReview(state) {
   const isHost = currentUser?.role === "host";
 
   eligiblePlayerIds.forEach((playerId) => {
-    const player = state.players.find((currentPlayer) => currentPlayer.id === playerId);
+    const player = state.players.find(
+      (currentPlayer) => currentPlayer.id === playerId,
+    );
 
     if (!player) {
       return;
@@ -1217,7 +1357,9 @@ function renderFinalReview(state) {
     const revealed = finalState.revealedPlayerIds?.includes(playerId);
     const answer = document.createElement("p");
     answer.className = "final-revealed-answer";
-    answer.textContent = revealed ? finalState.revealedAnswers?.[playerId] || "" : "Answer hidden";
+    answer.textContent = revealed
+      ? finalState.revealedAnswers?.[playerId] || ""
+      : "Answer hidden";
     row.appendChild(answer);
 
     const judgement = finalState.judged?.[playerId];
@@ -1273,7 +1415,9 @@ function renderFinalRankings(state) {
     return;
   }
 
-  const rankings = [...state.players].sort((first, second) => second.score - first.score);
+  const rankings = [...state.players].sort(
+    (first, second) => second.score - first.score,
+  );
   const winningScore = rankings[0]?.score;
 
   rankings.forEach((player, index) => {
@@ -1296,12 +1440,21 @@ function renderFinalRankings(state) {
 }
 
 function isFinalJeopardyPhase(phase) {
-  return ["finalCategory", "finalWager", "finalClue", "finalAnswers", "finalReview", "finalResults"].includes(phase);
+  return [
+    "finalCategory",
+    "finalWager",
+    "finalClue",
+    "finalAnswers",
+    "finalReview",
+    "finalResults",
+  ].includes(phase);
 }
 
 function allFinalJudged(state) {
   const finalState = state.finalJeopardyState || {};
-  return (finalState.eligiblePlayerIds || []).every((playerId) => Boolean(finalState.judged?.[playerId]));
+  return (finalState.eligiblePlayerIds || []).every((playerId) =>
+    Boolean(finalState.judged?.[playerId]),
+  );
 }
 
 function renderTimer(state) {
@@ -1335,7 +1488,8 @@ function renderTimer(state) {
       : "Paused";
 
   pauseTimerBtn.disabled = !timer.running || timer.expired;
-  resumeTimerBtn.disabled = timer.running || timer.expired || timer.remainingMs <= 0;
+  resumeTimerBtn.disabled =
+    timer.running || timer.expired || timer.remainingMs <= 0;
   addTimeBtn.disabled = false;
 }
 
@@ -1362,7 +1516,9 @@ function getBuzzingStatus(state) {
 function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
   buzzList.innerHTML = "";
 
-  const lockedOutPlayerIds = new Set(lockedOutPlayers.map((player) => player.id));
+  const lockedOutPlayerIds = new Set(
+    lockedOutPlayers.map((player) => player.id),
+  );
 
   buzzes.forEach((buzz, index) => {
     const item = document.createElement("li");
@@ -1374,9 +1530,10 @@ function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
     item.appendChild(createUserIdentity(buzz));
     const detail = document.createElement("span");
     detail.className = "buzz-detail";
-    detail.textContent = index === 0
-      ? `buzzed first${status ? ` (${status})` : ""}`
-      : `was ${formatDelay(buzz.delayMs)} late${status ? ` (${status})` : ""}`;
+    detail.textContent =
+      index === 0
+        ? `buzzed first${status ? ` (${status})` : ""}`
+        : `was ${formatDelay(buzz.delayMs)} late${status ? ` (${status})` : ""}`;
     item.appendChild(detail);
     buzzList.appendChild(item);
   });
@@ -1479,7 +1636,10 @@ function createUserName(user) {
 
 function getInitials(name = "") {
   const words = name.trim().split(/\s+/).filter(Boolean);
-  const initials = words.slice(0, 2).map((word) => word.charAt(0).toUpperCase()).join("");
+  const initials = words
+    .slice(0, 2)
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("");
   return initials || "?";
 }
 

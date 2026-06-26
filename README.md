@@ -76,7 +76,7 @@ BUILD_VERSION=
 
 Discord variables are optional for local browser testing. If they are not configured, the app still works with `Guest xxxx` names.
 
-Discord Activity identity uses Discord's proxy callback redirect URI. Add this exact pattern to your Discord Developer Portal OAuth2 redirects, replacing `<DISCORD_CLIENT_ID>` with your application client ID:
+Discord Activity identity uses Discord's RPC OAuth flow. The client `authorize()` call does not send a redirect URI. If Discord's token exchange requires one, the server retries with Discord's proxy callback URI:
 
 ```text
 https://<DISCORD_CLIENT_ID>.discordsays.com/.proxy/api/discord/callback
@@ -210,7 +210,7 @@ The visible build badge in the app should match this value.
 1. Create an application in the Discord Developer Portal.
 2. Enable Embedded App / Activity support for the application.
 3. Configure the Activity URL to point at your Railway deployment URL.
-4. In OAuth2 settings, add the Discord proxy redirect URI:
+4. In OAuth2 settings, add the Discord proxy redirect URI if Discord requires it for token exchange:
    - `https://<DISCORD_CLIENT_ID>.discordsays.com/.proxy/api/discord/callback`
 5. Copy the application client ID and client secret into Railway:
    - `DISCORD_CLIENT_ID`
@@ -222,7 +222,8 @@ Identity behavior:
 
 - In Discord, the client loads the Discord Embedded App SDK and requests `identify`.
 - The OAuth token exchange happens through the server at `POST /api/discord/token`.
-- Activity auth sends the Discord proxy callback redirect URI to both `authorize()` and token exchange.
+- Activity `authorize()` does not send `redirect_uri`.
+- The server first exchanges the code without `redirect_uri`, then retries with the Discord proxy callback URI if needed.
 - The client sends only display identity fields through `setUserIdentity`.
 - The server sanitizes display name, avatar URL, and Discord user ID.
 - Roles, scores, host status, and game state remain server-authoritative.
