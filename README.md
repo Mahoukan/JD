@@ -8,6 +8,8 @@ A real-time Jeopardy-style party game built with Express, Socket.IO, and plain H
 - Waiting room with live connected user lists
 - Optional Discord identity foundation with display names and avatars
 - Board selection from JSON files in `public/boards/`
+- Host board import without restarting the server
+- Optional image clues from `public/media/`
 - Jeopardy and Double Jeopardy rounds
 - Daily Double flow with player selection, wager entry, and wager-based scoring
 - Final Jeopardy flow with secret wagers, secret answers, review, judging, and final rankings
@@ -98,7 +100,8 @@ Minimal structure:
           {
             "value": 200,
             "clue": "This planet is known as the Red Planet.",
-            "answer": "Mars"
+            "answer": "Mars",
+            "image": "media/mars.png"
           }
         ]
       }
@@ -133,7 +136,9 @@ Notes:
 - `doubleJeopardy.board` is optional, but required for the Double Jeopardy button to appear.
 - `finalJeopardy` is optional, but required for Final Jeopardy.
 - Add `"dailyDouble": true` to any clue that should trigger Daily Double.
+- Add `"image": "media/example.png"` to show an image thumbnail with a clue. Images should live in `public/media/`.
 - Runtime fields such as `answered` are managed in memory by the server.
+- Hosts can import valid board JSON files from the waiting room. Imported boards are saved to `public/boards/` and become available immediately.
 
 ## Folder Structure
 
@@ -142,6 +147,7 @@ Notes:
 |-- public/
 |   |-- boards/
 |   |   |-- test-board.json
+|   |-- media/
 |   |-- app.js
 |   |-- index.html
 |   |-- style.css

@@ -13,6 +13,8 @@ const spectatorBtn = document.getElementById("spectator-btn");
 
 const changeRoleBtn = document.getElementById("change-role-btn");
 const startGameBtn = document.getElementById("start-game-btn");
+const importBoardBtn = document.getElementById("import-board-btn");
+const importBoardInput = document.getElementById("import-board-input");
 
 const hostControls = document.getElementById("host-controls");
 const waitingMessage = document.getElementById("waiting-message");
@@ -46,6 +48,8 @@ const toastContainer = document.getElementById("toast-container");
 const questionCategory = document.getElementById("question-category");
 const questionValue = document.getElementById("question-value");
 const questionClue = document.getElementById("question-clue");
+const clueImageThumbBtn = document.getElementById("clue-image-thumb-btn");
+const clueImageThumb = document.getElementById("clue-image-thumb");
 const timerPanel = document.getElementById("timer-panel");
 const timerLabel = document.getElementById("timer-label");
 const timerValue = document.getElementById("timer-value");
@@ -102,6 +106,9 @@ const startFinalReviewBtn = document.getElementById("start-final-review-btn");
 const showFinalResultsBtn = document.getElementById("show-final-results-btn");
 const finalReviewPanel = document.getElementById("final-review-panel");
 const finalRankings = document.getElementById("final-rankings");
+const imageLightbox = document.getElementById("image-lightbox");
+const imageLightboxImg = document.getElementById("image-lightbox-img");
+const imageLightboxCloseBtn = document.getElementById("image-lightbox-close-btn");
 
 const welcomeText = document.getElementById("welcome-text");
 const message = document.getElementById("message");
@@ -109,6 +116,17 @@ const message = document.getElementById("message");
 const hostList = document.getElementById("host-list");
 const playerList = document.getElementById("player-list");
 const spectatorList = document.getElementById("spectator-list");
+const browserNameModal = document.getElementById("browser-name-modal");
+const browserNameForm = document.getElementById("browser-name-form");
+const browserNameInput = document.getElementById("browser-name-input");
+const browserNameError = document.getElementById("browser-name-error");
+const browserNameCancelBtn = document.getElementById("browser-name-cancel-btn");
+const browserChangeNameButtons = document.querySelectorAll(
+  ".browser-change-name-btn",
+);
+const browserNameActionPanels = document.querySelectorAll(
+  ".browser-name-actions",
+);
 
 let currentUser = null;
 let currentState = null;
@@ -116,8 +134,37 @@ let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
 let discordIdentityEmitted = false;
+let browserIdentityReady = false;
+let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
 let resetBoardConfirmTimeout = null;
+const browserDisplayNameStorageKey = "jeopardyDisplayName";
+
+function initialiseIdentity() {
+  if (isLikelyDiscordActivity()) {
+    hideBrowserNameControls();
+    initialiseDiscordIdentity();
+    return;
+  }
+
+  initialiseBrowserIdentity();
+}
+
+function initialiseBrowserIdentity() {
+  showBrowserNameControls();
+  const storedName = getStoredBrowserDisplayName();
+
+  if (storedName) {
+    applyBrowserDisplayName(storedName);
+    return;
+  }
+
+  browserIdentityReady = false;
+  openBrowserNameModal({
+    mode: "initial",
+    value: "",
+  });
+}
 
 async function initialiseDiscordIdentity() {
   const isDiscordActivity = isLikelyDiscordActivity();
@@ -207,6 +254,95 @@ async function initialiseDiscordIdentity() {
       error,
     );
   }
+}
+
+function getStoredBrowserDisplayName() {
+  try {
+    return sanitiseBrowserDisplayName(
+      localStorage.getItem(browserDisplayNameStorageKey) || "",
+    );
+  } catch {
+    return "";
+  }
+}
+
+function storeBrowserDisplayName(name) {
+  try {
+    localStorage.setItem(browserDisplayNameStorageKey, name);
+  } catch {
+    // Storage can be unavailable in some embedded/private browser modes.
+  }
+}
+
+function sanitiseBrowserDisplayName(name) {
+  return String(name || "").trim().replace(/\s+/g, " ").slice(0, 40);
+}
+
+function showBrowserNameControls() {
+  browserChangeNameButtons.forEach((button) => {
+    button.classList.remove("hidden");
+  });
+  browserNameActionPanels.forEach((panel) => {
+    panel.classList.remove("hidden");
+  });
+}
+
+function hideBrowserNameControls() {
+  browserChangeNameButtons.forEach((button) => {
+    button.classList.add("hidden");
+  });
+  browserNameActionPanels.forEach((panel) => {
+    panel.classList.add("hidden");
+  });
+  closeBrowserNameModal();
+}
+
+function openBrowserNameModal({ mode, value }) {
+  browserNameModalMode = mode;
+  browserNameInput.value = value || "";
+  browserNameError.textContent = "";
+  browserNameCancelBtn.classList.toggle("hidden", mode === "initial");
+  browserNameModal.classList.remove("hidden");
+  browserNameInput.focus();
+  browserNameInput.select();
+}
+
+function closeBrowserNameModal() {
+  browserNameModal.classList.add("hidden");
+  browserNameError.textContent = "";
+}
+
+function closeImageLightbox() {
+  imageLightbox.classList.add("hidden");
+  imageLightboxImg.removeAttribute("src");
+}
+
+function applyBrowserDisplayName(name) {
+  browserIdentityReady = true;
+  storeBrowserDisplayName(name);
+  currentUser = {
+    ...currentUser,
+    name,
+    avatarUrl: "",
+    discordUserId: "",
+  };
+  socket.emit("setUserIdentity", {
+    name,
+    avatarUrl: "",
+    discordUserId: "",
+  });
+}
+
+function ensureBrowserDisplayNameBeforeRole() {
+  if (isLikelyDiscordActivity() || browserIdentityReady) {
+    return true;
+  }
+
+  openBrowserNameModal({
+    mode: "initial",
+    value: getStoredBrowserDisplayName(),
+  });
+  return false;
 }
 
 function isLikelyDiscordActivity() {
@@ -339,7 +475,7 @@ function clearResetBoardConfirm() {
 
 socket.on("connected", (user) => {
   currentUser = user;
-  initialiseDiscordIdentity();
+  initialiseIdentity();
 });
 
 socket.on("gameState", (state) => {
@@ -377,14 +513,26 @@ socket.on("actionRejected", (reason) => {
 });
 
 hostBtn.addEventListener("click", () => {
+  if (!ensureBrowserDisplayNameBeforeRole()) {
+    return;
+  }
+
   socket.emit("chooseRole", "host");
 });
 
 playerBtn.addEventListener("click", () => {
+  if (!ensureBrowserDisplayNameBeforeRole()) {
+    return;
+  }
+
   socket.emit("chooseRole", "player");
 });
 
 spectatorBtn.addEventListener("click", () => {
+  if (!ensureBrowserDisplayNameBeforeRole()) {
+    return;
+  }
+
   socket.emit("chooseRole", "spectator");
 });
 
@@ -396,11 +544,103 @@ startGameBtn.addEventListener("click", () => {
   socket.emit("startGame");
 });
 
+importBoardBtn.addEventListener("click", () => {
+  importBoardInput.value = "";
+  importBoardInput.click();
+});
+
+importBoardInput.addEventListener("change", () => {
+  const file = importBoardInput.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (!file.name.toLowerCase().endsWith(".json")) {
+    showToast("Choose a .json board file.", "error");
+    return;
+  }
+
+  file.text()
+    .then((contents) => {
+      socket.emit("importBoard", {
+        filename: file.name,
+        contents,
+      });
+    })
+    .catch(() => {
+      showToast("Could not read that file.", "error");
+    });
+});
+
 socket.on("identityUpdated", (user) => {
   currentUser = {
     ...currentUser,
     ...user,
   };
+});
+
+socket.on("boardImportResult", (result = {}) => {
+  if (result.ok) {
+    showToast(`Imported ${result.board?.name || "board"}.`, "success");
+    return;
+  }
+
+  showToast(result.error || "Board import failed.", "error");
+});
+
+clueImageThumbBtn.addEventListener("click", () => {
+  if (!clueImageThumb.src) {
+    return;
+  }
+
+  imageLightboxImg.src = clueImageThumb.src;
+  imageLightbox.classList.remove("hidden");
+  imageLightboxCloseBtn.focus();
+});
+
+imageLightboxCloseBtn.addEventListener("click", closeImageLightbox);
+
+imageLightbox.addEventListener("click", (event) => {
+  if (event.target === imageLightbox) {
+    closeImageLightbox();
+  }
+});
+
+browserNameForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = sanitiseBrowserDisplayName(browserNameInput.value);
+
+  if (!name) {
+    browserNameError.textContent = "Name is required.";
+    browserNameInput.focus();
+    return;
+  }
+
+  applyBrowserDisplayName(name);
+  closeBrowserNameModal();
+  showToast("Name updated.", "success");
+});
+
+browserNameCancelBtn.addEventListener("click", () => {
+  if (browserNameModalMode === "initial") {
+    return;
+  }
+
+  closeBrowserNameModal();
+});
+
+browserChangeNameButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (isLikelyDiscordActivity()) {
+      return;
+    }
+
+    openBrowserNameModal({
+      mode: "change",
+      value: getStoredBrowserDisplayName() || currentUser?.name || "",
+    });
+  });
 });
 
 boardSelect.addEventListener("change", () => {
@@ -895,6 +1135,8 @@ function renderQuestion(state) {
     buzzMessage.textContent = "";
     buzzList.innerHTML = "";
     lockedOutMessage.textContent = "";
+    clueImageThumbBtn.classList.add("hidden");
+    clueImageThumb.removeAttribute("src");
     revealAnswerBtn.disabled = false;
     return;
   }
@@ -902,6 +1144,7 @@ function renderQuestion(state) {
   questionCategory.textContent = currentClue.category;
   questionValue.textContent = `$${currentClue.value}`;
   questionClue.textContent = currentClue.clue;
+  renderClueImage(currentClue.image);
 
   if (state.answerRevealed) {
     questionAnswer.textContent = currentClue.answer || "";
@@ -925,6 +1168,19 @@ function renderQuestion(state) {
     state.buzzedPlayer,
     state.lockedOutPlayers || [],
   );
+}
+
+function renderClueImage(imagePath) {
+  if (!imagePath) {
+    clueImageThumbBtn.classList.add("hidden");
+    clueImageThumb.removeAttribute("src");
+    return;
+  }
+
+  clueImageThumb.src = imagePath.startsWith("media/")
+    ? imagePath
+    : `media/${imagePath}`;
+  clueImageThumbBtn.classList.remove("hidden");
 }
 
 function renderDailyDouble(state) {
@@ -1293,15 +1549,48 @@ function renderFinalRankings(state) {
   const rankings = [...state.players].sort(
     (first, second) => second.score - first.score,
   );
-  const winningScore = rankings[0]?.score;
+  const winner = rankings[0];
+
+  const complete = document.createElement("p");
+  complete.className = "final-complete-kicker";
+  complete.textContent = "🏆 GAME COMPLETE";
+  finalRankings.appendChild(complete);
+
+  if (winner) {
+    const winnerPanel = document.createElement("div");
+    winnerPanel.className = "winner-panel";
+
+    const winnerLabel = document.createElement("p");
+    winnerLabel.className = "winner-label";
+    winnerLabel.textContent = "Winner";
+
+    const winnerIdentity = createUserIdentity(winner);
+    winnerIdentity.classList.add("winner-identity");
+
+    const winnerScore = document.createElement("p");
+    winnerScore.className = "winner-score";
+    winnerScore.textContent = `Final Score ${formatScore(winner.score)}`;
+
+    winnerPanel.appendChild(winnerLabel);
+    winnerPanel.appendChild(winnerIdentity);
+    winnerPanel.appendChild(winnerScore);
+    finalRankings.appendChild(winnerPanel);
+  }
+
+  const title = document.createElement("h2");
+  title.className = "final-rankings-title";
+  title.textContent = "Final Rankings";
+  finalRankings.appendChild(title);
+
+  const list = document.createElement("ol");
+  list.className = "final-rankings-list";
 
   rankings.forEach((player, index) => {
     const item = document.createElement("li");
     item.className = "final-ranking-row";
-    item.classList.toggle("winner", player.score === winningScore);
     const place = document.createElement("span");
     place.className = "final-ranking-place";
-    place.textContent = `${index + 1}.`;
+    place.textContent = getRankingLabel(index);
 
     const score = document.createElement("span");
     score.className = "final-ranking-score";
@@ -1310,8 +1599,51 @@ function renderFinalRankings(state) {
     item.appendChild(place);
     item.appendChild(createUserIdentity(player));
     item.appendChild(score);
-    finalRankings.appendChild(item);
+    list.appendChild(item);
   });
+
+  finalRankings.appendChild(list);
+
+  const actions = document.createElement("div");
+  actions.className = "final-results-actions";
+
+  const playAgainButton = document.createElement("button");
+  playAgainButton.className = "primary-button";
+  playAgainButton.type = "button";
+  playAgainButton.textContent = "Play Again";
+  playAgainButton.disabled = currentUser?.role !== "host";
+  playAgainButton.addEventListener("click", () => {
+    socket.emit("playAgain");
+  });
+
+  const lobbyButton = document.createElement("button");
+  lobbyButton.className = "secondary-button";
+  lobbyButton.type = "button";
+  lobbyButton.textContent = "Return to Lobby";
+  lobbyButton.disabled = currentUser?.role !== "host";
+  lobbyButton.addEventListener("click", () => {
+    socket.emit("returnToLobby");
+  });
+
+  actions.appendChild(playAgainButton);
+  actions.appendChild(lobbyButton);
+  finalRankings.appendChild(actions);
+}
+
+function getRankingLabel(index) {
+  if (index === 0) {
+    return "🥇 First Place";
+  }
+
+  if (index === 1) {
+    return "🥈 Second Place";
+  }
+
+  if (index === 2) {
+    return "🥉 Third Place";
+  }
+
+  return `${index + 1}th Place`;
 }
 
 function isFinalJeopardyPhase(phase) {

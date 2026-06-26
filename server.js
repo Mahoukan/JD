@@ -1,5 +1,5 @@
 import express from "express";
-import { readdirSync, readFileSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import http from "http";
 import { basename, dirname, join } from "path";
 import { Server } from "socket.io";
@@ -20,7 +20,7 @@ const buildCommit = process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || packageJs
 const BUILD_VERSION = process.env.BUILD_VERSION ||
   `${buildCommit}-${Date.now()}`;
 const boardsDirectory = join(__dirname, "public", "boards");
-const availableBoards = discoverAvailableBoards();
+let availableBoards = discoverAvailableBoards();
 const selectedBoard = availableBoards[0] ?? createFallbackBoardOption();
 const initialBoard = loadBoardByFilename(selectedBoard.filename) ?? createEmptyBoard(selectedBoard);
 
@@ -202,22 +202,32 @@ function getSocketGame(socket) {
 }
 
 function runInSocketGame(socket, callback) {
+  const previousGameContext = activeGameContext;
   setActiveGameContext(getSocketGame(socket));
 
   try {
     return callback();
   } finally {
     saveActiveTimerHandles();
+
+    if (previousGameContext && previousGameContext !== activeGameContext) {
+      setActiveGameContext(previousGameContext);
+    }
   }
 }
 
 function runInGameContext(gameContext, callback) {
+  const previousGameContext = activeGameContext;
   setActiveGameContext(gameContext);
 
   try {
     return callback();
   } finally {
     saveActiveTimerHandles();
+
+    if (previousGameContext && previousGameContext !== activeGameContext) {
+      setActiveGameContext(previousGameContext);
+    }
   }
 }
 
@@ -267,6 +277,12 @@ function sendGameState() {
     finalJeopardyState: getVisibleFinalJeopardyState(),
     timer: getVisibleTimer(),
     resultMessage: gameState.resultMessage
+  });
+}
+
+function broadcastAllGameStates() {
+  GameManager.games.forEach((gameContext) => {
+    runInGameContext(gameContext, sendGameState);
   });
 }
 
@@ -394,6 +410,7 @@ io.on("connection", (socket) => {
       value: question.value,
       clue: question.clue,
       answer: question.answer,
+      image: isSafeRelativeMediaPath(question.image) ? question.image : "",
       dailyDouble: Boolean(question.dailyDouble)
     };
     gameState.answerRevealed = false;
@@ -888,6 +905,49 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
+  onGameEvent(socket, "returnToLobby", () => {
+    if (gameState.host?.id !== socket.id) {
+      socket.emit("actionRejected", "Only the host can return to the lobby.");
+      return;
+    }
+
+    stopTimer();
+    gameState.phase = "waiting";
+    resetCurrentClueState();
+    sendGameState();
+  });
+
+  onGameEvent(socket, "playAgain", () => {
+    if (gameState.host?.id !== socket.id) {
+      socket.emit("actionRejected", "Only the host can start another game.");
+      return;
+    }
+
+    resetFullGameToBoard();
+    sendGameState();
+  });
+
+  onGameEvent(socket, "importBoard", ({ filename, contents } = {}) => {
+    if (gameState.host?.id !== socket.id) {
+      socket.emit("boardImportResult", {
+        ok: false,
+        error: "Only the host can import boards."
+      });
+      return;
+    }
+
+    const result = importBoardFile({ filename, contents });
+
+    socket.emit("boardImportResult", result);
+
+    if (!result.ok) {
+      return;
+    }
+
+    refreshBoardsForAllGames();
+    broadcastAllGameStates();
+  });
+
   onGameEvent(socket, "editPlayerScore", ({ playerId, newScore } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can edit scores.");
@@ -1204,6 +1264,195 @@ function discoverAvailableBoards() {
     });
     return boards;
   }, []);
+}
+
+function refreshAvailableBoards() {
+  availableBoards = discoverAvailableBoards();
+  return availableBoards;
+}
+
+function refreshBoardsForAllGames() {
+  const boards = refreshAvailableBoards();
+
+  GameManager.games.forEach((gameContext) => {
+    gameContext.state.availableBoards = boards;
+
+    if (!boards.some((board) => board.filename === gameContext.state.selectedBoardFilename)) {
+      const firstBoard = boards[0] ?? createFallbackBoardOption();
+      setActiveGameContext(gameContext);
+      gameContext.state.selectedBoardFilename = firstBoard.filename;
+      gameContext.state.board = loadBoardByFilename(firstBoard.filename) ?? createEmptyBoard(firstBoard);
+      gameContext.state.currentRound = "jeopardy";
+      resetCurrentClueState();
+      saveActiveTimerHandles();
+    }
+  });
+}
+
+function importBoardFile({ filename, contents }) {
+  const originalFilename = typeof filename === "string" ? basename(filename) : "";
+
+  if (!originalFilename.toLowerCase().endsWith(".json")) {
+    return { ok: false, error: "Choose a .json board file." };
+  }
+
+  if (typeof contents !== "string" || !contents.trim()) {
+    return { ok: false, error: "The selected file is empty." };
+  }
+
+  if (Buffer.byteLength(contents, "utf8") > 2 * 1024 * 1024) {
+    return { ok: false, error: "Board file is too large. Keep it under 2 MB." };
+  }
+
+  let board;
+
+  try {
+    board = JSON.parse(contents);
+  } catch {
+    return { ok: false, error: "Invalid JSON. Check the file syntax and try again." };
+  }
+
+  const validationError = validateBoardSchema(board);
+
+  if (validationError) {
+    return { ok: false, error: validationError };
+  }
+
+  if (availableBoards.some((currentBoard) => currentBoard.id === board.id)) {
+    return { ok: false, error: `A board with ID "${board.id}" already exists.` };
+  }
+
+  const safeFilename = getUniqueBoardFilename(originalFilename, board.id);
+
+  try {
+    writeFileSync(
+      join(boardsDirectory, safeFilename),
+      `${JSON.stringify(stripAnsweredTracking(board), null, 2)}\n`,
+      "utf8"
+    );
+  } catch (error) {
+    return { ok: false, error: `Could not save board: ${error.message}` };
+  }
+
+  return {
+    ok: true,
+    board: {
+      id: board.id,
+      name: board.name,
+      filename: safeFilename
+    }
+  };
+}
+
+function validateBoardSchema(board) {
+  if (!board || typeof board !== "object" || Array.isArray(board)) {
+    return "Board JSON must be an object.";
+  }
+
+  if (!isNonEmptyString(board.id)) {
+    return "Board must include a non-empty id.";
+  }
+
+  if (!isNonEmptyString(board.name)) {
+    return "Board must include a non-empty name.";
+  }
+
+  if (!Array.isArray(board.jeopardy?.board) || board.jeopardy.board.length === 0) {
+    return "Board must include jeopardy.board with at least one category.";
+  }
+
+  for (const round of ["jeopardy", "doubleJeopardy"]) {
+    if (!Array.isArray(board[round]?.board)) {
+      continue;
+    }
+
+    const categoryError = validateRoundCategories(board[round].board, round);
+
+    if (categoryError) {
+      return categoryError;
+    }
+  }
+
+  if (board.finalJeopardy !== undefined && (!isNonEmptyString(board.finalJeopardy.category) || !isNonEmptyString(board.finalJeopardy.clue) || !isNonEmptyString(board.finalJeopardy.answer))) {
+    return "finalJeopardy must include category, clue, and answer.";
+  }
+
+  return "";
+}
+
+function validateRoundCategories(categories, round) {
+  for (const [categoryIndex, category] of categories.entries()) {
+    if (!isNonEmptyString(category.category)) {
+      return `${round}.board[${categoryIndex}] must include a category name.`;
+    }
+
+    if (!Array.isArray(category.questions) || category.questions.length === 0) {
+      return `${round}.board[${categoryIndex}] must include questions.`;
+    }
+
+    for (const [questionIndex, question] of category.questions.entries()) {
+      if (!Number.isFinite(Number(question.value))) {
+        return `${round}.board[${categoryIndex}].questions[${questionIndex}] must include a numeric value.`;
+      }
+
+      if (!isNonEmptyString(question.clue) || !isNonEmptyString(question.answer)) {
+        return `${round}.board[${categoryIndex}].questions[${questionIndex}] must include clue and answer.`;
+      }
+
+      if (question.image !== undefined && !isSafeRelativeMediaPath(question.image)) {
+        return `${round}.board[${categoryIndex}].questions[${questionIndex}] has an invalid image path.`;
+      }
+    }
+  }
+
+  return "";
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isSafeRelativeMediaPath(value) {
+  return typeof value === "string" &&
+    value.trim().length > 0 &&
+    value === value.trim() &&
+    !value.startsWith("/") &&
+    !value.includes("\\") &&
+    !value.split("/").includes("..");
+}
+
+function getUniqueBoardFilename(originalFilename, boardId) {
+  const preferredBase = slugifyBoardFilename(originalFilename.replace(/\.json$/i, "") || boardId);
+  let filename = `${preferredBase}.json`;
+  let index = 2;
+
+  while (availableBoards.some((board) => board.filename === filename)) {
+    filename = `${preferredBase}-${index}.json`;
+    index += 1;
+  }
+
+  return filename;
+}
+
+function slugifyBoardFilename(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "imported-board";
+}
+
+function stripAnsweredTracking(board) {
+  const cleanBoard = JSON.parse(JSON.stringify(board));
+
+  ["jeopardy", "doubleJeopardy"].forEach((round) => {
+    cleanBoard[round]?.board?.forEach((category) => {
+      category.questions?.forEach((question) => {
+        delete question.answered;
+      });
+    });
+  });
+
+  return cleanBoard;
 }
 
 function createFallbackBoardOption() {
@@ -1561,6 +1810,19 @@ function resetBoardState() {
   }
 }
 
+function resetFullGameToBoard() {
+  stopTimer();
+  gameState.players = gameState.players.map((player) => ({
+    ...player,
+    score: 0
+  }));
+  gameState.currentRound = "jeopardy";
+  resetCurrentClueState();
+  resetRoundAnsweredTracking("jeopardy");
+  resetRoundAnsweredTracking("doubleJeopardy");
+  gameState.phase = "board";
+}
+
 function validateHostJudgement(socket) {
   if (gameState.host?.id !== socket.id) {
     return "Only the host can judge answers.";
@@ -1660,6 +1922,7 @@ function getVisibleCurrentClue() {
     category: gameState.currentClue.category,
     value: gameState.currentClue.value,
     clue: gameState.currentClue.clue,
+    image: gameState.currentClue.image || "",
     dailyDouble: Boolean(gameState.currentClue.dailyDouble)
   };
 

@@ -37,6 +37,10 @@
         </button>
       </div>
 
+      <div class="browser-name-actions hidden">
+        <button class="secondary-button browser-change-name-btn" type="button">Change Name</button>
+      </div>
+
       <p id="message" class="message"></p>
     </section>
 
@@ -72,6 +76,8 @@
 
       <div id="host-controls" class="host-controls hidden">
         <button id="start-game-btn" class="primary-button">Start Game</button>
+        <button id="import-board-btn" class="secondary-button" type="button">Import Board</button>
+        <input id="import-board-input" class="hidden" type="file" accept="application/json,.json" />
       </div>
 
       <p id="waiting-message" class="waiting-message">
@@ -79,6 +85,7 @@
       </p>
 
       <button id="change-role-btn" class="secondary-button">Change Role</button>
+      <button class="secondary-button browser-change-name-btn hidden" type="button">Change Name</button>
     </section>
 
     <section id="game-screen" class="screen card hidden">
@@ -109,6 +116,9 @@
       <p id="question-category" class="question-category"></p>
       <h1 id="question-value" class="question-value"></h1>
       <p id="question-clue" class="question-clue"></p>
+      <button id="clue-image-thumb-btn" class="clue-image-thumb hidden" type="button" aria-label="Open clue image">
+        <img id="clue-image-thumb" alt="Clue image" />
+      </button>
       <div id="timer-panel" class="timer-panel">
         <span id="timer-label" class="timer-label">Reading time</span>
         <span id="timer-value" class="timer-value">0.0</span>
@@ -191,7 +201,7 @@
       </div>
 
       <div id="final-review-panel" class="final-review-panel hidden"></div>
-      <ol id="final-rankings" class="final-rankings hidden"></ol>
+      <div id="final-rankings" class="final-results hidden"></div>
     </section>
 
   </main>
@@ -217,6 +227,25 @@
         <button id="confirm-cancel-btn" class="secondary-button" type="button">Cancel</button>
         <button id="confirm-confirm-btn" class="primary-button" type="button">Confirm</button>
       </div>
+    </div>
+  </div>
+  <div id="browser-name-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="browser-name-title">
+    <form id="browser-name-form" class="browser-name-modal">
+      <h2 id="browser-name-title">Enter Your Name</h2>
+      <p class="browser-name-copy">Choose the display name other players will see.</p>
+      <label class="browser-name-label" for="browser-name-input">Display name</label>
+      <input id="browser-name-input" class="browser-name-input" type="text" maxlength="40" autocomplete="nickname" />
+      <p id="browser-name-error" class="browser-name-error" aria-live="polite"></p>
+      <div class="browser-name-actions-row">
+        <button id="browser-name-cancel-btn" class="secondary-button" type="button">Cancel</button>
+        <button class="primary-button" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+  <div id="image-lightbox" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Clue image preview">
+    <div class="image-lightbox">
+      <button id="image-lightbox-close-btn" class="image-lightbox-close" type="button" aria-label="Close image preview">Close</button>
+      <img id="image-lightbox-img" alt="Clue image preview" />
     </div>
   </div>
   <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
