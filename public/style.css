@@ -1156,7 +1156,7 @@ li {
   color: #fde68a;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 800px), (hover: none), (pointer: coarse) {
   body {
     align-items: start;
   }
