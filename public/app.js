@@ -134,11 +134,15 @@ let activeScoreEditPlayerId = null;
 let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
 let discordIdentityEmitted = false;
+let discordSdkClient = null;
+let lastRichPresenceKey = "";
 let browserIdentityReady = false;
 let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
 let resetBoardConfirmTimeout = null;
 const browserDisplayNameStorageKey = "jeopardyDisplayName";
+const discordActivityStartTimestamp = Date.now();
+const maxRichPresencePlayers = 8;
 
 function initialiseIdentity() {
   if (isLikelyDiscordActivity()) {
@@ -194,10 +198,16 @@ async function initialiseDiscordIdentity() {
     const DiscordSDK = await loadDiscordSdk();
     const discordSdk = new DiscordSDK(config.clientId);
     await discordSdk.ready();
+
+    // Rich Presence is initialized once the Discord SDK is ready. To update it
+    // later, call updateRichPresence() with the latest authoritative gameState.
+    // The "logo" Rich Presence asset must exist in the Discord Developer Portal.
+    discordSdkClient = discordSdk;
     const instanceId = discordSdk.instanceId || "";
     socket.emit("setGameInstance", {
       instanceId,
     });
+    updateRichPresence(currentState);
 
     const authCode = await getDiscordAuthCode(discordSdk, config.clientId);
 
@@ -381,11 +391,123 @@ async function getDiscordAuthCode(discordSdk, clientId) {
       "identify",
       "guilds",
       "guilds.members.read",
+      "rpc.activities.write",
       "rpc.voice.read",
     ],
   };
   const response = await discordSdk.commands.authorize(authorizePayload);
   return response?.code || "";
+}
+
+async function updateRichPresence(state) {
+  const setActivity = discordSdkClient?.commands?.setActivity;
+
+  if (typeof setActivity !== "function") {
+    return;
+  }
+
+  try {
+    const playerCount = getRichPresencePlayerCount(state);
+    const maxPlayers = Math.max(
+      playerCount,
+      Number(state?.maxPlayers) || maxRichPresencePlayers,
+    );
+    const activityText = getRichPresenceText(state, playerCount, maxPlayers);
+    const startTimestamp =
+      getRichPresenceStartTimestamp(state) || discordActivityStartTimestamp;
+    const activity = {
+      type: 0,
+      details: activityText.details,
+      state: activityText.state,
+      timestamps: {
+        start: startTimestamp,
+      },
+      assets: {
+        large_image: "logo",
+        large_text: "Trivia Showdown",
+      },
+      party: {
+        id: discordSdkClient.instanceId || "trivia-showdown",
+        size: [playerCount, maxPlayers],
+      },
+    };
+    const richPresenceKey = JSON.stringify(activity);
+
+    if (richPresenceKey === lastRichPresenceKey) {
+      return;
+    }
+
+    await setActivity.call(discordSdkClient.commands, { activity });
+    lastRichPresenceKey = richPresenceKey;
+  } catch {
+    // Rich Presence is optional; keep the game playable outside Discord.
+  }
+}
+
+function getRichPresencePlayerCount(state) {
+  if (!state?.players) {
+    return 0;
+  }
+
+  return state.players.length;
+}
+
+function getRichPresenceStartTimestamp(state) {
+  const timestamp =
+    state?.gameStartTimestamp || state?.gameStartedAt || state?.sessionStartedAt;
+
+  if (!timestamp) {
+    return 0;
+  }
+
+  if (typeof timestamp === "number") {
+    return timestamp > 1000000000000 ? timestamp : timestamp * 1000;
+  }
+
+  const parsed = Date.parse(timestamp);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function getRichPresenceText(state, playerCount, maxPlayers) {
+  const countLabel = `(${playerCount} of ${maxPlayers})`;
+
+  if (!state || state.phase === "waiting") {
+    return {
+      details: "Setting up a game",
+      state: `In Lobby ${countLabel}`,
+    };
+  }
+
+  if (state.phase === "finalResults") {
+    return {
+      details: "Game Over",
+      state: `Winner: ${getRichPresenceWinnerName(state)}`,
+    };
+  }
+
+  if (isFinalJeopardyPhase(state.phase)) {
+    return {
+      details: "Final Showdown",
+      state: `Wagering now ${countLabel}`,
+    };
+  }
+
+  return {
+    details: getRichPresenceRoundDetails(state.currentRound),
+    state: `Buzzing in ${countLabel}`,
+  };
+}
+
+function getRichPresenceRoundDetails(round) {
+  return round === "doubleJeopardy" ? "Round 2" : "Round 1";
+}
+
+function getRichPresenceWinnerName(state) {
+  const winner = [...(state.players || [])].sort(
+    (first, second) => Number(second.score || 0) - Number(first.score || 0),
+  )[0];
+
+  return winner?.name || "TBD";
 }
 
 function getDiscordAvatarUrl(user) {
@@ -480,6 +602,7 @@ socket.on("connected", (user) => {
 
 socket.on("gameState", (state) => {
   currentState = state;
+  updateRichPresence(state);
 
   updateRoleButtons(state);
   updateWaitingRoom(state);
