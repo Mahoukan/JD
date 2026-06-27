@@ -123,6 +123,7 @@ function getUser(socket) {
     name: socket.data.name || `Guest ${socket.id.slice(0, 4)}`,
     avatarUrl: socket.data.avatarUrl || "",
     discordUserId: socket.data.discordUserId || "",
+    clientToken: socket.data.clientToken || "",
     role: socket.data.role || null
   };
 }
@@ -307,6 +308,7 @@ io.on("connection", (socket) => {
   socket.data.name = `Guest ${socket.id.slice(0, 4)}`;
   socket.data.avatarUrl = "";
   socket.data.discordUserId = "";
+  socket.data.clientToken = "";
   socket.data.role = null;
   socket.join(socket.data.gameId);
   setActiveGameContext(getSocketGame(socket));
@@ -323,13 +325,14 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId } = {}) => {
+  onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId, clientToken } = {}) => {
     const identity = sanitizeIdentity({
       name,
       avatarUrl,
-      discordUserId
+      discordUserId,
+      clientToken
     });
-    const restoredRole = restoreDiscordSession(socket, identity);
+    const restoredRole = restoreUserSession(socket, identity);
 
     if (identity.name) {
       socket.data.name = identity.name;
@@ -337,15 +340,42 @@ io.on("connection", (socket) => {
 
     socket.data.avatarUrl = identity.avatarUrl;
     socket.data.discordUserId = identity.discordUserId;
+    socket.data.clientToken = identity.clientToken;
     socket.data.role = restoredRole || socket.data.role;
     updateUserIdentity(socket.id, identity);
     socket.emit("identityUpdated", getUser(socket));
     sendGameState();
   });
 
-  onGameEvent(socket, "chooseRole", (role) => {
+  onGameEvent(socket, "chooseRole", (payload) => {
+    const role = typeof payload === "string" ? payload : payload?.role;
+    const clientToken = typeof payload === "object"
+      ? sanitizeClientToken(payload?.clientToken)
+      : "";
+
     if (!["host", "player", "spectator"].includes(role)) {
       socket.emit("roleRejected", "Invalid role.");
+      return;
+    }
+
+    if (!socket.data.discordUserId && clientToken) {
+      socket.data.clientToken = clientToken;
+    }
+
+    const restoredRole = restoreUserSession(socket, {
+      name: socket.data.name,
+      avatarUrl: socket.data.avatarUrl,
+      discordUserId: socket.data.discordUserId,
+      clientToken: socket.data.clientToken
+    });
+
+    if (restoredRole) {
+      socket.data.role = restoredRole;
+    }
+
+    if (socket.data.role === role) {
+      socket.emit("roleConfirmed", getUser(socket));
+      sendGameState();
       return;
     }
 
@@ -1080,6 +1110,11 @@ io.on("connection", (socket) => {
   onGameEvent(socket, "disconnect", () => {
     console.log(`Disconnected: ${socket.id}`);
 
+    if (socket.data.discordUserId || socket.data.clientToken) {
+      sendGameState();
+      return;
+    }
+
     removeUserFromAllRoles(socket.id);
 
     if (gameState.host === null) {
@@ -1150,12 +1185,17 @@ function removeBoardAnswers(round) {
   });
 }
 
-function sanitizeIdentity({ name, avatarUrl, discordUserId }) {
+function sanitizeIdentity({ name, avatarUrl, discordUserId, clientToken }) {
   return {
     name: sanitizeDisplayName(name),
     avatarUrl: sanitizeAvatarUrl(avatarUrl),
-    discordUserId: sanitizePlainText(discordUserId, 40)
+    discordUserId: sanitizePlainText(discordUserId, 40),
+    clientToken: sanitizeClientToken(clientToken)
   };
+}
+
+function sanitizeClientToken(value) {
+  return sanitizePlainText(value, 80);
 }
 
 function sanitizeDisplayName(value) {
@@ -1201,7 +1241,8 @@ function updateUserIdentity(socketId, identity) {
       ...user,
       name: identity.name || user.name,
       avatarUrl: identity.avatarUrl,
-      discordUserId: identity.discordUserId
+      discordUserId: identity.discordUserId,
+      clientToken: identity.clientToken
     };
   };
 
@@ -1221,12 +1262,8 @@ function updateUserIdentity(socketId, identity) {
   }
 }
 
-function restoreDiscordSession(socket, identity) {
-  if (!identity.discordUserId) {
-    return null;
-  }
-
-  const existingSession = findSessionByDiscordUserId(identity.discordUserId);
+function restoreUserSession(socket, identity) {
+  const existingSession = findRestorableSession(identity);
 
   if (!existingSession || existingSession.user.id === socket.id) {
     return existingSession?.role || null;
@@ -1235,7 +1272,60 @@ function restoreDiscordSession(socket, identity) {
   const previousSocketId = existingSession.user.id;
   removeUserFromAllRoles(socket.id);
   replaceUserSocketId(previousSocketId, socket.id, identity);
+  socket.data.name = identity.name || existingSession.user.name || socket.data.name;
+  socket.data.avatarUrl = identity.avatarUrl || existingSession.user.avatarUrl || "";
+  socket.data.discordUserId = identity.discordUserId || existingSession.user.discordUserId || "";
+  socket.data.clientToken = identity.clientToken || existingSession.user.clientToken || "";
   return existingSession.role;
+}
+
+function findRestorableSession(identity) {
+  if (identity.discordUserId) {
+    const discordSession = findSessionByDiscordUserId(identity.discordUserId);
+
+    if (discordSession) {
+      return discordSession;
+    }
+  }
+
+  if (identity.clientToken) {
+    return findSessionByClientToken(identity.clientToken);
+  }
+
+  return null;
+}
+
+function findSessionByClientToken(clientToken) {
+  if (!clientToken) {
+    return null;
+  }
+
+  if (gameState.host?.clientToken === clientToken) {
+    return {
+      role: "host",
+      user: gameState.host
+    };
+  }
+
+  const player = gameState.players.find((currentPlayer) => currentPlayer.clientToken === clientToken);
+
+  if (player) {
+    return {
+      role: "player",
+      user: player
+    };
+  }
+
+  const spectator = gameState.spectators.find((currentSpectator) => currentSpectator.clientToken === clientToken);
+
+  if (spectator) {
+    return {
+      role: "spectator",
+      user: spectator
+    };
+  }
+
+  return null;
 }
 
 function findSessionByDiscordUserId(discordUserId) {
@@ -1278,7 +1368,8 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
       id: nextSocketId,
       name: identity.name || user.name,
       avatarUrl: identity.avatarUrl,
-      discordUserId: identity.discordUserId
+      discordUserId: identity.discordUserId,
+      clientToken: identity.clientToken
     };
   };
 

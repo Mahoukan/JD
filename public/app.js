@@ -147,6 +147,7 @@ let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
 let resetBoardConfirmTimeout = null;
 const browserDisplayNameStorageKey = "jeopardyDisplayName";
+const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
 const discordActivityStartTimestamp = Date.now();
 const maxRichPresencePlayers = 8;
 
@@ -299,6 +300,22 @@ function getStoredBrowserDisplayName() {
   }
 }
 
+function getBrowserPlayerToken() {
+  try {
+    const storedToken = localStorage.getItem(browserPlayerTokenStorageKey);
+
+    if (storedToken) {
+      return storedToken;
+    }
+
+    const token = crypto.randomUUID();
+    localStorage.setItem(browserPlayerTokenStorageKey, token);
+    return token;
+  } catch {
+    return "";
+  }
+}
+
 function storeBrowserDisplayName(name) {
   try {
     localStorage.setItem(browserDisplayNameStorageKey, name);
@@ -363,6 +380,7 @@ function applyBrowserDisplayName(name) {
     name,
     avatarUrl: "",
     discordUserId: "",
+    clientToken: getBrowserPlayerToken(),
   });
 }
 
@@ -684,7 +702,10 @@ hostBtn.addEventListener("click", () => {
     return;
   }
 
-  socket.emit("chooseRole", "host");
+  socket.emit("chooseRole", {
+    role: "host",
+    clientToken: getBrowserPlayerToken(),
+  });
 });
 
 playerBtn.addEventListener("click", () => {
@@ -692,7 +713,10 @@ playerBtn.addEventListener("click", () => {
     return;
   }
 
-  socket.emit("chooseRole", "player");
+  socket.emit("chooseRole", {
+    role: "player",
+    clientToken: getBrowserPlayerToken(),
+  });
 });
 
 spectatorBtn.addEventListener("click", () => {
@@ -700,7 +724,10 @@ spectatorBtn.addEventListener("click", () => {
     return;
   }
 
-  socket.emit("chooseRole", "spectator");
+  socket.emit("chooseRole", {
+    role: "spectator",
+    clientToken: getBrowserPlayerToken(),
+  });
 });
 
 changeRoleBtn.addEventListener("click", () => {
