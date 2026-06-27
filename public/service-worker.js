@@ -1,6 +1,10 @@
 const buildVersion = new URL(self.location.href).searchParams.get("v") || "dev";
 const staticCacheName = `trivia-showdown-static-${buildVersion}`;
-const safeStaticAssets = [`/style.css?v=${buildVersion}`, "/manifest.json"];
+const safeStaticAssets = [
+  `/style.css?v=${buildVersion}`,
+  "/icon-192.png",
+  "/icon-512.png",
+];
 const safeAssetPattern = /\.(?:css|png|jpg|jpeg|gif|webp|svg|ico|woff2?|ttf|otf)$/i;
 const livePathPrefixes = ["/socket.io/", "/api/", "/version", "/boards/"];
 const liveFilePattern = /\.(?:html|js|json)$/i;
