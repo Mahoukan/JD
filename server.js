@@ -168,6 +168,7 @@ function createInitialGameState() {
     selectedBoardFilename: selectedBoard.filename,
     board: structuredCloneBoard(initialBoard),
     currentRound: "jeopardy",
+    currentTurnPlayerId: null,
     currentClue: null,
     answerRevealed: false,
     buzzingOpen: false,
@@ -257,7 +258,19 @@ function setSocketGame(socket, gameId) {
 }
 
 function sendGameState() {
-  io.to(activeGameContext.id).emit("gameState", {
+  const sockets = io.sockets.adapter.rooms.get(activeGameContext.id) || new Set();
+
+  sockets.forEach((socketId) => {
+    const socket = io.sockets.sockets.get(socketId);
+
+    if (socket) {
+      socket.emit("gameState", createVisibleGameState(socket));
+    }
+  });
+}
+
+function createVisibleGameState(socket) {
+  return {
     host: gameState.host,
     players: gameState.players,
     spectators: gameState.spectators,
@@ -265,9 +278,10 @@ function sendGameState() {
     phase: gameState.phase,
     availableBoards: gameState.availableBoards,
     selectedBoardFilename: gameState.selectedBoardFilename,
-    board: gameState.board,
+    board: getVisibleBoard(socket),
     currentRound: gameState.currentRound,
-    currentClue: getVisibleCurrentClue(),
+    currentTurnPlayerId: gameState.currentTurnPlayerId,
+    currentClue: getVisibleCurrentClue(socket),
     answerRevealed: gameState.answerRevealed,
     buzzingOpen: gameState.buzzingOpen,
     buzzedPlayer: gameState.buzzedPlayer,
@@ -277,7 +291,7 @@ function sendGameState() {
     finalJeopardyState: getVisibleFinalJeopardyState(),
     timer: getVisibleTimer(),
     resultMessage: gameState.resultMessage
-  });
+  };
 }
 
 function broadcastAllGameStates() {
@@ -355,6 +369,7 @@ io.on("connection", (socket) => {
         ...user,
         score: 0
       });
+      ensureCurrentTurnPlayer();
     }
 
     if (role === "spectator") {
@@ -373,7 +388,22 @@ io.on("connection", (socket) => {
 
     gameState.phase = "board";
     gameState.currentRound = "jeopardy";
+    gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
     resetCurrentClueState();
+    sendGameState();
+  });
+
+  onGameEvent(socket, "setCurrentTurn", ({ playerId } = {}) => {
+    if (gameState.host?.id !== socket.id) {
+      socket.emit("actionRejected", "Only the host can change the turn.");
+      return;
+    }
+
+    if (!setCurrentTurnPlayer(playerId)) {
+      socket.emit("actionRejected", "That player is not active.");
+      return;
+    }
+
     sendGameState();
   });
 
@@ -739,6 +769,7 @@ io.on("connection", (socket) => {
     }
 
     player.score += gameState.currentClue.value;
+    gameState.currentTurnPlayerId = player.id;
     gameState.answerRevealed = true;
     gameState.buzzingOpen = false;
     gameState.resultMessage = `${player.name} is correct! +$${gameState.currentClue.value}`;
@@ -1065,8 +1096,58 @@ function removeUserFromAllRoles(socketId) {
     gameState.host = null;
   }
 
+  const removedPlayerIndex = gameState.players.findIndex((player) => player.id === socketId);
   gameState.players = gameState.players.filter((player) => player.id !== socketId);
   gameState.spectators = gameState.spectators.filter((spectator) => spectator.id !== socketId);
+
+  if (gameState.currentTurnPlayerId === socketId) {
+    const nextPlayer = gameState.players[removedPlayerIndex] || gameState.players[0];
+    gameState.currentTurnPlayerId = nextPlayer?.id || null;
+  }
+}
+
+// Turn order is tracked by player id; the players array remains the source of truth.
+function ensureCurrentTurnPlayer() {
+  if (gameState.players.some((player) => player.id === gameState.currentTurnPlayerId)) {
+    return;
+  }
+
+  gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
+}
+
+function setCurrentTurnPlayer(playerId) {
+  const player = gameState.players.find((currentPlayer) => currentPlayer.id === playerId);
+
+  if (!player) {
+    return false;
+  }
+
+  gameState.currentTurnPlayerId = player.id;
+  return true;
+}
+
+function getVisibleBoard(socket) {
+  if (socket?.id === gameState.host?.id) {
+    return gameState.board;
+  }
+
+  const board = structuredCloneBoard(gameState.board);
+  removeBoardAnswers(board.jeopardy);
+  removeBoardAnswers(board.doubleJeopardy);
+
+  if (board.finalJeopardy) {
+    delete board.finalJeopardy.answer;
+  }
+
+  return board;
+}
+
+function removeBoardAnswers(round) {
+  round?.board?.forEach((category) => {
+    category.questions?.forEach((question) => {
+      delete question.answer;
+    });
+  });
 }
 
 function sanitizeIdentity({ name, avatarUrl, discordUserId }) {
@@ -1211,6 +1292,10 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
   if (gameState.dailyDouble.playerId === previousSocketId) {
     gameState.dailyDouble.playerId = nextSocketId;
     gameState.dailyDouble.playerName = identity.name || gameState.dailyDouble.playerName;
+  }
+
+  if (gameState.currentTurnPlayerId === previousSocketId) {
+    gameState.currentTurnPlayerId = nextSocketId;
   }
 
   replaceFinalJeopardyPlayerId(previousSocketId, nextSocketId);
@@ -1803,6 +1888,7 @@ function resetBoardState() {
     ...player,
     score: 0
   }));
+  gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
   gameState.currentClue = null;
   gameState.answerRevealed = false;
   gameState.buzzingOpen = false;
@@ -1825,6 +1911,7 @@ function resetFullGameToBoard() {
     ...player,
     score: 0
   }));
+  gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
   gameState.currentRound = "jeopardy";
   resetCurrentClueState();
   resetRoundAnsweredTracking("jeopardy");
@@ -1896,6 +1983,7 @@ function judgeDailyDouble(isCorrect) {
 
   if (isCorrect) {
     player.score += wager;
+    gameState.currentTurnPlayerId = player.id;
     gameState.resultMessage = `${player.name} is correct! +$${wager}`;
   } else {
     player.score -= wager;
@@ -1919,7 +2007,8 @@ function markCurrentClueAnswered() {
   }
 }
 
-function getVisibleCurrentClue() {
+// Hosts receive the current answer for judging; other roles only get it after Reveal Answer.
+function getVisibleCurrentClue(socket) {
   if (!gameState.currentClue) {
     return null;
   }
@@ -1935,7 +2024,7 @@ function getVisibleCurrentClue() {
     dailyDouble: Boolean(gameState.currentClue.dailyDouble)
   };
 
-  if (gameState.answerRevealed) {
+  if (gameState.answerRevealed || socket?.id === gameState.host?.id) {
     currentClue.answer = gameState.currentClue.answer;
   }
 

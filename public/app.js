@@ -32,6 +32,10 @@ const startFinalJeopardyBtn = document.getElementById(
   "start-final-jeopardy-btn",
 );
 const scoreList = document.getElementById("score-list");
+const currentTurnDisplay = document.getElementById("current-turn-display");
+const turnControls = document.getElementById("turn-controls");
+const turnPlayerSelect = document.getElementById("turn-player-select");
+const setTurnBtn = document.getElementById("set-turn-btn");
 const scoreEditModal = document.getElementById("score-edit-modal");
 const scoreEditForm = document.getElementById("score-edit-form");
 const scoreEditPlayerName = document.getElementById("score-edit-player-name");
@@ -55,6 +59,8 @@ const timerLabel = document.getElementById("timer-label");
 const timerValue = document.getElementById("timer-value");
 const timerStatus = document.getElementById("timer-status");
 const buzzingStatus = document.getElementById("buzzing-status");
+const hostAnswerPanel = document.getElementById("host-answer-panel");
+const hostAnswerText = document.getElementById("host-answer-text");
 const questionAnswer = document.getElementById("question-answer");
 const resultMessage = document.getElementById("result-message");
 const buzzMessage = document.getElementById("buzz-message");
@@ -896,6 +902,12 @@ showFinalResultsBtn.addEventListener("click", () => {
   socket.emit("showFinalResults");
 });
 
+setTurnBtn.addEventListener("click", () => {
+  socket.emit("setCurrentTurn", {
+    playerId: turnPlayerSelect.value,
+  });
+});
+
 scoreEditForm.addEventListener("submit", (event) => {
   event.preventDefault();
   saveScoreEdit();
@@ -1152,6 +1164,7 @@ function getRoundName(round) {
 function renderScores(state) {
   scoreList.innerHTML = "";
   const isHost = currentUser?.role === "host";
+  renderTurnIndicator(state);
 
   if (!state.players.length) {
     const emptyItem = document.createElement("li");
@@ -1164,6 +1177,10 @@ function renderScores(state) {
   state.players.forEach((player) => {
     const item = document.createElement("li");
     item.className = isHost ? "score-row editable-score-row" : "score-row";
+
+    if (player.id === state.currentTurnPlayerId) {
+      item.classList.add("current-turn-score-row");
+    }
 
     const name = document.createElement("span");
     name.className = "score-name user-identity";
@@ -1191,6 +1208,58 @@ function renderScores(state) {
 
     scoreList.appendChild(item);
   });
+}
+
+function renderTurnIndicator(state) {
+  const currentTurnPlayer = getCurrentTurnPlayer(state);
+  currentTurnDisplay.innerHTML = "";
+
+  const label = document.createElement("span");
+  label.className = "current-turn-label";
+  label.textContent = "Current Turn:";
+  currentTurnDisplay.appendChild(label);
+
+  if (currentTurnPlayer) {
+    const identity = createUserIdentity(currentTurnPlayer);
+    identity.classList.add("current-turn-identity");
+    currentTurnDisplay.appendChild(identity);
+  } else {
+    const empty = document.createElement("span");
+    empty.className = "current-turn-empty";
+    empty.textContent = "None";
+    currentTurnDisplay.appendChild(empty);
+  }
+
+  renderTurnControls(state);
+}
+
+function renderTurnControls(state) {
+  const isHost = currentUser?.role === "host";
+  const canChangeTurn = isHost && state.players.length > 0;
+
+  turnControls.classList.toggle("hidden", !canChangeTurn);
+  setTurnBtn.disabled = !canChangeTurn;
+  turnPlayerSelect.innerHTML = "";
+
+  if (!canChangeTurn) {
+    return;
+  }
+
+  state.players.forEach((player) => {
+    const option = document.createElement("option");
+    option.value = player.id;
+    option.textContent = player.name;
+    option.selected = player.id === state.currentTurnPlayerId;
+    turnPlayerSelect.appendChild(option);
+  });
+}
+
+// Keep all turn display and host override UI driven by the latest gameState.
+function getCurrentTurnPlayer(state) {
+  return (
+    state.players.find((player) => player.id === state.currentTurnPlayerId) ||
+    null
+  );
 }
 
 function openScoreEditModal(player) {
@@ -1302,6 +1371,8 @@ function renderQuestion(state) {
     questionValue.textContent = "";
     questionClue.textContent = "";
     buzzingStatus.textContent = "";
+    hostAnswerPanel.classList.add("hidden");
+    hostAnswerText.textContent = "";
     questionAnswer.textContent = "Answer hidden";
     questionAnswer.classList.add("answer-hidden");
     resultMessage.textContent = "";
@@ -1318,6 +1389,7 @@ function renderQuestion(state) {
   questionValue.textContent = `$${currentClue.value}`;
   questionClue.textContent = currentClue.clue;
   renderClueImage(currentClue.image);
+  renderHostAnswer(currentClue, isHost);
 
   if (state.answerRevealed) {
     questionAnswer.textContent = currentClue.answer || "";
@@ -1341,6 +1413,14 @@ function renderQuestion(state) {
     state.buzzedPlayer,
     state.lockedOutPlayers || [],
   );
+}
+
+function renderHostAnswer(currentClue, isHost) {
+  // The server only includes currentClue.answer for hosts before Reveal Answer.
+  const canShowHostAnswer = isHost && Boolean(currentClue?.answer);
+
+  hostAnswerPanel.classList.toggle("hidden", !canShowHostAnswer);
+  hostAnswerText.textContent = canShowHostAnswer ? currentClue.answer : "";
 }
 
 function renderClueImage(imagePath) {
@@ -1374,7 +1454,7 @@ function renderDailyDouble(state) {
   if (state.phase === "dailyDoublePlayerSelect") {
     dailyDoubleDetail.textContent =
       "Choose the player who found the Daily Double.";
-    renderDailyDoublePlayerOptions(state.players || []);
+    renderDailyDoublePlayerOptions(state.players || [], state.currentTurnPlayerId);
 
     if (!isHost) {
       dailyDoubleWaiting.textContent =
@@ -1398,7 +1478,7 @@ function renderDailyDouble(state) {
   }
 }
 
-function renderDailyDoublePlayerOptions(players) {
+function renderDailyDoublePlayerOptions(players, currentTurnPlayerId) {
   dailyDoublePlayerSelect.innerHTML = "";
   dailyDoublePlayerBtn.disabled = players.length === 0;
 
@@ -1414,6 +1494,7 @@ function renderDailyDoublePlayerOptions(players) {
     const option = document.createElement("option");
     option.value = player.id;
     option.textContent = `${player.name} (${formatScore(player.score)})`;
+    option.selected = player.id === currentTurnPlayerId;
     dailyDoublePlayerSelect.appendChild(option);
   });
 }

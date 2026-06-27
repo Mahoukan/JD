@@ -108,6 +108,14 @@
 
         <aside class="score-panel" aria-label="Player scores">
           <h2>Scores</h2>
+          <p id="current-turn-display" class="current-turn-display">Current Turn: None</p>
+          <div id="turn-controls" class="turn-controls hidden">
+            <label for="turn-player-select">Change Turn</label>
+            <div class="turn-control-row">
+              <select id="turn-player-select"></select>
+              <button id="set-turn-btn" class="score-edit-button" type="button">Set</button>
+            </div>
+          </div>
           <ul id="score-list" class="score-list"></ul>
         </aside>
       </div>
@@ -126,6 +134,10 @@
         <span id="timer-status" class="timer-status">Paused</span>
       </div>
       <p id="buzzing-status" class="buzzing-status">Read the clue...</p>
+      <div id="host-answer-panel" class="host-answer-panel hidden">
+        <p class="host-answer-label">Host Answer</p>
+        <p id="host-answer-text" class="host-answer-text"></p>
+      </div>
       <div id="question-answer" class="question-answer answer-hidden">Answer hidden</div>
       <p id="result-message" class="result-message"></p>
       <p id="buzz-message" class="buzz-message"></p>

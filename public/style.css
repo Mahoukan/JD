@@ -462,6 +462,70 @@ li {
   text-transform: uppercase;
 }
 
+.current-turn-display {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  border: 1px solid rgba(251, 191, 36, 0.42);
+  border-radius: 8px;
+  padding: 8px 9px;
+  background: rgba(251, 191, 36, 0.08);
+  color: #f9fafb;
+  font-size: 13px;
+}
+
+.current-turn-label {
+  color: #fbbf24;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.current-turn-identity {
+  min-width: 0;
+}
+
+.current-turn-empty {
+  color: #9ca3af;
+  font-weight: 800;
+}
+
+.turn-controls {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.turn-controls.hidden {
+  display: none;
+}
+
+.turn-controls label {
+  color: #d1d5db;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.turn-control-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+.turn-control-row select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  padding: 6px 7px;
+  background: #1f2937;
+  color: #f9fafb;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .score-list {
   display: grid;
   gap: 6px;
@@ -481,6 +545,12 @@ li {
 
 .editable-score-row {
   grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.current-turn-score-row {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  box-shadow: inset 3px 0 0 #fbbf24;
 }
 
 .score-name {
@@ -514,6 +584,36 @@ li {
 .score-edit-button:hover {
   border-color: #fbbf24;
   color: #f9fafb;
+}
+
+.host-answer-panel {
+  width: min(100%, 560px);
+  margin: 0 auto 14px;
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(251, 191, 36, 0.1);
+  text-align: left;
+}
+
+.host-answer-panel.hidden {
+  display: none;
+}
+
+.host-answer-label {
+  margin: 0 0 5px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.host-answer-text {
+  margin: 0;
+  color: #f9fafb;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
 .modal-backdrop {
