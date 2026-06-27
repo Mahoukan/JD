@@ -1,0 +1,383 @@
+{
+  "id": "GENERAL-KNOWLEDGE-100",
+  "name": "General Knowledge 100",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "PUT IT ON THE MAP",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This is the capital city of Hungary.",
+            "answer": "What is Budapest?"
+          },
+          {
+            "value": 400,
+            "clue": "This is the capital city of Jamaica.",
+            "answer": "What is Kingston?"
+          },
+          {
+            "value": 600,
+            "clue": "This sea lies to the west of India.",
+            "answer": "What is the Arabian Sea?"
+          },
+          {
+            "value": 800,
+            "clue": "Bolivia and Paraguay share this geographic distinction in South America.",
+            "answer": "What are landlocked countries?"
+          },
+          {
+            "value": 1000,
+            "clue": "The Danyang-Kunshan Grand Bridge, the world's longest bridge, is located in this country.",
+            "answer": "What is China?"
+          }
+        ]
+      },
+      {
+        "category": "SCIENCE SAYS...",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Plants release this gas during photosynthesis.",
+            "answer": "What is oxygen?"
+          },
+          {
+            "value": 400,
+            "clue": "The ozone layer protects Earth from this type of harmful radiation.",
+            "answer": "What is ultraviolet radiation?"
+          },
+          {
+            "value": 600,
+            "clue": "The structural shape of DNA is known by this two-word term.",
+            "answer": "What is a double helix?"
+          },
+          {
+            "value": 800,
+            "clue": "This process splits the nucleus of an atom.",
+            "answer": "What is nuclear fission?",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "This instrument is used to measure ionizing radiation.",
+            "answer": "What is a Geiger counter?"
+          }
+        ]
+      },
+      {
+        "category": "BODY LANGUAGE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This nutrient is most associated with building muscle.",
+            "answer": "What is protein?"
+          },
+          {
+            "value": 400,
+            "clue": "This bone is the second-longest bone in the human body.",
+            "answer": "What is the tibia?"
+          },
+          {
+            "value": 600,
+            "clue": "This is the largest joint in the human body.",
+            "answer": "What is the knee?"
+          },
+          {
+            "value": 800,
+            "clue": "This organ or muscle is responsible for hiccups.",
+            "answer": "What is the diaphragm?"
+          },
+          {
+            "value": 1000,
+            "clue": "These organs filter blood in the human body.",
+            "answer": "What are the kidneys?"
+          }
+        ]
+      },
+      {
+        "category": "POP CULTURE DETECTIVE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "The phrase 'Finish Him!' is famously heard in this fighting game series.",
+            "answer": "What is Mortal Kombat?"
+          },
+          {
+            "value": 400,
+            "clue": "Rickrolling sends people to this Rick Astley song.",
+            "answer": "What is Never Gonna Give You Up?"
+          },
+          {
+            "value": 600,
+            "clue": "Hill Valley is the fictional town in this time-travel movie series.",
+            "answer": "What is Back to the Future?"
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of the kingdom in Disney's Frozen.",
+            "answer": "What is Arendelle?"
+          },
+          {
+            "value": 1000,
+            "clue": "Gillette uses this slogan about male grooming.",
+            "answer": "What is 'The best a man can get'?"
+          }
+        ]
+      },
+      {
+        "category": "ANIMAL ANTICS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "A baby horse is called this.",
+            "answer": "What is a foal?"
+          },
+          {
+            "value": 400,
+            "clue": "A baby whale is called this.",
+            "answer": "What is a calf?"
+          },
+          {
+            "value": 600,
+            "clue": "This is the only mammal completely covered in scales.",
+            "answer": "What is a pangolin?"
+          },
+          {
+            "value": 800,
+            "clue": "This mammal has the longest pregnancy.",
+            "answer": "What is the African elephant?"
+          },
+          {
+            "value": 1000,
+            "clue": "This animal is known for playing dead when frightened.",
+            "answer": "What is an opossum?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "EVERYDAY GENIUS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "One kilowatt equals this many watts.",
+            "answer": "What is 1,000?"
+          },
+          {
+            "value": 400,
+            "clue": "This process removes salt from seawater to make drinkable freshwater.",
+            "answer": "What is desalination?"
+          },
+          {
+            "value": 600,
+            "clue": "An espresso diluted with hot water is called this.",
+            "answer": "What is an Americano?"
+          },
+          {
+            "value": 800,
+            "clue": "A planned schedule for a trip is called this.",
+            "answer": "What is an itinerary?"
+          },
+          {
+            "value": 1000,
+            "clue": "This synthetic coating is commonly used to make cookware nonstick.",
+            "answer": "What is Teflon?"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "MONEY TALKS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "In finance, IPO stands for this.",
+            "answer": "What is an Initial Public Offering?"
+          },
+          {
+            "value": 800,
+            "clue": "This measures the total value of all goods and services a country produces in one year.",
+            "answer": "What is GDP?"
+          },
+          {
+            "value": 1200,
+            "clue": "This term means a general rise in prices and a drop in the value of money.",
+            "answer": "What is inflation?"
+          },
+          {
+            "value": 1600,
+            "clue": "This ingredient is added to white sugar to make brown sugar.",
+            "answer": "What is molasses?"
+          },
+          {
+            "value": 2000,
+            "clue": "Subway once ran ads featuring a man who lost this many pounds.",
+            "answer": "What is 245?"
+          }
+        ]
+      },
+      {
+        "category": "GODS & LEGENDS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "In Greek mythology, she opened the box that released evils into the world.",
+            "answer": "Who is Pandora?"
+          },
+          {
+            "value": 800,
+            "clue": "This mythical creature has a lion's body and an eagle's head.",
+            "answer": "What is a griffin?"
+          },
+          {
+            "value": 1200,
+            "clue": "This black-and-white symbol is strongly associated with Taoism.",
+            "answer": "What is the yin-yang?"
+          },
+          {
+            "value": 1600,
+            "clue": "This is the place of worship for Jewish people.",
+            "answer": "What is a synagogue?"
+          },
+          {
+            "value": 2000,
+            "clue": "In India, this animal is traditionally considered sacred.",
+            "answer": "What is a cow?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "BY THE NUMBERS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "One gram of fat contains this many Calories.",
+            "answer": "What is 9?"
+          },
+          {
+            "value": 800,
+            "clue": "A full-size piano has this many keys.",
+            "answer": "What is 88?"
+          },
+          {
+            "value": 1200,
+            "clue": "This many teaspoons equal one tablespoon.",
+            "answer": "What is 3?"
+          },
+          {
+            "value": 1600,
+            "clue": "This is ten percent of 54.",
+            "answer": "What is 5.4?"
+          },
+          {
+            "value": 2000,
+            "clue": "Using order of operations, this is the value of 3 + 3 × (2 + 2).",
+            "answer": "What is 15?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "MODERN LIFE",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "The 'I' in MRI stands for this.",
+            "answer": "What is imaging?"
+          },
+          {
+            "value": 800,
+            "clue": "A webpage that no longer exists often displays 'Not Found' with this error code.",
+            "answer": "What is 404?"
+          },
+          {
+            "value": 1200,
+            "clue": "In the NATO phonetic alphabet, this comes after Alpha, Bravo, Charlie, and Delta.",
+            "answer": "What is Echo?"
+          },
+          {
+            "value": 1600,
+            "clue": "Air Force One is the callsign for a U.S. Air Force aircraft carrying this person.",
+            "answer": "Who is the President of the United States?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "The past participle of the verb 'strike' is this.",
+            "answer": "What is struck?"
+          }
+        ]
+      },
+      {
+        "category": "NATURAL WORLD",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Roughly this percentage of Earth's surface is covered by water.",
+            "answer": "What is 71%?"
+          },
+          {
+            "value": 800,
+            "clue": "This plant is widely known as the fastest-growing plant in the world.",
+            "answer": "What is bamboo?"
+          },
+          {
+            "value": 1200,
+            "clue": "This is the fastest speed an object reaches while falling through a fluid due to gravity.",
+            "answer": "What is terminal velocity?"
+          },
+          {
+            "value": 1600,
+            "clue": "This planet is seventh from the Sun.",
+            "answer": "What is Uranus?"
+          },
+          {
+            "value": 2000,
+            "clue": "A Geiger counter measures this type of radiation-related phenomenon.",
+            "answer": "What is ionizing radiation?"
+          }
+        ]
+      },
+      {
+        "category": "ODD JOBS & ODD WORDS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "A farrier specializes in doing this for horses.",
+            "answer": "What is shoeing horses?"
+          },
+          {
+            "value": 800,
+            "clue": "A blacksmith traditionally works mainly with this metal.",
+            "answer": "What is iron?"
+          },
+          {
+            "value": 1200,
+            "clue": "Decorative, stylized handwriting is known as this art form.",
+            "answer": "What is calligraphy?"
+          },
+          {
+            "value": 1600,
+            "clue": "A typeface such as Arial, Georgia, Impact, or Verdana is commonly called this.",
+            "answer": "What is a font?"
+          },
+          {
+            "value": 2000,
+            "clue": "This term refers to background sound often used to mask other noises.",
+            "answer": "What is white noise?",
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "WORLD RECORDS",
+    "clue": "Although Egypt is famous for them, this country actually contains more pyramids than any other nation on Earth.",
+    "answer": "What is Sudan?"
+  }
+}
