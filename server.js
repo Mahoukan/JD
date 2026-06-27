@@ -37,7 +37,7 @@ app.use(express.static("public", {
   immutable: true,
   maxAge: "1y",
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith(".html")) {
+    if (filePath.endsWith(".html") || filePath.endsWith("service-worker.js")) {
       res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", "0");

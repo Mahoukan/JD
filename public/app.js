@@ -154,6 +154,23 @@ function initialiseIdentity() {
   initialiseBrowserIdentity();
 }
 
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  try {
+    const buildVersion = encodeURIComponent(window.BUILD_VERSION || "dev");
+    navigator.serviceWorker
+      .register(`/service-worker.js?v=${buildVersion}`)
+      .catch(() => {
+        // PWA support is optional; Discord Activities and browsers keep working.
+      });
+  } catch {
+    // Ignore unsupported or restricted embedded browser environments.
+  }
+}
+
 function initialiseBrowserIdentity() {
   showBrowserNameControls();
   const storedName = getStoredBrowserDisplayName();
@@ -1508,7 +1525,11 @@ function renderFinalJeopardy(state) {
     finalWagerInput.max = String(currentPlayer.score);
   }
 
-  if (
+  if (state.phase === "finalWager" && isEligible) {
+    finalStatus.textContent = finalState.wagerStatuses?.[currentUser?.id]
+      ? "Wager submitted. You can still change it until the host reveals the clue."
+      : "Submit your wager.";
+  } else if (
     state.phase === "finalWager" &&
     !isEligible &&
     currentUser?.role === "player"
@@ -1518,7 +1539,9 @@ function renderFinalJeopardy(state) {
     finalStatus.textContent = "Eligible players are submitting wagers.";
   } else if (state.phase === "finalAnswers") {
     finalStatus.textContent = isEligible
-      ? "Submit your answer."
+      ? finalState.answerStatuses?.[currentUser?.id]
+        ? "Answer submitted. You can still change it until the host starts review."
+        : "Submit your answer."
       : "Eligible players are submitting answers.";
   } else if (state.phase === "finalReview") {
     finalStatus.textContent = "Host is reviewing Final Trivia Showdown answers.";
@@ -1556,13 +1579,9 @@ function submitFinalWager() {
   }
 
   finalWagerError.textContent = "";
-  finalWagerBtn.disabled = true;
   socket.emit("submitFinalWager", {
     wager: parsedWager,
   });
-  setTimeout(() => {
-    finalWagerBtn.disabled = false;
-  }, 250);
 }
 
 function submitFinalAnswer() {
@@ -1574,13 +1593,9 @@ function submitFinalAnswer() {
   }
 
   finalAnswerError.textContent = "";
-  finalAnswerBtn.disabled = true;
   socket.emit("submitFinalAnswer", {
     answer: trimmedAnswer,
   });
-  setTimeout(() => {
-    finalAnswerBtn.disabled = false;
-  }, 250);
 }
 
 function renderFinalStatusList(state) {
@@ -2021,3 +2036,5 @@ function formatDelay(delayMs) {
 function formatTimer(remainingMs) {
   return (Math.max(0, remainingMs) / 1000).toFixed(1);
 }
+
+registerServiceWorker();
