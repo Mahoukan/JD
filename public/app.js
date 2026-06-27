@@ -387,12 +387,8 @@ async function getDiscordAuthCode(discordSdk, clientId) {
     state: "",
     prompt: "none",
     scope: [
-      "applications.commands",
       "identify",
-      "guilds",
-      "guilds.members.read",
       "rpc.activities.write",
-      "rpc.voice.read",
     ],
   };
   const response = await discordSdk.commands.authorize(authorizePayload);
@@ -480,15 +476,40 @@ function getRichPresenceText(state, playerCount, maxPlayers) {
 
   if (state.phase === "finalResults") {
     return {
-      details: "Game Over",
+      details: "Game Complete",
       state: `Winner: ${getRichPresenceWinnerName(state)}`,
     };
   }
 
-  if (isFinalJeopardyPhase(state.phase)) {
+  if (state.phase === "finalWager") {
     return {
       details: "Final Showdown",
-      state: `Wagering now ${countLabel}`,
+      state: "Placing Wagers",
+    };
+  }
+
+  if (state.phase === "finalAnswers") {
+    return {
+      details: "Final Showdown",
+      state: "Submitting Answers",
+    };
+  }
+
+  if (state.phase === "finalReview") {
+    return {
+      details: "Final Showdown",
+      state: "Host Reviewing",
+    };
+  }
+
+  if (
+    state.phase === "dailyDoublePlayerSelect" ||
+    state.phase === "dailyDoubleWager" ||
+    state.phase === "dailyDoubleQuestion"
+  ) {
+    return {
+      details: "Daily Double",
+      state: "Special Wager",
     };
   }
 
@@ -499,7 +520,7 @@ function getRichPresenceText(state, playerCount, maxPlayers) {
 }
 
 function getRichPresenceRoundDetails(round) {
-  return round === "doubleJeopardy" ? "Round 2" : "Round 1";
+  return round === "doubleJeopardy" ? "Round Two" : "Round One";
 }
 
 function getRichPresenceWinnerName(state) {
