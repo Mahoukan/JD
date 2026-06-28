@@ -10,6 +10,14 @@ const finalJeopardyScreen = document.getElementById("final-jeopardy-screen");
 const hostBtn = document.getElementById("host-btn");
 const playerBtn = document.getElementById("player-btn");
 const spectatorBtn = document.getElementById("spectator-btn");
+const lobbyPanel = document.getElementById("lobby-panel");
+const createLobbyBtn = document.getElementById("create-lobby-btn");
+const joinLobbyForm = document.getElementById("join-lobby-form");
+const joinLobbyCode = document.getElementById("join-lobby-code");
+const lobbyStatus = document.getElementById("lobby-status");
+const waitingLobbyPanel = document.getElementById("waiting-lobby-panel");
+const currentLobbyCode = document.getElementById("current-lobby-code");
+const copyLobbyCodeBtn = document.getElementById("copy-lobby-code-btn");
 
 const changeRoleBtn = document.getElementById("change-role-btn");
 const startGameBtn = document.getElementById("start-game-btn");
@@ -146,18 +154,22 @@ let browserIdentityReady = false;
 let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
 let resetBoardConfirmTimeout = null;
+let currentLobby = "";
 const browserDisplayNameStorageKey = "jeopardyDisplayName";
 const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
+const browserLobbyCodeStorageKey = "triviaShowdownLobbyCode";
 const discordActivityStartTimestamp = Date.now();
 const maxRichPresencePlayers = 8;
 
 function initialiseIdentity() {
   if (isLikelyDiscordActivity()) {
+    hideLobbyControls();
     hideBrowserNameControls();
     initialiseDiscordIdentity();
     return;
   }
 
+  showLobbyControls();
   initialiseBrowserIdentity();
 }
 
@@ -316,6 +328,27 @@ function getBrowserPlayerToken() {
   }
 }
 
+function getStoredBrowserLobbyCode() {
+  try {
+    return sanitiseLobbyCode(localStorage.getItem(browserLobbyCodeStorageKey) || "");
+  } catch {
+    return "";
+  }
+}
+
+function storeBrowserLobbyCode(lobbyCode) {
+  try {
+    if (lobbyCode) {
+      localStorage.setItem(browserLobbyCodeStorageKey, lobbyCode);
+      return;
+    }
+
+    localStorage.removeItem(browserLobbyCodeStorageKey);
+  } catch {
+    // Storage can be unavailable in some embedded/private browser modes.
+  }
+}
+
 function storeBrowserDisplayName(name) {
   try {
     localStorage.setItem(browserDisplayNameStorageKey, name);
@@ -326,6 +359,19 @@ function storeBrowserDisplayName(name) {
 
 function sanitiseBrowserDisplayName(name) {
   return String(name || "").trim().replace(/\s+/g, " ").slice(0, 40);
+}
+
+function sanitiseLobbyCode(value) {
+  return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+}
+
+function showLobbyControls() {
+  lobbyPanel.classList.remove("hidden");
+}
+
+function hideLobbyControls() {
+  lobbyPanel.classList.add("hidden");
+  waitingLobbyPanel.classList.add("hidden");
 }
 
 function showBrowserNameControls() {
@@ -376,6 +422,21 @@ function applyBrowserDisplayName(name) {
     avatarUrl: "",
     discordUserId: "",
   };
+  const storedLobbyCode = getStoredBrowserLobbyCode();
+
+  if (!currentLobby && storedLobbyCode) {
+    socket.emit("joinLobby", {
+      lobbyCode: storedLobbyCode,
+      clientToken: getBrowserPlayerToken(),
+    });
+  }
+
+  emitBrowserIdentity();
+}
+
+function emitBrowserIdentity() {
+  const name = getStoredBrowserDisplayName() || currentUser?.name || "";
+
   socket.emit("setUserIdentity", {
     name,
     avatarUrl: "",
@@ -664,8 +725,13 @@ socket.on("connected", (user) => {
 
 socket.on("gameState", (state) => {
   currentState = state;
+  if (state.lobbyCode) {
+    currentLobby = state.lobbyCode;
+    storeBrowserLobbyCode(currentLobby);
+  }
   updateRichPresence(state);
 
+  updateLobbyPanel(state);
   updateRoleButtons(state);
   updateWaitingRoom(state);
   updateHostControls();
@@ -688,6 +754,24 @@ socket.on("roleConfirmed", (user) => {
   updateHostControls();
 });
 
+socket.on("lobbyJoined", ({ lobbyCode } = {}) => {
+  currentLobby = sanitiseLobbyCode(lobbyCode);
+  storeBrowserLobbyCode(currentLobby);
+  lobbyStatus.textContent = currentLobby
+    ? `Joined lobby ${currentLobby}. Choose a role to continue.`
+    : "Joined lobby.";
+  message.textContent = "";
+
+  if (browserIdentityReady && !isLikelyDiscordActivity()) {
+    emitBrowserIdentity();
+  }
+});
+
+socket.on("lobbyError", (reason) => {
+  lobbyStatus.textContent = reason || "Could not join lobby.";
+  showToast(lobbyStatus.textContent, "error");
+});
+
 socket.on("roleRejected", (reason) => {
   message.textContent = reason;
   showToast(reason, "error");
@@ -695,6 +779,58 @@ socket.on("roleRejected", (reason) => {
 
 socket.on("actionRejected", (reason) => {
   showToast(reason, "error");
+});
+
+createLobbyBtn.addEventListener("click", () => {
+  if (!ensureBrowserDisplayNameBeforeRole()) {
+    return;
+  }
+
+  createLobbyBtn.disabled = true;
+  socket.emit("createLobby", {
+    clientToken: getBrowserPlayerToken(),
+  });
+  setTimeout(() => {
+    createLobbyBtn.disabled = false;
+  }, 1200);
+});
+
+joinLobbyCode.addEventListener("input", () => {
+  joinLobbyCode.value = sanitiseLobbyCode(joinLobbyCode.value);
+});
+
+joinLobbyForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!ensureBrowserDisplayNameBeforeRole()) {
+    return;
+  }
+
+  const lobbyCode = sanitiseLobbyCode(joinLobbyCode.value);
+
+  if (lobbyCode.length < 4) {
+    lobbyStatus.textContent = "Enter a 4-6 character lobby code.";
+    joinLobbyCode.focus();
+    return;
+  }
+
+  socket.emit("joinLobby", {
+    lobbyCode,
+    clientToken: getBrowserPlayerToken(),
+  });
+});
+
+copyLobbyCodeBtn.addEventListener("click", async () => {
+  if (!currentLobby) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(currentLobby);
+    showToast("Lobby code copied.", "success");
+  } catch {
+    showToast(`Lobby code: ${currentLobby}`, "info");
+  }
 });
 
 hostBtn.addEventListener("click", () => {
@@ -970,7 +1106,26 @@ confirmModal.addEventListener("click", (event) => {
 });
 
 function updateRoleButtons(state) {
-  hostBtn.classList.toggle("hidden", !state.hostAvailable);
+  const needsLobby = !isLikelyDiscordActivity() && !currentLobby;
+  hostBtn.classList.toggle("hidden", !state.hostAvailable || needsLobby);
+  playerBtn.disabled = needsLobby;
+  spectatorBtn.disabled = needsLobby;
+}
+
+function updateLobbyPanel(state) {
+  if (isLikelyDiscordActivity()) {
+    hideLobbyControls();
+    return;
+  }
+
+  const lobbyCode = state.lobbyCode || currentLobby || "";
+  currentLobby = lobbyCode;
+  lobbyPanel.classList.toggle("hidden", Boolean(currentUser?.role));
+  waitingLobbyPanel.classList.toggle("hidden", !lobbyCode);
+  currentLobbyCode.textContent = lobbyCode || "-----";
+  lobbyStatus.textContent = lobbyCode
+    ? `Current lobby: ${lobbyCode}`
+    : "Create a lobby as host, or join with a code.";
 }
 
 function updateWaitingRoom(state) {

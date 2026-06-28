@@ -18,6 +18,18 @@
       <h2>Welcome to Trivia Showdown!</h2>
       <p>Choose how you'd like to join.</p>
 
+      <div id="lobby-panel" class="lobby-panel hidden">
+        <button id="create-lobby-btn" class="primary-button" type="button">Create Lobby</button>
+        <form id="join-lobby-form" class="join-lobby-form">
+          <label for="join-lobby-code">Lobby Code</label>
+          <div class="join-lobby-row">
+            <input id="join-lobby-code" autocomplete="off" inputmode="text" maxlength="6" placeholder="AB123" />
+            <button class="secondary-button" type="submit">Join</button>
+          </div>
+        </form>
+        <p id="lobby-status" class="lobby-status">Create a lobby as host, or join with a code.</p>
+      </div>
+
       <div class="role-list">
         <button id="host-btn" class="role-card">
           <span class="role-icon">👑</span>
@@ -49,6 +61,11 @@
       <h1>Trivia Showdown</h1>
       <h2 id="welcome-text">Welcome!</h2>
       <p class="subtle">Waiting Room</p>
+
+      <div id="waiting-lobby-panel" class="waiting-lobby-panel hidden">
+        <span>Lobby <strong id="current-lobby-code">-----</strong></span>
+        <button id="copy-lobby-code-btn" class="secondary-button" type="button">Copy Lobby Code</button>
+      </div>
 
       <div class="room-grid">
         <div class="room-section">

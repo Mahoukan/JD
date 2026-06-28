@@ -126,6 +126,89 @@ p {
   color: #fca5a5;
 }
 
+.lobby-panel,
+.waiting-lobby-panel {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  background: #111827;
+  text-align: left;
+}
+
+.lobby-panel.hidden,
+.waiting-lobby-panel.hidden {
+  display: none;
+}
+
+.join-lobby-form {
+  display: grid;
+  gap: 6px;
+}
+
+.join-lobby-form label {
+  color: #d1d5db;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.join-lobby-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.join-lobby-row input {
+  min-width: 0;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: #0f172a;
+  color: #f9fafb;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.join-lobby-row input:focus {
+  border-color: #fbbf24;
+  outline: none;
+}
+
+.join-lobby-row .secondary-button,
+.waiting-lobby-panel .secondary-button {
+  width: auto;
+  white-space: nowrap;
+}
+
+.lobby-status {
+  margin: 0;
+  color: #bfdbfe;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.waiting-lobby-panel {
+  grid-template-columns: 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.waiting-lobby-panel span {
+  color: #d1d5db;
+  font-weight: 800;
+}
+
+.waiting-lobby-panel strong {
+  color: #fbbf24;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
 .room-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -232,6 +315,11 @@ li {
 
   .room-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .waiting-lobby-panel {
+    grid-template-columns: 1fr auto;
+    text-align: left;
   }
 }
 

@@ -14,6 +14,8 @@ const PORT = process.env.PORT || 3001;
 const READING_TIMER_MS = 5000;
 const ANSWER_TIMER_MS = 10000;
 const TIMER_BROADCAST_MS = 250;
+const LOBBY_CODE_LENGTH = 5;
+const LOBBY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(join(__dirname, "package.json"), "utf8"));
 const buildCommit = process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || packageJson.version;
@@ -100,6 +102,16 @@ app.post("/api/discord/token", async (req, res) => {
 
 const GameManager = {
   games: new Map(),
+  hasGame(gameId) {
+    const id = sanitizeGameId(gameId);
+    return Boolean(id && this.games.has(id));
+  },
+  createLobby() {
+    const lobbyCode = generateLobbyCode();
+    this.games.set(lobbyCode, createGameContext(lobbyCode, { lobbyCode }));
+    console.log(`Lobby created: ${lobbyCode}`);
+    return this.games.get(lobbyCode);
+  },
   getGame(gameId = "development") {
     const id = gameId || "development";
 
@@ -150,9 +162,10 @@ function exchangeDiscordToken({ clientId, clientSecret, code }) {
   });
 }
 
-function createGameContext(id) {
+function createGameContext(id, options = {}) {
   return {
     id,
+    lobbyCode: options.lobbyCode || "",
     state: createInitialGameState(),
     timerTimeout: null,
     timerBroadcastInterval: null
@@ -272,6 +285,7 @@ function sendGameState() {
 
 function createVisibleGameState(socket) {
   return {
+    lobbyCode: activeGameContext.lobbyCode || "",
     host: gameState.host,
     players: gameState.players,
     spectators: gameState.spectators,
@@ -301,6 +315,23 @@ function broadcastAllGameStates() {
   });
 }
 
+function generateLobbyCode() {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    let code = "";
+
+    for (let index = 0; index < LOBBY_CODE_LENGTH; index += 1) {
+      const randomIndex = Math.floor(Math.random() * LOBBY_CODE_ALPHABET.length);
+      code += LOBBY_CODE_ALPHABET[randomIndex];
+    }
+
+    if (!GameManager.games.has(code)) {
+      return code;
+    }
+  }
+
+  return `L${Date.now().toString(36).toUpperCase().slice(-5)}`;
+}
+
 io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
 
@@ -310,6 +341,8 @@ io.on("connection", (socket) => {
   socket.data.discordUserId = "";
   socket.data.clientToken = "";
   socket.data.role = null;
+  socket.data.isDiscordActivity = false;
+  socket.data.lobbyCode = "";
   socket.join(socket.data.gameId);
   setActiveGameContext(getSocketGame(socket));
 
@@ -318,10 +351,76 @@ io.on("connection", (socket) => {
 
   socket.on("setGameInstance", ({ instanceId } = {}) => {
     const gameId = sanitizeGameId(instanceId) || "development";
+    socket.data.isDiscordActivity = true;
+    socket.data.lobbyCode = "";
     setSocketGame(socket, gameId);
     socket.emit("gameInstanceConfirmed", {
       gameId
     });
+    sendGameState();
+  });
+
+  socket.on("createLobby", ({ clientToken } = {}) => {
+    if (socket.data.isDiscordActivity) {
+      socket.emit("lobbyError", "Lobby codes are not used inside Discord Activities.");
+      return;
+    }
+
+    if (clientToken) {
+      socket.data.clientToken = sanitizeClientToken(clientToken);
+    }
+
+    const lobby = GameManager.createLobby();
+    setSocketGame(socket, lobby.id);
+    socket.data.lobbyCode = lobby.lobbyCode;
+    socket.data.role = null;
+    addSocketToRole(socket, "host");
+    socket.emit("lobbyJoined", {
+      lobbyCode: lobby.lobbyCode
+    });
+    socket.emit("roleConfirmed", getUser(socket));
+    sendGameState();
+  });
+
+  socket.on("joinLobby", ({ lobbyCode, clientToken } = {}) => {
+    if (socket.data.isDiscordActivity) {
+      socket.emit("lobbyError", "Lobby codes are not used inside Discord Activities.");
+      return;
+    }
+
+    const code = sanitizeLobbyCode(lobbyCode);
+
+    if (!GameManager.hasGame(code)) {
+      socket.emit("lobbyError", "Lobby code not found.");
+      return;
+    }
+
+    if (clientToken) {
+      socket.data.clientToken = sanitizeClientToken(clientToken);
+    }
+
+    setSocketGame(socket, code);
+    socket.data.lobbyCode = code;
+    socket.data.role = null;
+    const restoredRole = restoreUserSession(socket, {
+      name: socket.data.name,
+      avatarUrl: socket.data.avatarUrl,
+      discordUserId: "",
+      clientToken: socket.data.clientToken
+    });
+
+    if (restoredRole) {
+      socket.data.role = restoredRole;
+    }
+
+    socket.emit("lobbyJoined", {
+      lobbyCode: code
+    });
+
+    if (restoredRole) {
+      socket.emit("roleConfirmed", getUser(socket));
+    }
+
     sendGameState();
   });
 
@@ -358,6 +457,11 @@ io.on("connection", (socket) => {
       return;
     }
 
+    if (!socket.data.isDiscordActivity && !socket.data.lobbyCode) {
+      socket.emit("roleRejected", "Create or join a lobby first.");
+      return;
+    }
+
     if (!socket.data.discordUserId && clientToken) {
       socket.data.clientToken = clientToken;
     }
@@ -384,29 +488,9 @@ io.on("connection", (socket) => {
       return;
     }
 
-    removeUserFromAllRoles(socket.id);
+    addSocketToRole(socket, role);
 
-    socket.data.role = role;
-
-    const user = getUser(socket);
-
-    if (role === "host") {
-      gameState.host = user;
-    }
-
-    if (role === "player") {
-      gameState.players.push({
-        ...user,
-        score: 0
-      });
-      ensureCurrentTurnPlayer();
-    }
-
-    if (role === "spectator") {
-      gameState.spectators.push(user);
-    }
-
-    socket.emit("roleConfirmed", user);
+    socket.emit("roleConfirmed", getUser(socket));
     sendGameState();
   });
 
@@ -1111,6 +1195,10 @@ io.on("connection", (socket) => {
     console.log(`Disconnected: ${socket.id}`);
 
     if (socket.data.discordUserId || socket.data.clientToken) {
+      if (activeGameContext.lobbyCode && gameState.host?.id === socket.id) {
+        gameState.host = null;
+      }
+
       sendGameState();
       return;
     }
@@ -1125,6 +1213,30 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 });
+
+function addSocketToRole(socket, role) {
+  removeUserFromAllRoles(socket.id);
+
+  socket.data.role = role;
+
+  const user = getUser(socket);
+
+  if (role === "host") {
+    gameState.host = user;
+  }
+
+  if (role === "player") {
+    gameState.players.push({
+      ...user,
+      score: 0
+    });
+    ensureCurrentTurnPlayer();
+  }
+
+  if (role === "spectator") {
+    gameState.spectators.push(user);
+  }
+}
 
 function removeUserFromAllRoles(socketId) {
   if (gameState.host?.id === socketId) {
@@ -1229,6 +1341,11 @@ function sanitizePlainText(value, maxLength) {
 function sanitizeGameId(value) {
   const gameId = sanitizePlainText(value, 120);
   return /^[A-Za-z0-9_-]+$/.test(gameId) ? gameId : "";
+}
+
+function sanitizeLobbyCode(value) {
+  const lobbyCode = sanitizePlainText(value, 6).toUpperCase();
+  return /^[A-Z0-9]{4,6}$/.test(lobbyCode) ? lobbyCode : "";
 }
 
 function updateUserIdentity(socketId, identity) {
