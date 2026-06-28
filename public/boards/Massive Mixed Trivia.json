@@ -1,0 +1,381 @@
+{
+  "id": "MASSIVE-MIXED-TRIVIA",
+  "name": "Massive Mixed Trivia",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "WHAT AM I?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "A building where books can be borrowed.",
+            "answer": "What is a library?"
+          },
+          {
+            "value": 400,
+            "clue": "A scientist who studies living organisms.",
+            "answer": "What is a biologist?"
+          },
+          {
+            "value": 600,
+            "clue": "A device used to measure atmospheric pressure.",
+            "answer": "What is a barometer?"
+          },
+          {
+            "value": 800,
+            "clue": "A structure built to guide ships using a powerful light.",
+            "answer": "What is a lighthouse?"
+          },
+          {
+            "value": 1000,
+            "clue": "The scientific study of coins and currency is known by this name.",
+            "answer": "What is numismatics?"
+          }
+        ]
+      },
+      {
+        "category": "BEFORE OR AFTER?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "The United Nations was founded before or after NATO?",
+            "answer": "What is before?"
+          },
+          {
+            "value": 400,
+            "clue": "The Panama Canal opened for transit before or after World War I began?",
+            "answer": "What is after?"
+          },
+          {
+            "value": 600,
+            "clue": "The first email was sent before or after the first handheld mobile phone call?",
+            "answer": "What is before?"
+          },
+          {
+            "value": 800,
+            "clue": "The Chernobyl disaster occurred before or after the first Space Shuttle launch?",
+            "answer": "What is after?",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "The euro entered circulation before or after Wikipedia launched?",
+            "answer": "What is after?"
+          }
+        ]
+      },
+      {
+        "category": "PICK ONE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This computing term describes unwanted promotional email.",
+            "answer": "What is spam?"
+          },
+          {
+            "value": 400,
+            "clue": "This hormone prepares the body for a fight-or-flight response.",
+            "answer": "What is adrenaline?"
+          },
+          {
+            "value": 600,
+            "clue": "This mineral is the primary component of most sea sand.",
+            "answer": "What is quartz?"
+          },
+          {
+            "value": 800,
+            "clue": "The 'Ph' in PhD stands for this word.",
+            "answer": "What is philosophy?"
+          },
+          {
+            "value": 1000,
+            "clue": "This geologic era is commonly known as the Age of Dinosaurs.",
+            "answer": "What is the Mesozoic Era?"
+          }
+        ]
+      },
+      {
+        "category": "BY THE NUMBERS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "There are this many cards in each suit of a standard deck.",
+            "answer": "What is 13?"
+          },
+          {
+            "value": 400,
+            "clue": "A standard grand piano has this many pedals.",
+            "answer": "What is 3?"
+          },
+          {
+            "value": 600,
+            "clue": "A regulation pool table has this many pockets.",
+            "answer": "What is 6?"
+          },
+          {
+            "value": 800,
+            "clue": "A royal gun salute consists of this many rounds.",
+            "answer": "What is 21?"
+          },
+          {
+            "value": 1000,
+            "clue": "The human heart contains this many valves.",
+            "answer": "What is 4?"
+          }
+        ]
+      },
+      {
+        "category": "CITY LIFE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "The Opera House and Harbour Bridge are landmarks of this Australian city.",
+            "answer": "What is Sydney?"
+          },
+          {
+            "value": 400,
+            "clue": "This Dutch capital is famous for its canals.",
+            "answer": "What is Amsterdam?"
+          },
+          {
+            "value": 600,
+            "clue": "The Forbidden City is located in this Chinese capital.",
+            "answer": "What is Beijing?"
+          },
+          {
+            "value": 800,
+            "clue": "This city famously spans both Europe and Asia.",
+            "answer": "What is Istanbul?"
+          },
+          {
+            "value": 1000,
+            "clue": "This Vietnamese capital is located on the Red River.",
+            "answer": "What is Hanoi?"
+          }
+        ]
+      },
+      {
+        "category": "GENERAL KNOWLEDGE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "The hormone primarily responsible for regulating the sleep cycle.",
+            "answer": "What is melatonin?"
+          },
+          {
+            "value": 400,
+            "clue": "Toyota is headquartered in this country.",
+            "answer": "What is Japan?"
+          },
+          {
+            "value": 600,
+            "clue": "ROI is a common business abbreviation meaning this.",
+            "answer": "What is Return on Investment?"
+          },
+          {
+            "value": 800,
+            "clue": "The medical term for shortsightedness.",
+            "answer": "What is myopia?"
+          },
+          {
+            "value": 1000,
+            "clue": "Portuguese is the most widely spoken language in South America because of this country.",
+            "answer": "What is Brazil?"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "SPELL IT RIGHT",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This word meaning 'the upkeep of something' is spelled correctly.",
+            "answer": "What is maintenance?"
+          },
+          {
+            "value": 800,
+            "clue": "Meaning 'extremely careful,' this word is spelled correctly.",
+            "answer": "What is meticulous?"
+          },
+          {
+            "value": 1200,
+            "clue": "This verb meaning 'to measure or estimate' is spelled with only one 'u'.",
+            "answer": "What is gauging?"
+          },
+          {
+            "value": 1600,
+            "clue": "This adjective describes something that cannot be resisted.",
+            "answer": "What is irresistible?"
+          },
+          {
+            "value": 2000,
+            "clue": "Meaning 'impossible to dispute,' this difficult word is spelled correctly.",
+            "answer": "What is incontrovertible?"
+          }
+        ]
+      },
+      {
+        "category": "THAT'S FALSE!",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Which statement is false? 'Sharks do not have bones,' 'The liver produces bile,' or 'Strawberries are berries.'",
+            "answer": "What is 'Strawberries are berries'?"
+          },
+          {
+            "value": 800,
+            "clue": "Which statement is false? 'Owls have no eyeballs,' 'Cows have one stomach,' or 'Sloths cannot swim.'",
+            "answer": "What is 'Sloths cannot swim'?"
+          },
+          {
+            "value": 1200,
+            "clue": "Which statement is false? 'Iron is denser than gold,' 'Copper conducts electricity,' or 'Aluminium is not magnetic.'",
+            "answer": "What is 'Iron is denser than gold'?"
+          },
+          {
+            "value": 1600,
+            "clue": "Which statement is false? 'Mars has two moons,' 'Saturn could float in water,' or 'Venus rotates in the same direction as Earth.'",
+            "answer": "What is 'Venus rotates in the same direction as Earth'?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "Which statement is false? 'Canada has 10 provinces,' 'Japan has four main islands,' or 'The United States has 51 states.'",
+            "answer": "What is 'The United States has 51 states'?"
+          }
+        ]
+      },
+      {
+        "category": "EVERYDAY OBJECTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This vehicle instrument records the distance traveled.",
+            "answer": "What is an odometer?"
+          },
+          {
+            "value": 800,
+            "clue": "The steering of a ship is controlled by this underwater surface.",
+            "answer": "What is a rudder?"
+          },
+          {
+            "value": 1200,
+            "clue": "Permanent tattoos place pigment into this layer of skin.",
+            "answer": "What is the dermis?"
+          },
+          {
+            "value": 1600,
+            "clue": "A common household battery cell supplies this many volts.",
+            "answer": "What is 1.5 volts?"
+          },
+          {
+            "value": 2000,
+            "clue": "This material is commonly used to coat non-stick frying pans.",
+            "answer": "What is Teflon?"
+          }
+        ]
+      },
+      {
+        "category": "FOOD & DRINK",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This spice gives traditional paella its golden colour.",
+            "answer": "What is saffron?"
+          },
+          {
+            "value": 800,
+            "clue": "This carbon allotrope is the main ingredient in pencil 'lead.'",
+            "answer": "What is graphite?"
+          },
+          {
+            "value": 1200,
+            "clue": "This rice-shaped pasta is often served in soups.",
+            "answer": "What is orzo?"
+          },
+          {
+            "value": 1600,
+            "clue": "This restaurant employee clears and resets tables between customers.",
+            "answer": "What is a busser?"
+          },
+          {
+            "value": 2000,
+            "clue": "This gemstone traditionally marks a 40th wedding anniversary.",
+            "answer": "What is a ruby?"
+          }
+        ]
+      },
+      {
+        "category": "AROUND THE WORLD",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This country is home to Toyota's headquarters.",
+            "answer": "What is Japan?"
+          },
+          {
+            "value": 800,
+            "clue": "Portuguese is the most widely spoken language in South America largely because of this country.",
+            "answer": "What is Brazil?"
+          },
+          {
+            "value": 1200,
+            "clue": "This Italian city lies in the shadow of Mount Vesuvius.",
+            "answer": "What is Naples?"
+          },
+          {
+            "value": 1600,
+            "clue": "This capital city sits on the Potomac River.",
+            "answer": "What is Washington, D.C.?"
+          },
+          {
+            "value": 2000,
+            "clue": "This European capital is divided into Buda and Pest by the Danube River.",
+            "answer": "What is Budapest?"
+          }
+        ]
+      },
+      {
+        "category": "ODD FACTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Cupid is traditionally depicted carrying this weapon.",
+            "answer": "What is a bow?"
+          },
+          {
+            "value": 800,
+            "clue": "The more common name for the medical condition singultus.",
+            "answer": "What are hiccups?"
+          },
+          {
+            "value": 1200,
+            "clue": "An executor settles this after a person's death.",
+            "answer": "What is an estate?"
+          },
+          {
+            "value": 1600,
+            "clue": "Galaxy is a smartphone line produced by this company.",
+            "answer": "What is Samsung?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This gemstone is formed from fossilized tree resin.",
+            "answer": "What is amber?",
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "WORLD HISTORY",
+    "clue": "Completed in 1869, this man-made waterway connected the Mediterranean Sea to the Red Sea nearly 50 years before the Panama Canal opened.",
+    "answer": "What is the Suez Canal?"
+  }
+}
