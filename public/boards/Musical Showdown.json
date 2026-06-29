@@ -1,0 +1,382 @@
+{
+  "id": "TRIVIA-SHOWDOWN",
+  "name": "Trivia Showdown Board",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "TV Theme Songs",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Now this is a story all about how\nMy life got flipped, turned upside down",
+            "answer": "And I'd like to take a minute, just sit right there I'll tell you how I became the prince of a town called Bel-Air"
+          },
+          {
+            "value": 400,
+            "clue": "So no one told you life was gonna be this way\nYour job's a joke, you're broke, your love life's D.O.A.",
+            "answer": "It's like you're always stuck in second gear When it hasn't been your day, your week Your month, or even your year"
+          },
+          {
+            "value": 600,
+            "clue": "The Earth began to cool\nThe autotrophs began to drool\nNeanderthals developed tools\nWe built a wall (We built the pyramids)",
+            "answer": "Math, science, history, unraveling the mystery That all started with the Big Bang (Bang)"
+          },
+          {
+            "value": 800,
+            "clue": "There's a hundred and four days of summer vacation\nAnd school comes along just to end it",
+            "answer": "So the annual problem for our generation Is finding a good way to spend it"
+          },
+          {
+            "value": 1000,
+            "clue": "(Pokémon\nGotta catch 'em all) It's you and me\nI know it's my destiny (Pokémon)\nOh, you're my best friend",
+            "answer": "In a world we must defend (Pokémon Gotta catch 'em all)",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "Cartoon Intros",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Who lives in a pineapple under the sea?\nSpongeBob SquarePants",
+            "answer": "Absorbent and yellow and porous is he SpongeBob SquarePants"
+          },
+          {
+            "value": 400,
+            "clue": "It started when an alien device did what it did\nAnd stuck itself upon his wrist with secrets that it hid",
+            "answer": "Now he's got superpowers, he's no ordinary kid He's Ben 10 (Ben 10)"
+          },
+          {
+            "value": 600,
+            "clue": "When there's trouble, you know who to call (Teen Titans)",
+            "answer": "From their tower, they can see it all (Teen Titans)"
+          },
+          {
+            "value": 800,
+            "clue": "Obtuse, rubber goose, green moose, guava juice",
+            "answer": "Giant snake, birthday cake, large fries, chocolate shake"
+          },
+          {
+            "value": 1000,
+            "clue": "Adventure Time\nCome on, grab your friends\nWe'll go to very distant lands",
+            "answer": "With Jake the Dog and Finn the Human The fun will never end, it's Adventure Time"
+          }
+        ]
+      },
+      {
+        "category": "Disney",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "My power flurries through the air into the ground\nMy soul is spiraling in frozen fractals all around",
+            "answer": "And one thought crystallizes like an icy blast I'm never goin' back, the past is in the past"
+          },
+          {
+            "value": 400,
+            "clue": "The tide, the grass, the ground\nOh, that was Maui just messin' around",
+            "answer": "I killed an eel, I buried its guts Sprouted a tree, now you got coconuts"
+          },
+          {
+            "value": 600,
+            "clue": "I can show you the world\nShining, shimmering, splendid",
+            "answer": "Tell me, Princess Now, when did you last let your heart decide?"
+          },
+          {
+            "value": 800,
+            "clue": "I will find my way\nI can go the distance",
+            "answer": "I'll be there someday, If I can be strong"
+          },
+          {
+            "value": 1000,
+            "clue": "Be our guest, be our guest\nOur command is your request\nIt's ten years since we've had anybody here",
+            "answer": "And we're obsessed With your meal, with your ease Yes, indeed, we aim to please"
+          }
+        ]
+      },
+      {
+        "category": "2000s Hits",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Why'd you have to go and make things so complicated?\nI see the way you're",
+            "answer": "Actin' like you're somebody else, gets me frustrated"
+          },
+          {
+            "value": 400,
+            "clue": "Comin' out of my cage and I've been doin' just fine\nGotta, gotta be down because I want it all",
+            "answer": "It started out with a kiss, how did it end up like this? It was only a kiss, it was only a kiss"
+          },
+          {
+            "value": 600,
+            "clue": "My baby don't mess around\nBecause she loves me so, and this I know for sure (Uh)",
+            "answer": "But does she really wanna But can't stand to see me walk out the door? (Ah)"
+          },
+          {
+            "value": 800,
+            "clue": "Here's the thing, we started out friends\nIt was cool, but it was all pretend\nYeah, yeah\nSince you been gone",
+            "answer": "You're dedicated, you took the time Wasn't long 'til I called you mine"
+          },
+          {
+            "value": 1000,
+            "clue": "Up in the club with my homies\nTryna get a little V-I, keep it down on the low-key (Low-key)\n'Cause you know how it is (Hey, hey)",
+            "answer": "I saw this shorty, she was checkin' up on me"
+          }
+        ]
+      },
+      {
+        "category": "Everyone Knows These",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Hey, I just met you, and this is crazy",
+            "answer": "But here's my number, so call me maybe"
+          },
+          {
+            "value": 400,
+            "clue": "Clap along if you feel like a room without a roof\n(Because I'm happy)",
+            "answer": "Clap along if you feel like happiness is the truth"
+          },
+          {
+            "value": 600,
+            "clue": "You know you love me (Yo), I know you care (Uh-huh)",
+            "answer": "Just shout whenever (Yo), and I'll be there (Uh-huh)"
+          },
+          {
+            "value": 800,
+            "clue": "This hit, that ice cold\nMichelle Pfeiffer, that white gold",
+            "answer": "This one for them hood girls Them good girls, straight masterpieces"
+          },
+          {
+            "value": 1000,
+            "clue": "I got the horses in the back\nHorse tack is attached",
+            "answer": "Hat is matte black Got the boots that's black to match"
+          }
+        ]
+      },
+      {
+        "category": "Movie Soundtracks",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Every night in my dreams, I see you, I feel you\nThat is how I know you go on",
+            "answer": "Far across the distance and spaces between us You have come to show you go on"
+          },
+          {
+            "value": 400,
+            "clue": "Everybody's always talkin' at me\nEverybody's tryin' to get in my head",
+            "answer": "I wanna listen to my own heart talkin' I need to count on myself instead"
+          },
+          {
+            "value": 600,
+            "clue": "Where have all the good men gone and where are all the gods?\nWhere's the streetwise Hercules to fight the risin' odds?",
+            "answer": "Isn't there a white knight upon a fiery steed? Late at night, I toss and I turn and I dream of what I need"
+          },
+          {
+            "value": 800,
+            "clue": "You think I don't want to run to you?\nBut there are mountains",
+            "answer": "And there are doors that we can't walk through I know you're wonderin' why"
+          },
+          {
+            "value": 1000,
+            "clue": "Po atarau\nE moea iho nei",
+            "answer": "E haere ana Koe ki pamamao",
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "ONe hit wonder",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Her name is Noelle, I have a dream about her\nShe rings my bell, I got gym class in half an hour",
+            "answer": "Oh, how she rocks in Keds and tube socks But she doesn't know who I am, and she doesn't give a damn"
+          },
+          {
+            "value": 800,
+            "clue": "Well, the party was nice\nThe party was pumping (Hey, yippie-yi-yo)",
+            "answer": "And everybody having a ball (Hah, ho, yippie-yi-yo)"
+          },
+          {
+            "value": 1200,
+            "clue": "If I could fall into the sky\nDo you think time would pass me by?",
+            "answer": "'Cause you know I'd walk a thousand miles If I could just see you tonight"
+          },
+          {
+            "value": 1600,
+            "clue": "Stacy, can I come over after school? (After school)\nWe can hang around by the pool (Hang by the pool)",
+            "answer": "Does your mom get back from her business trip? Is she there, or is she trying to give me the slip?"
+          },
+          {
+            "value": 2000,
+            "clue": "We're talking away\nNo, I don't know what I'm to say",
+            "answer": "I'll say it anyway Today is another day to find you",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "Internet Classics",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "We're no strangers to love",
+            "answer": "You know the rules and so do I"
+          },
+          {
+            "value": 800,
+            "clue": "Dog goes \"woof\", cat goes \"meow\"\nBird goes \"tweet\" and mouse goes \"squeak\"",
+            "answer": "Cow goes \"moo\", frog goes \"croak\" And the elephant goes \"toot\""
+          },
+          {
+            "value": 1200,
+            "clue": "(Save me) Call my name and save me from the dark",
+            "answer": "(Wake me up) Bid my blood to run"
+          },
+          {
+            "value": 1600,
+            "clue": "Hello, salute\nIt's me, your duke",
+            "answer": "And I made something that's real To show you how I feel"
+          },
+          {
+            "value": 2000,
+            "clue": "Jeongsukae boijiman nol ttaen noneun yeoja",
+            "answer": "Ittaeda sipeumyeon mukkeotdeon meori puneun yeoja",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "Rock Anthems",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "When I was a young boy, my father\nTook me into the city to see a marching band",
+            "answer": "He said, \"Son, when you grow up, would you be The savior of the broken, the beaten, and the damned?\""
+          },
+          {
+            "value": 800,
+            "clue": "I'm tired of being what you want me to be\nFeeling so faithless, lost under the surface",
+            "answer": "I don't know what you're expecting of me Put under the pressure of walking in your shoes"
+          },
+          {
+            "value": 1200,
+            "clue": "My shadow's the only one that walks beside me",
+            "answer": "My shallow heart's the only thing that's beatin'"
+          },
+          {
+            "value": 1600,
+            "clue": "Come up to meet you, tell ya I'm sorry",
+            "answer": "You don't know how lovely you are"
+          },
+          {
+            "value": 2000,
+            "clue": "I'm gonna fight 'em off\nA seven-nation army couldn't hold me back",
+            "answer": "They're gonna rip it off Takin' their time right behind my back"
+          }
+        ]
+      },
+      {
+        "category": "The 20s",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Birds of a feather, we should stick together, I know\nI said I'd never think I wasn't better alone",
+            "answer": "Can't change the weather, might not be forever But if it's forever, it's even better"
+          },
+          {
+            "value": 800,
+            "clue": "I know I have good judgment, I know I have good taste\nIt's funny and it's ironic that only I feel that way",
+            "answer": "I promise 'em that you're different and everyone makes mistakes"
+          },
+          {
+            "value": 1200,
+            "clue": "We were good, we were gold\nKinda dream that can't be sold",
+            "answer": "We were right 'til we weren't Built a home and watched it burn"
+          },
+          {
+            "value": 1600,
+            "clue": "For a while there, it was rough\nBut lately, I've been doin' better",
+            "answer": "Than the last four cold Decembers I recall And I see my family every month"
+          },
+          {
+            "value": 2000,
+            "clue": "He said, \"I'm just curious, is this for real or just an act?\nCan't tell if you love or hate me, never met someone like that",
+            "answer": "Drive me so (So, so) crazy, did you know you got that effect?\" I said, \"Lemme check, yeah\""
+          }
+        ]
+      },
+      {
+        "category": "Lyric Traps",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "My lover's got humour\nShe's the giggle at a funeral",
+            "answer": "Knows everybody's disapproval I should've worshipped her sooner"
+          },
+          {
+            "value": 800,
+            "clue": "But you didn't have to cut me off\nMake out like it never happened and that we were nothing (Ah)",
+            "answer": "And I don't even need your love (Ohh) But you treat me like a stranger and that feels so rough (Ah)"
+          },
+          {
+            "value": 1200,
+            "clue": "I'm gonna swing from the chandelier\nFrom the chandelier",
+            "answer": "I'm gonna live like tomorrow doesn't exist Like it doesn't exist"
+          },
+          {
+            "value": 1600,
+            "clue": "And the walls kept tumbling down in the city that we love",
+            "answer": "Grey clouds roll over the hills, bringing darkness from above"
+          },
+          {
+            "value": 2000,
+            "clue": "When the days are cold and the cards all fold\nAnd the saints we see are all made of gold",
+            "answer": "When your dreams all fail and the ones we hail Are the worst of all, and the blood's run stale"
+          }
+        ]
+      },
+      {
+        "category": "Category 6",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Picking coconuts from the coconut tree, yeah\nNa-na-na-na-na-na-na-na-na",
+            "answer": "Biggest coconuts that you ever seen"
+          },
+          {
+            "value": 800,
+            "clue": "I told the witch doctor you didn't love me true (Doh-doh-doh-doh)",
+            "answer": "I told the witch doctor you didn't love me nice (Doh-doh-doh-doh)"
+          },
+          {
+            "value": 1200,
+            "clue": "Well, the party was nice\nThe party was pumping (Hey, yippie-yi-yo)",
+            "answer": "And everybody having a ball (Hah, ho, yippie-yi-yo)"
+          },
+          {
+            "value": 1600,
+            "clue": "Whakaawe, awe, awe (Hi!)\nWhakaawe, awe, awe (Awe!)",
+            "answer": "Ma te kotahitanga (Hi!)"
+          },
+          {
+            "value": 2000,
+            "clue": "Who can take a sunrise?\n(Who can take a sunrise?)",
+            "answer": "Sprinkle it with dew (Sprinkle it with dew)",
+            "dailyDouble": true
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "The classics",
+    "clue": "I see a little silhouetto of a man",
+    "answer": "Scaramouche, Scaramouche, will you do the Fandango?"
+  }
+}
