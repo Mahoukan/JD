@@ -1,0 +1,383 @@
+{
+  "id": "MOVIE-NIGHT-2",
+  "name": "Movie Night II: Film Buff",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "CHARACTER NAMES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This is the real name of Uma Thurman's character known as 'The Bride' in Kill Bill.",
+            "answer": "Who is Beatrix Kiddo?"
+          },
+          {
+            "value": 400,
+            "clue": "Nicole Kidman played this courtesan and performer in Moulin Rouge!.",
+            "answer": "Who is Satine?"
+          },
+          {
+            "value": 600,
+            "clue": "Katie Holmes and Maggie Gyllenhaal both played this Gotham assistant district attorney.",
+            "answer": "Who is Rachel Dawes?"
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of John Wayne's character in True Grit, later played by Jeff Bridges in the remake.",
+            "answer": "Who is Rooster Cogburn?"
+          },
+          {
+            "value": 1000,
+            "clue": "Alec Baldwin was the first actor to play this CIA analyst on screen.",
+            "answer": "Who is Jack Ryan?"
+          }
+        ]
+      },
+      {
+        "category": "THE ACTOR'S STUDIO",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This actor played Juror Number 8 in 12 Angry Men.",
+            "answer": "Who is Henry Fonda?"
+          },
+          {
+            "value": 400,
+            "clue": "This actress was born Audrey Kathleen Ruston.",
+            "answer": "Who is Audrey Hepburn?"
+          },
+          {
+            "value": 600,
+            "clue": "This actress played the Wicked Witch of the West in The Wizard of Oz.",
+            "answer": "Who is Margaret Hamilton?"
+          },
+          {
+            "value": 800,
+            "clue": "This actor is the only performer to receive an Oscar nomination for acting in a Star Wars movie.",
+            "answer": "Who is Alec Guinness?",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "This actress was known as the queen of 1970s blaxploitation cinema.",
+            "answer": "Who is Pam Grier?"
+          }
+        ]
+      },
+      {
+        "category": "SCREEN STORIES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Sylvester Stallone wrote the screenplay for this boxing classic.",
+            "answer": "What is Rocky?"
+          },
+          {
+            "value": 400,
+            "clue": "Erich Maria Remarque wrote the novel that inspired multiple film versions of this anti-war story.",
+            "answer": "What is All Quiet on the Western Front?"
+          },
+          {
+            "value": 600,
+            "clue": "Benoit Blanc investigates the Thrombey family in this 2019 mystery film.",
+            "answer": "What is Knives Out?"
+          },
+          {
+            "value": 800,
+            "clue": "Miles Bron is revealed as the killer in this Knives Out sequel.",
+            "answer": "What is Glass Onion?"
+          },
+          {
+            "value": 1000,
+            "clue": "The first rule of this movie is that you do not talk about it.",
+            "answer": "What is Fight Club?"
+          }
+        ]
+      },
+      {
+        "category": "ICONIC LOCATIONS & OBJECTS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Cary Grant climbs this national monument in the final moments of North by Northwest.",
+            "answer": "What is Mount Rushmore?"
+          },
+          {
+            "value": 400,
+            "clue": "This famous Los Angeles landmark is heavily featured in Rebel Without a Cause.",
+            "answer": "What is Griffith Observatory?"
+          },
+          {
+            "value": 600,
+            "clue": "This Los Angeles hotel is prominently featured in Pretty Woman.",
+            "answer": "What is the Beverly Wilshire?"
+          },
+          {
+            "value": 800,
+            "clue": "This is the fictional brand of cigarettes that appears across Quentin Tarantino's movies.",
+            "answer": "What are Red Apple cigarettes?"
+          },
+          {
+            "value": 1000,
+            "clue": "This is the name of Humperdinck's kingdom in The Princess Bride.",
+            "answer": "What is Florin?"
+          }
+        ]
+      },
+      {
+        "category": "SOUNDTRACKS & SCORES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This 1964 musical blockbuster won Julie Andrews the Academy Award for Best Actress.",
+            "answer": "What is Mary Poppins?"
+          },
+          {
+            "value": 400,
+            "clue": "This is the name of the extended ballet sequence near the end of Singin' in the Rain.",
+            "answer": "What is Broadway Melody?"
+          },
+          {
+            "value": 600,
+            "clue": "This composer first collaborated with Steven Spielberg on The Sugarland Express.",
+            "answer": "Who is John Williams?"
+          },
+          {
+            "value": 800,
+            "clue": "This vocalist sang for Natalie Wood in West Side Story, Audrey Hepburn in My Fair Lady, and Deborah Kerr in The King and I.",
+            "answer": "Who is Marni Nixon?"
+          },
+          {
+            "value": 1000,
+            "clue": "The Harry Lime Theme from The Third Man was performed on this instrument.",
+            "answer": "What is a zither?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "FILM HISTORY",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This 1970 film marked Arnold Schwarzenegger's feature debut.",
+            "answer": "What is Hercules in New York?"
+          },
+          {
+            "value": 400,
+            "clue": "This was the first foreign-language film to win the Oscar for Best Picture.",
+            "answer": "What is Parasite?"
+          },
+          {
+            "value": 600,
+            "clue": "This 1981 drama starred real-life father and daughter Henry and Jane Fonda.",
+            "answer": "What is On Golden Pond?"
+          },
+          {
+            "value": 800,
+            "clue": "Adjusted for inflation, this is the highest-grossing movie of all time.",
+            "answer": "What is Gone with the Wind?"
+          },
+          {
+            "value": 1000,
+            "clue": "This is the second, and most recent, fantasy film to win Best Picture at the Oscars.",
+            "answer": "What is The Shape of Water?"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "OSCAR RECORDS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This entertainment icon holds the record for the most Academy Awards won, with 22 Oscars.",
+            "answer": "Who is Walt Disney?"
+          },
+          {
+            "value": 800,
+            "clue": "This actress has won three Oscars and received 21 nominations.",
+            "answer": "Who is Meryl Streep?"
+          },
+          {
+            "value": 1200,
+            "clue": "This actress became the first woman of color to win the Oscar for Best Actress.",
+            "answer": "Who is Halle Berry?"
+          },
+          {
+            "value": 1600,
+            "clue": "This actor won his second Best Actor Oscar in 2021 in a major upset.",
+            "answer": "Who is Anthony Hopkins?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This actor won Best Supporting Actor Oscars for both Moonlight and Green Book.",
+            "answer": "Who is Mahershala Ali?"
+          }
+        ]
+      },
+      {
+        "category": "CULT FAVORITES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 1984 country-musical comedy starred Dolly Parton and Sylvester Stallone.",
+            "answer": "What is Rhinestone?"
+          },
+          {
+            "value": 800,
+            "clue": "This infamous 1980 box-office bomb damaged director Michael Cimino's career.",
+            "answer": "What is Heaven's Gate?"
+          },
+          {
+            "value": 1200,
+            "clue": "This Hollywood movie star plays himself in Zombieland.",
+            "answer": "Who is Bill Murray?"
+          },
+          {
+            "value": 1600,
+            "clue": "In this 1995 teen comedy, Tai says, 'You're a virgin who can't drive?'",
+            "answer": "What is Clueless?"
+          },
+          {
+            "value": 2000,
+            "clue": "David Bowie judges a fashion walk-off between Ben Stiller and Owen Wilson in this comedy.",
+            "answer": "What is Zoolander?"
+          }
+        ]
+      },
+      {
+        "category": "DIRECTOR TRIVIA",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This director won his first Oscar for Best Director for Schindler's List.",
+            "answer": "Who is Steven Spielberg?"
+          },
+          {
+            "value": 800,
+            "clue": "This Richard Linklater drama was filmed and produced over 12 years.",
+            "answer": "What is Boyhood?"
+          },
+          {
+            "value": 1200,
+            "clue": "This filmmaker's first feature as writer and director was Reservoir Dogs.",
+            "answer": "Who is Quentin Tarantino?"
+          },
+          {
+            "value": 1600,
+            "clue": "This director made both the 1961 West Side Story and The Sound of Music.",
+            "answer": "Who is Robert Wise?"
+          },
+          {
+            "value": 2000,
+            "clue": "This director made the classic horror films Frankenstein and Bride of Frankenstein.",
+            "answer": "Who is James Whale?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "DEEP CUTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This creature is on the back of Ryan Gosling's silk jacket in Drive.",
+            "answer": "What is a scorpion?"
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of the donkey in The Banshees of Inisherin.",
+            "answer": "Who is Jenny?"
+          },
+          {
+            "value": 1200,
+            "clue": "This household pet meets a horrific fate in Fatal Attraction.",
+            "answer": "What is a bunny rabbit?"
+          },
+          {
+            "value": 1600,
+            "clue": "In Blonde Venus, Marlene Dietrich famously appears in a nightclub dressed as this animal.",
+            "answer": "What is a gorilla?"
+          },
+          {
+            "value": 2000,
+            "clue": "In Tár, Lydia Tár aims to conduct this piece as a career-high achievement.",
+            "answer": "What is Mahler's Symphony No. 5?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "BOX OFFICE & RECORDS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 2023 film became the highest-grossing war movie of all time.",
+            "answer": "What is Oppenheimer?"
+          },
+          {
+            "value": 800,
+            "clue": "This was the first pandemic-era movie to gross over $1 billion at the box office.",
+            "answer": "What is Spider-Man: No Way Home?"
+          },
+          {
+            "value": 1200,
+            "clue": "This Avatar sequel has a runtime of 192 minutes.",
+            "answer": "What is Avatar: The Way of Water?"
+          },
+          {
+            "value": 1600,
+            "clue": "This is the highest-grossing foreign-language film at the U.S. box office.",
+            "answer": "What is The Passion of the Christ?"
+          },
+          {
+            "value": 2000,
+            "clue": "This DC movie was shockingly cancelled by Warner Bros. in 2022 despite being mostly completed.",
+            "answer": "What is Batgirl?"
+          }
+        ]
+      },
+      {
+        "category": "TRUE CINEPHILES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Bill Nighy played this character in the Pirates of the Caribbean movies.",
+            "answer": "Who is Davy Jones?"
+          },
+          {
+            "value": 800,
+            "clue": "This award-winning Canadian actor played the killer in Rear Window.",
+            "answer": "Who is Raymond Burr?"
+          },
+          {
+            "value": 1200,
+            "clue": "This actress delivered the line 'Whose hand was I holding?' in the 1963 horror film The Haunting.",
+            "answer": "Who is Julie Harris?"
+          },
+          {
+            "value": 1600,
+            "clue": "This visual-effects legend created stop-motion effects for Jason and the Argonauts and Clash of the Titans.",
+            "answer": "Who is Ray Harryhausen?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This is the only actor to appear in both Robert Wise's 1961 West Side Story and the 2021 remake.",
+            "answer": "Who is Rita Moreno?"
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "ACADEMY AWARDS",
+    "clue": "Only three films have won the 'Big Five' Academy Awards: Best Picture, Best Director, Best Screenplay, Best Actor, and Best Actress. Name one of the three.",
+    "answer": "What are It Happened One Night, One Flew Over the Cuckoo's Nest, and The Silence of the Lambs?"
+  }
+}

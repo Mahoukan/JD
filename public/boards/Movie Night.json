@@ -1,0 +1,383 @@
+{
+  "id": "MOVIE-NIGHT-1",
+  "name": "Movie Night",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "BOX OFFICE HITS",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This James Cameron film is the highest-grossing movie of all time, not adjusted for inflation.",
+            "answer": "What is Avatar?"
+          },
+          {
+            "value": 400,
+            "clue": "This 2019 film about Batman's most famous villain became a record-breaking R-rated hit.",
+            "answer": "What is Joker?"
+          },
+          {
+            "value": 600,
+            "clue": "Robert Zemeckis won the Oscar for Best Director for this Tom Hanks film.",
+            "answer": "What is Forrest Gump?"
+          },
+          {
+            "value": 800,
+            "clue": "Joaquin Phoenix received his first Oscar nomination for playing Commodus in this 2000 epic.",
+            "answer": "What is Gladiator?"
+          },
+          {
+            "value": 1000,
+            "clue": "Richard Attenborough played John Hammond in this blockbuster.",
+            "answer": "What is Jurassic Park?"
+          }
+        ]
+      },
+      {
+        "category": "WHO PLAYED THEM?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This actor played Spider-Man in Sam Raimi's 2002 blockbuster.",
+            "answer": "Who is Tobey Maguire?"
+          },
+          {
+            "value": 400,
+            "clue": "This actor played Detective Rick Deckard in Blade Runner.",
+            "answer": "Who is Harrison Ford?"
+          },
+          {
+            "value": 600,
+            "clue": "This actress played the 'Unsinkable' Molly Brown in Titanic.",
+            "answer": "Who is Kathy Bates?"
+          },
+          {
+            "value": 800,
+            "clue": "This actress played Mrs. Robinson in The Graduate.",
+            "answer": "Who is Anne Bancroft?",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "This actor played Martin Luther King Jr. in the 2014 biopic Selma.",
+            "answer": "Who is David Oyelowo?"
+          }
+        ]
+      },
+      {
+        "category": "MOVIE QUOTES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Jack Nicholson ad-libbed 'Here's Johnny!' in The Shining, referencing this TV show.",
+            "answer": "What is The Tonight Show Starring Johnny Carson?"
+          },
+          {
+            "value": 400,
+            "clue": "In Apocalypse Now, Robert Duvall says, 'I love the smell of this in the morning.'",
+            "answer": "What is napalm?"
+          },
+          {
+            "value": 600,
+            "clue": "These are the dying words of Charles Foster Kane in Citizen Kane.",
+            "answer": "What is Rosebud?"
+          },
+          {
+            "value": 800,
+            "clue": "Robert De Niro famously says 'You talkin' to me?' in this 1976 thriller.",
+            "answer": "What is Taxi Driver?"
+          },
+          {
+            "value": 1000,
+            "clue": "'Well, nobody's perfect' is the final punchline of this 1959 Marilyn Monroe comedy.",
+            "answer": "What is Some Like It Hot?"
+          }
+        ]
+      },
+      {
+        "category": "SUPERHEROES & FANTASY",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This actor played the Green Goblin in the 2002 box-office smash Spider-Man.",
+            "answer": "Who is Willem Dafoe?"
+          },
+          {
+            "value": 400,
+            "clue": "This famous actor was almost unrecognizable as the Penguin in The Batman.",
+            "answer": "Who is Colin Farrell?"
+          },
+          {
+            "value": 600,
+            "clue": "This is the first fantasy movie to win Best Picture at the Oscars.",
+            "answer": "What is The Lord of the Rings: The Return of the King?"
+          },
+          {
+            "value": 800,
+            "clue": "Bill Nighy played this character in the Harry Potter films.",
+            "answer": "Who is Rufus Scrimgeour?"
+          },
+          {
+            "value": 1000,
+            "clue": "Jason Momoa plays this character in Dune (2021).",
+            "answer": "Who is Duncan Idaho?"
+          }
+        ]
+      },
+      {
+        "category": "MOVIE MUSIC",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This anthemic dance appears near the beginning of The Rocky Horror Picture Show.",
+            "answer": "What is The Time Warp?"
+          },
+          {
+            "value": 400,
+            "clue": "This Redbone song plays over the opening credits of Guardians of the Galaxy.",
+            "answer": "What is Come and Get Your Love?"
+          },
+          {
+            "value": 600,
+            "clue": "This composer wrote the music for Tim Burton's 1989 Batman.",
+            "answer": "Who is Danny Elfman?"
+          },
+          {
+            "value": 800,
+            "clue": "This filmmaker also wrote the famous theme music for Halloween.",
+            "answer": "Who is John Carpenter?",
+            "dailyDouble": true
+          },
+          {
+            "value": 1000,
+            "clue": "In Risky Business, Tom Cruise famously lip-syncs to this Bob Seger song.",
+            "answer": "What is Old Time Rock and Roll?"
+          }
+        ]
+      },
+      {
+        "category": "ANIMATED FAVORITES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This Disney film was the first feature-length animated movie ever released.",
+            "answer": "What is Snow White and the Seven Dwarfs?"
+          },
+          {
+            "value": 400,
+            "clue": "This actress voices Princess Elsa in the Frozen films.",
+            "answer": "Who is Idina Menzel?"
+          },
+          {
+            "value": 600,
+            "clue": "This is the name of Riley's imaginary friend in Inside Out.",
+            "answer": "Who is Bing Bong?"
+          },
+          {
+            "value": 800,
+            "clue": "This is the name of the fictional boy band in Pixar's Turning Red.",
+            "answer": "What is 4*Town?"
+          },
+          {
+            "value": 1000,
+            "clue": "This animated classic was the first film of the late-20th-century Disney Renaissance.",
+            "answer": "What is The Little Mermaid?"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "THE OSCARS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This film was incorrectly announced as Best Picture at the 2017 Academy Awards.",
+            "answer": "What is La La Land?"
+          },
+          {
+            "value": 800,
+            "clue": "Jennifer Lawrence won Best Actress for this 2012 romantic comedy-drama.",
+            "answer": "What is Silver Linings Playbook?"
+          },
+          {
+            "value": 1200,
+            "clue": "This 1927 war drama was the first film to win Best Picture.",
+            "answer": "What is Wings?"
+          },
+          {
+            "value": 1600,
+            "clue": "This is the only X-rated film to win Best Picture.",
+            "answer": "What is Midnight Cowboy?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "This 1972 film holds the record for most Oscar wins without winning Best Picture, with eight wins total.",
+            "answer": "What is Cabaret?"
+          }
+        ]
+      },
+      {
+        "category": "DIRECTOR'S CHAIR",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Steven Spielberg won his first Oscar for Best Director for this film.",
+            "answer": "What is Schindler's List?"
+          },
+          {
+            "value": 800,
+            "clue": "This was Quentin Tarantino's first feature as writer and director.",
+            "answer": "What is Reservoir Dogs?"
+          },
+          {
+            "value": 1200,
+            "clue": "This Oscar-winning filmmaker directed Happy Feet, Babe: Pig in the City, and Mad Max: Fury Road.",
+            "answer": "Who is George Miller?"
+          },
+          {
+            "value": 1600,
+            "clue": "This director made the horror films Hereditary and Midsommar.",
+            "answer": "Who is Ari Aster?"
+          },
+          {
+            "value": 2000,
+            "clue": "This director's 1980 box-office bomb Heaven's Gate badly damaged his career after The Deer Hunter.",
+            "answer": "Who is Michael Cimino?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "BEHIND THE SCENES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 1927 musical is widely known as the first feature-length 'talkie.'",
+            "answer": "What is The Jazz Singer?"
+          },
+          {
+            "value": 800,
+            "clue": "This 1984 action film was the first movie ever rated PG-13.",
+            "answer": "What is Red Dawn?"
+          },
+          {
+            "value": 1200,
+            "clue": "This is the name of the skyscraper in Die Hard.",
+            "answer": "What is Nakatomi Plaza?"
+          },
+          {
+            "value": 1600,
+            "clue": "This is the name of the spaceship in Alien.",
+            "answer": "What is the USCSS Nostromo?"
+          },
+          {
+            "value": 2000,
+            "clue": "This stage play was adapted into the 1942 Best Picture winner Casablanca.",
+            "answer": "What is Everybody Comes to Rick's?"
+          }
+        ]
+      },
+      {
+        "category": "HORROR SHOW",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This Alfred Hitchcock thriller is famous for its shocking shower scene.",
+            "answer": "What is Psycho?"
+          },
+          {
+            "value": 800,
+            "clue": "This movie star is killed off in the opening scene of Scream.",
+            "answer": "Who is Drew Barrymore?"
+          },
+          {
+            "value": 1200,
+            "clue": "Linda Blair played Regan MacNeil in this horror film.",
+            "answer": "What is The Exorcist?"
+          },
+          {
+            "value": 1600,
+            "clue": "This 1972 Wes Craven horror film used the tagline, 'To avoid fainting, keep repeating, It's only a movie...'",
+            "answer": "What is The Last House on the Left?"
+          },
+          {
+            "value": 2000,
+            "clue": "This indie horror character unexpectedly became an LGBTQ+ icon of the 21st century.",
+            "answer": "What is The Babadook?",
+            "dailyDouble": true
+          }
+        ]
+      },
+      {
+        "category": "BOND, JAMES BOND",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "In this 1979 James Bond movie, the famous spy goes to outer space.",
+            "answer": "What is Moonraker?"
+          },
+          {
+            "value": 800,
+            "clue": "In this 1969 James Bond film, Bond falls in love and gets married.",
+            "answer": "What is On Her Majesty's Secret Service?"
+          },
+          {
+            "value": 1200,
+            "clue": "This actress was married to and later divorced from Richard Burton; they starred together in Who's Afraid of Virginia Woolf?",
+            "answer": "Who is Elizabeth Taylor?"
+          },
+          {
+            "value": 1600,
+            "clue": "This actress, later an Oscar winner, starred in the Bond film Tomorrow Never Dies.",
+            "answer": "Who is Michelle Yeoh?"
+          },
+          {
+            "value": 2000,
+            "clue": "This actor played James Bond in Never Say Never Again, an unofficial Bond film.",
+            "answer": "Who is Sean Connery?"
+          }
+        ]
+      },
+      {
+        "category": "CLASSIC HOLLYWOOD",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This 1942 Best Picture winner was adapted from the stage play Everybody Comes to Rick's.",
+            "answer": "What is Casablanca?"
+          },
+          {
+            "value": 800,
+            "clue": "This is Charlie Chaplin's most famous recurring character.",
+            "answer": "Who is The Tramp?"
+          },
+          {
+            "value": 1200,
+            "clue": "Marlon Brando says he 'could have been a contender' in this 1954 crime drama.",
+            "answer": "What is On the Waterfront?"
+          },
+          {
+            "value": 1600,
+            "clue": "This Alfred Hitchcock movie starring James Stewart was shot to look like one continuous take.",
+            "answer": "What is Rope?",
+            "dailyDouble": true
+          },
+          {
+            "value": 2000,
+            "clue": "Barbara Stanwyck played femme fatale Phyllis Dietrichson in this classic film noir.",
+            "answer": "What is Double Indemnity?"
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "FANTASY FILMS",
+    "clue": "This actor is the only performer to receive an Oscar nomination for acting in a Lord of the Rings movie.",
+    "answer": "Who is Ian McKellen?"
+  }
+}
