@@ -1228,10 +1228,6 @@ io.on("connection", (socket) => {
     console.log(`Disconnected: ${socket.id}`);
 
     if (socket.data.discordUserId || socket.data.clientToken) {
-      if (activeGameContext.lobbyCode && gameState.host?.id === socket.id) {
-        gameState.host = null;
-      }
-
       sendGameState();
       return;
     }

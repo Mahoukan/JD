@@ -423,16 +423,25 @@ function applyBrowserDisplayName(name) {
     avatarUrl: "",
     discordUserId: "",
   };
-  const storedLobbyCode = getStoredBrowserLobbyCode();
+  rejoinStoredBrowserLobby();
+  emitBrowserIdentity();
+}
 
-  if (!currentLobby && storedLobbyCode) {
-    socket.emit("joinLobby", {
-      lobbyCode: storedLobbyCode,
-      clientToken: getBrowserPlayerToken(),
-    });
+function rejoinStoredBrowserLobby() {
+  if (isLikelyDiscordActivity()) {
+    return;
   }
 
-  emitBrowserIdentity();
+  const storedLobbyCode = getStoredBrowserLobbyCode();
+
+  if (!storedLobbyCode) {
+    return;
+  }
+
+  socket.emit("joinLobby", {
+    lobbyCode: storedLobbyCode,
+    clientToken: getBrowserPlayerToken(),
+  });
 }
 
 function emitBrowserIdentity() {
