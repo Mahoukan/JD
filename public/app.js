@@ -20,6 +20,7 @@ const currentLobbyCode = document.getElementById("current-lobby-code");
 const copyLobbyCodeBtn = document.getElementById("copy-lobby-code-btn");
 
 const changeRoleBtn = document.getElementById("change-role-btn");
+const quitGameButtons = document.querySelectorAll(".quit-game-btn");
 const startGameBtn = document.getElementById("start-game-btn");
 const importBoardBtn = document.getElementById("import-board-btn");
 const importBoardInput = document.getElementById("import-board-input");
@@ -767,6 +768,19 @@ socket.on("lobbyJoined", ({ lobbyCode } = {}) => {
   }
 });
 
+socket.on("leftGame", () => {
+  currentUser = {
+    ...currentUser,
+    role: null,
+  };
+  currentLobby = "";
+  storeBrowserLobbyCode("");
+  joinLobbyCode.value = "";
+  message.textContent = "";
+  lobbyStatus.textContent = "Create a lobby as host, or join with a code.";
+  showScreen("role");
+});
+
 socket.on("lobbyError", (reason) => {
   lobbyStatus.textContent = reason || "Could not join lobby.";
   showToast(lobbyStatus.textContent, "error");
@@ -868,6 +882,12 @@ spectatorBtn.addEventListener("click", () => {
 
 changeRoleBtn.addEventListener("click", () => {
   showScreen("role");
+});
+
+quitGameButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    socket.emit("leaveGame");
+  });
 });
 
 startGameBtn.addEventListener("click", () => {

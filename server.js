@@ -271,6 +271,35 @@ function setSocketGame(socket, gameId) {
   setActiveGameContext(GameManager.getGame(nextGameId));
 }
 
+function leaveCurrentGame(socket) {
+  const previousGameContext = activeGameContext;
+
+  removeUserFromAllRoles(socket.id);
+
+  if (gameState.host === null) {
+    gameState.phase = "waiting";
+    resetCurrentClueState();
+  }
+
+  socket.data.role = null;
+
+  if (socket.data.isDiscordActivity) {
+    socket.emit("leftGame");
+    sendGameState();
+    return;
+  }
+
+  socket.data.lobbyCode = "";
+  socket.leave(previousGameContext.id);
+  sendGameState();
+  saveActiveTimerHandles();
+  socket.data.gameId = "development";
+  socket.join(socket.data.gameId);
+  setActiveGameContext(GameManager.getGame(socket.data.gameId));
+  socket.emit("leftGame");
+  sendGameState();
+}
+
 function sendGameState() {
   const sockets = io.sockets.adapter.rooms.get(activeGameContext.id) || new Set();
 
@@ -492,6 +521,10 @@ io.on("connection", (socket) => {
 
     socket.emit("roleConfirmed", getUser(socket));
     sendGameState();
+  });
+
+  onGameEvent(socket, "leaveGame", () => {
+    leaveCurrentGame(socket);
   });
 
   onGameEvent(socket, "startGame", () => {

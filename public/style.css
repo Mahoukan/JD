@@ -448,6 +448,18 @@ li {
   font-size: 13px;
 }
 
+.quit-game-btn {
+  margin-top: 10px;
+}
+
+.board-actions .quit-game-btn {
+  margin-top: 0;
+}
+
+.in-round-quit-btn {
+  width: min(260px, 100%);
+}
+
 .board-action-button.hidden {
   display: none;
 }
