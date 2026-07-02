@@ -34,12 +34,8 @@ const round1Grid = document.getElementById("jeopardy-board");
 const roundStatus = document.getElementById("round-status");
 const gridStatus = document.getElementById("board-status");
 const resetGridBtn = document.getElementById("reset-board-btn");
-const startPowerRoundBtn = document.getElementById(
-  "start-double-jeopardy-btn",
-);
-const startFaceAFaceBtn = document.getElementById(
-  "start-final-jeopardy-btn",
-);
+const startPowerRoundBtn = document.getElementById("start-double-jeopardy-btn");
+const startFaceAFaceBtn = document.getElementById("start-final-jeopardy-btn");
 const scoreList = document.getElementById("score-list");
 const currentTurnDisplay = document.getElementById("current-turn-display");
 const turnControls = document.getElementById("turn-controls");
@@ -95,12 +91,8 @@ const riskTilePlayerSelect = document.getElementById(
 );
 const riskTilePlayerBtn = document.getElementById("daily-double-player-btn");
 const riskTileBetForm = document.getElementById("daily-double-wager-form");
-const riskTileBetInput = document.getElementById(
-  "daily-double-wager-input",
-);
-const riskTileBetError = document.getElementById(
-  "daily-double-wager-error",
-);
+const riskTileBetInput = document.getElementById("daily-double-wager-input");
+const riskTileBetError = document.getElementById("daily-double-wager-error");
 const riskTileBetBtn = document.getElementById("daily-double-wager-btn");
 const riskTileWaiting = document.getElementById("daily-double-waiting");
 const finalCategory = document.getElementById("final-category");
@@ -123,7 +115,9 @@ const finalReviewPanel = document.getElementById("final-review-panel");
 const finalRankings = document.getElementById("final-rankings");
 const imageLightbox = document.getElementById("image-lightbox");
 const imageLightboxImg = document.getElementById("image-lightbox-img");
-const imageLightboxCloseBtn = document.getElementById("image-lightbox-close-btn");
+const imageLightboxCloseBtn = document.getElementById(
+  "image-lightbox-close-btn",
+);
 
 const welcomeText = document.getElementById("welcome-text");
 const message = document.getElementById("message");
@@ -345,7 +339,9 @@ function getBrowserPlayerToken() {
 
 function getStoredBrowserLobbyCode() {
   try {
-    return sanitiseLobbyCode(localStorage.getItem(browserLobbyCodeStorageKey) || "");
+    return sanitiseLobbyCode(
+      localStorage.getItem(browserLobbyCodeStorageKey) || "",
+    );
   } catch {
     return "";
   }
@@ -373,11 +369,18 @@ function storeBrowserDisplayName(name) {
 }
 
 function sanitiseBrowserDisplayName(name) {
-  return String(name || "").trim().replace(/\s+/g, " ").slice(0, 40);
+  return String(name || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 40);
 }
 
 function sanitiseLobbyCode(value) {
-  return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 6);
 }
 
 function showLobbyControls() {
@@ -512,10 +515,7 @@ async function getDiscordAuthCode(discordSdk, clientId) {
     response_type: "code",
     state: "",
     prompt: "none",
-    scope: [
-      "identify",
-      "rpc.activities.write",
-    ],
+    scope: ["identify", "rpc.activities.write"],
   };
   const response = await discordSdk.commands.authorize(authorizePayload);
   return response?.code || "";
@@ -576,7 +576,9 @@ function getRichPresencePlayerCount(state) {
 
 function getRichPresenceStartTimestamp(state) {
   const timestamp =
-    state?.gameStartTimestamp || state?.gameStartedAt || state?.sessionStartedAt;
+    state?.gameStartTimestamp ||
+    state?.gameStartedAt ||
+    state?.sessionStartedAt;
 
   if (!timestamp) {
     return 0;
@@ -934,7 +936,8 @@ importGridInput.addEventListener("change", () => {
     return;
   }
 
-  file.text()
+  file
+    .text()
     .then((contents) => {
       socket.emit("importGrid", {
         filename: file.name,
@@ -1207,10 +1210,7 @@ function updateScreen(state) {
     return;
   }
 
-  if (
-    state.phase === "riskTilePlayerSelect" ||
-    state.phase === "riskTileBet"
-  ) {
+  if (state.phase === "riskTilePlayerSelect" || state.phase === "riskTileBet") {
     showScreen("riskTile");
     return;
   }
@@ -1275,6 +1275,10 @@ function renderGrid(state) {
   round1Grid.innerHTML = "";
 
   const categories = getCurrentRoundCategories(state);
+  const gridColumnCount = Math.max(categories?.length || 1, 1);
+  round1Grid.style.setProperty("--grid-columns", String(gridColumnCount));
+
+  const isHost = currentUser?.role === "host";
   const isHost = currentUser?.role === "host";
   const canStartPowerRound =
     isHost &&
@@ -1678,13 +1682,14 @@ function renderDailyDouble(state) {
   riskTileWaiting.textContent = "";
 
   if (state.phase === "riskTilePlayerSelect") {
-    riskTileDetail.textContent =
-      "Choose the player who found the Risk Tile.";
-    renderDailyDoublePlayerOptions(state.players || [], state.currentTurnPlayerId);
+    riskTileDetail.textContent = "Choose the player who found the Risk Tile.";
+    renderDailyDoublePlayerOptions(
+      state.players || [],
+      state.currentTurnPlayerId,
+    );
 
     if (!isHost) {
-      riskTileWaiting.textContent =
-        "Waiting for the host to choose a player.";
+      riskTileWaiting.textContent = "Waiting for the host to choose a player.";
     }
     return;
   }
@@ -2346,6 +2351,3 @@ function formatTimer(remainingMs) {
 }
 
 registerServiceWorker();
-
-
-
