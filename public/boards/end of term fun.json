@@ -1,0 +1,377 @@
+{
+  "id": "TRIVIA-SHOWDOWN",
+  "name": "Trivia Showdown",
+  "jeopardy": {
+    "board": [
+      {
+        "category": "INTERNET CULTURE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This word means someone has charm or flirting ability.",
+            "answer": "Rizz"
+          },
+          {
+            "value": 400,
+            "clue": "Someone acting like a background character or behaving in a scripted way is often called this.",
+            "answer": "NPC"
+          },
+          {
+            "value": 600,
+            "clue": "This phrase is used when something has a certain mood or energy, as in “It’s giving…”",
+            "answer": "Vibes"
+          },
+          {
+            "value": 800,
+            "clue": "Before TikTok, this short-form video app was famous for six-second videos.",
+            "answer": "Vine"
+          },
+          {
+            "value": 1000,
+            "clue": "This term describes online content that is chaotic, low-effort, overstimulating, or “so dumb it’s addictive.”",
+            "answer": "Brain rot"
+          }
+        ]
+      },
+      {
+        "category": "MOVIES IN 3 CLUES",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "Toys. Andy. Cowboy.",
+            "answer": "Toy Story"
+          },
+          {
+            "value": 400,
+            "clue": "Green ogre. Donkey. Swamp.",
+            "answer": "Shrek"
+          },
+          {
+            "value": 600,
+            "clue": "Iceberg. Necklace. “King of the world.”",
+            "answer": "Titanic"
+          },
+          {
+            "value": 800,
+            "clue": "Paris. Rat. Cooking.",
+            "answer": "Ratatouille"
+          },
+          {
+            "value": 1000,
+            "clue": "Dreams. Spinning top. Mind heist.",
+            "answer": "Inception"
+          }
+        ]
+      },
+      {
+        "category": "NAME THAT CHARACTER",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "A young wizard with a lightning-shaped scar.",
+            "answer": "Harry Potter"
+          },
+          {
+            "value": 400,
+            "clue": "A yellow sponge who lives in a pineapple under the sea.",
+            "answer": "SpongeBob SquarePants"
+          },
+          {
+            "value": 600,
+            "clue": "A superhero from Wakanda who wears a black suit made from vibranium.",
+            "answer": "Black Panther"
+          },
+          {
+            "value": 800,
+            "clue": "A blue hedgehog who runs extremely fast and collects rings.",
+            "answer": "Sonic the Hedgehog"
+          },
+          {
+            "value": 1000,
+            "clue": "A masked villain in Star Wars who breathes loudly and uses the Force.",
+            "answer": "Darth Vader"
+          }
+        ]
+      },
+      {
+        "category": "FOOD AROUND THE WORLD",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This Japanese food often includes rice, seaweed, and raw or cooked seafood.",
+            "answer": "Sushi"
+          },
+          {
+            "value": 400,
+            "clue": "This Mexican food is a folded or rolled tortilla often filled with meat, beans, cheese, or vegetables.",
+            "answer": "Taco"
+          },
+          {
+            "value": 600,
+            "clue": "This Italian food is usually round, sliced into triangles, and topped with cheese.",
+            "answer": "Pizza"
+          },
+          {
+            "value": 800,
+            "clue": "This Korean food is made from fermented vegetables, often cabbage, and is usually spicy.",
+            "answer": "Kimchi"
+          },
+          {
+            "value": 1000,
+            "clue": "This Canadian dish is made with fries, gravy, and cheese curds.",
+            "answer": "Poutine"
+          }
+        ]
+      },
+      {
+        "category": "WEIRD SCIENCE",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "This planet is known as the Red Planet.",
+            "answer": "Mars"
+          },
+          {
+            "value": 400,
+            "clue": "This animal can change colour and has eyes that can look in different directions.",
+            "answer": "Chameleon"
+          },
+          {
+            "value": 600,
+            "clue": "This part of the body continues to send signals after touching something hot, causing pain.",
+            "answer": "Nerves"
+          },
+          {
+            "value": 800,
+            "clue": "This natural event happens when static electricity builds up in clouds and releases as a flash.",
+            "answer": "Lightning"
+          },
+          {
+            "value": 1000,
+            "clue": "This animal can survive in extreme conditions, including freezing, drying out, and even space exposure.",
+            "answer": "Tardigrade"
+          }
+        ]
+      },
+      {
+        "category": "WHO SAID THAT?",
+        "questions": [
+          {
+            "value": 200,
+            "clue": "“To infinity and beyond!”",
+            "answer": "Buzz Lightyear"
+          },
+          {
+            "value": 400,
+            "clue": "“I am Groot.”",
+            "answer": "Groot"
+          },
+          {
+            "value": 600,
+            "clue": "“Why so serious?”",
+            "answer": "The Joker"
+          },
+          {
+            "value": 800,
+            "clue": "“I am inevitable.”",
+            "answer": "Thanos"
+          },
+          {
+            "value": 1000,
+            "clue": "“With great power comes great responsibility.”",
+            "answer": "Uncle Ben / Spider-Man"
+          }
+        ]
+      }
+    ]
+  },
+  "doubleJeopardy": {
+    "board": [
+      {
+        "category": "BADLY EXPLAINED PLOTS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "Purple alien goes on a rampage across the universe so he can complete his rock collection",
+            "answer": "Avengers: Infinity War"
+          },
+          {
+            "value": 800,
+            "clue": "A monster saves a girl from marrying a tiny man.",
+            "answer": "Shrek"
+          },
+          {
+            "value": 1200,
+            "clue": "A girl walks into a wardrobe and accidentally joins a war.",
+            "answer": "The Chronicles of Narnia"
+          },
+          {
+            "value": 1600,
+            "clue": "A family in red suits has to stop a villain who hates people being special.",
+            "answer": "The Incredibles"
+          },
+          {
+            "value": 2000,
+            "clue": "A father watches his wife die, and only son be disabled after a brutal attack on his home. Years later his son is then kidnapped. He travels many miles in search of his son with help of strangers he meets along the way.",
+            "answer": "Finding Nemo"
+          }
+        ]
+      },
+      {
+        "category": "GAMING & APPS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This block-building game includes Creepers, diamonds, and the Nether.",
+            "answer": "Minecraft"
+          },
+          {
+            "value": 800,
+            "clue": "In this game, players complete tasks while trying to find the impostor.",
+            "answer": "Among Us"
+          },
+          {
+            "value": 1200,
+            "clue": "This battle royale game is known for building, skins, emotes, and the Battle Bus.",
+            "answer": "Fortnite"
+          },
+          {
+            "value": 1600,
+            "clue": "Before becoming TikTok, this app was known as this lip-syncing app.",
+            "answer": "Musical.ly"
+          },
+          {
+            "value": 2000,
+            "clue": "This mobile game became famous for making players walk around in real life to catch creatures.",
+            "answer": "Pokémon GO"
+          }
+        ]
+      },
+      {
+        "category": "ANIMAL CHAOS",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This bird cannot fly, but it can run faster than most humans.",
+            "answer": "Ostrich"
+          },
+          {
+            "value": 800,
+            "clue": "This Australian mammal lays eggs and has a duck-like bill.",
+            "answer": "Platypus"
+          },
+          {
+            "value": 1200,
+            "clue": "This sea animal has three hearts.",
+            "answer": "Octopus"
+          },
+          {
+            "value": 1600,
+            "clue": "This animal can regrow body parts, including legs and parts of its heart and brain.",
+            "answer": "Axolotl"
+          },
+          {
+            "value": 2000,
+            "clue": "This tiny sea creature can punch so fast it creates heat and bubbles underwater.",
+            "answer": "Mantis shrimp"
+          }
+        ]
+      },
+      {
+        "category": "CRAZY FACTS FROM COUNTRIES",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This country has more sheep than people.",
+            "answer": "New Zealand"
+          },
+          {
+            "value": 800,
+            "clue": "This country is famous for La Tomatina, a festival where people throw tomatoes.",
+            "answer": "Spain"
+          },
+          {
+            "value": 1200,
+            "clue": "This country has more pyramids than Egypt.",
+            "answer": "Sudan"
+          },
+          {
+            "value": 1600,
+            "clue": "This country uses a calendar that is around seven to eight years behind the Gregorian calendar.",
+            "answer": "Ethiopia"
+          },
+          {
+            "value": 2000,
+            "clue": "This country is home to the Svalbard Global Seed Vault, sometimes called the “Doomsday Vault.”",
+            "answer": "Norway"
+          }
+        ]
+      },
+      {
+        "category": "MYSTERY OBJECT",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "I have teeth, but I do not bite. I help fix your hair.",
+            "answer": "Comb"
+          },
+          {
+            "value": 800,
+            "clue": "I have hands, but no arms. I can tell you something important.",
+            "answer": "Clock"
+          },
+          {
+            "value": 1200,
+            "clue": "I am full of holes, but I can still hold water for a short time.",
+            "answer": "Sponge"
+          },
+          {
+            "value": 1600,
+            "clue": "I have a neck and a body, but no head. People usually fill me before using me.",
+            "answer": "Bottle"
+          },
+          {
+            "value": 2000,
+            "clue": "I have keys, but I do not open doors. I can make music or type words.",
+            "answer": "Keyboard"
+          }
+        ]
+      },
+      {
+        "category": "THINGS THAT SHOULDN’T EXIST",
+        "questions": [
+          {
+            "value": 400,
+            "clue": "This invention combines a spoon and a fork into one eating tool.",
+            "answer": "Spork"
+          },
+          {
+            "value": 800,
+            "clue": "This wearable blanket has sleeves, so you can stay warm while using your hands.",
+            "answer": "Snuggie"
+          },
+          {
+            "value": 1200,
+            "clue": "This strange hat lets someone drink from cans using tubes while wearing it.",
+            "answer": "Drinking helmet"
+          },
+          {
+            "value": 1600,
+            "clue": "This alarm clock rolls away so you have to get out of bed to turn it off.",
+            "answer": "Clocky / runaway alarm clock"
+          },
+          {
+            "value": 2000,
+            "clue": "This unusual Japanese hotel is known for having robot dinosaurs help at reception.",
+            "answer": "Henn na Hotel"
+          }
+        ]
+      }
+    ]
+  },
+  "finalJeopardy": {
+    "category": "WORLD RECORDS",
+    "clue": "This video game is the best-selling game of all time, with hundreds of millions of copies sold across many platforms.",
+    "answer": "Minecraft"
+  }
+}
