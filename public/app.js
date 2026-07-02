@@ -1076,6 +1076,7 @@ addTimeBtn.addEventListener("click", () => {
 });
 
 riskTilePlayerBtn.addEventListener("click", () => {
+  // TODO: Rename this legacy Risk Tile event alias after older clients have aged out.
   socket.emit("selectDailyDoublePlayer", {
     playerId: riskTilePlayerSelect.value,
   });
@@ -1339,7 +1340,7 @@ function renderGrid(state) {
         return;
       }
 
-      square.textContent = `$${prompt.value}`;
+      square.textContent = String(prompt.value);
       square.disabled = !isHost;
       square.setAttribute(
         "aria-label",
@@ -1611,7 +1612,7 @@ function renderQuestion(state) {
   }
 
   questionCategory.textContent = currentPrompt.category;
-  questionValue.textContent = `$${currentPrompt.value}`;
+  questionValue.textContent = String(currentPrompt.value);
   questionPrompt.textContent = currentPrompt.prompt;
   renderPromptImage(currentPrompt.image);
   renderHostGuess(currentPrompt, isHost);
@@ -1750,6 +1751,7 @@ function submitDailyDoubleBet() {
 
   riskTileBetError.textContent = "";
   riskTileBetBtn.disabled = true;
+  // TODO: Rename this legacy Risk Tile event alias after older clients have aged out.
   socket.emit("submitDailyDoubleBet", {
     bet: parsedBet,
   });
@@ -1880,7 +1882,7 @@ function submitFinalBet() {
   }
 
   if (parsedBet < 0 || parsedBet > currentPlayer.score) {
-    finalBetError.textContent = `Bet must be between $0 and ${formatScore(currentPlayer.score)}.`;
+    finalBetError.textContent = `Bet must be between 0 and ${formatScore(currentPlayer.score)}.`;
     return;
   }
 
@@ -2332,7 +2334,7 @@ function capitalise(word) {
 }
 
 function formatScore(score) {
-  return `$${Number(score || 0).toLocaleString()}`;
+  return Number(score || 0).toLocaleString();
 }
 
 function formatDelay(delayMs) {

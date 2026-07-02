@@ -619,6 +619,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
+  // TODO: Drop startDoubleJeopardy after legacy client compatibility is no longer needed.
   onGameEvents(socket, ["startPowerRound", "startDoubleJeopardy"], () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start Power Round.");
@@ -646,6 +647,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
+  // TODO: Drop startFinalJeopardy after legacy client compatibility is no longer needed.
   onGameEvents(socket, ["startFaceAFace", "startFinalJeopardy"], () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can start Face-a-Face.");
@@ -689,7 +691,7 @@ io.on("connection", (socket) => {
     }
 
     if (parsedBet < 0 || parsedBet > player.score) {
-      socket.emit("actionRejected", "Bet must be between $0 and your current score.");
+      socket.emit("actionRejected", "Bet must be between 0 and your current score.");
       return;
     }
 
@@ -929,7 +931,7 @@ io.on("connection", (socket) => {
     gameState.currentTurnPlayerId = player.id;
     gameState.guessRevealed = true;
     gameState.buzzingOpen = false;
-    gameState.resultMessage = `${player.name} is correct! +$${gameState.currentPrompt.value}`;
+    gameState.resultMessage = `${player.name} is correct! +${gameState.currentPrompt.value}`;
     stopTimer();
     markCurrentPromptGuessed();
     sendGameState();
@@ -970,7 +972,7 @@ io.on("connection", (socket) => {
       avatarUrl: player.avatarUrl || "",
       discordUserId: player.discordUserId || ""
     });
-    gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -$${gameState.currentPrompt.value}`;
+    gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -${gameState.currentPrompt.value}`;
     gameState.buzzedPlayer = null;
     gameState.buzzes = [];
     gameState.guessRevealed = false;
@@ -980,6 +982,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
+  // TODO: Rename this legacy Risk Tile event alias after older clients have aged out.
   onGameEvent(socket, "selectDailyDoublePlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can choose the Risk Tile player.");
@@ -1011,6 +1014,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
+  // TODO: Rename this legacy Risk Tile event alias after older clients have aged out.
   onGameEvent(socket, "submitDailyDoubleBet", ({ bet } = {}) => {
     if (gameState.phase !== "riskTileBet") {
       socket.emit("actionRejected", "Risk Tile betting is not active.");
@@ -2225,10 +2229,10 @@ function judgeRiskTile(isCorrect) {
   if (isCorrect) {
     player.score += bet;
     gameState.currentTurnPlayerId = player.id;
-    gameState.resultMessage = `${player.name} is correct! +$${bet}`;
+    gameState.resultMessage = `${player.name} is correct! +${bet}`;
   } else {
     player.score -= bet;
-    gameState.resultMessage = `${player.name} is incorrect. -$${bet}`;
+    gameState.resultMessage = `${player.name} is incorrect. -${bet}`;
   }
 
   gameState.riskTileState.judged = true;
