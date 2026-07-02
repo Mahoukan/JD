@@ -1270,6 +1270,21 @@ function getSelectedGrid(state) {
       : null)
   );
 }
+const gridColumnThemes = [
+  { accent: "#00e5ff", rgb: "0, 229, 255" },
+  { accent: "#ff4d6d", rgb: "255, 77, 109" },
+  { accent: "#ffb703", rgb: "255, 183, 3" },
+  { accent: "#35e07f", rgb: "53, 224, 127" },
+  { accent: "#c084fc", rgb: "192, 132, 252" },
+  { accent: "#ff7a18", rgb: "255, 122, 24" },
+  { accent: "#5eead4", rgb: "94, 234, 212" },
+];
+
+function applyGridColumnTheme(element, categoryIndex) {
+  const theme = gridColumnThemes[categoryIndex % gridColumnThemes.length];
+  element.style.setProperty("--tile-accent", theme.accent);
+  element.style.setProperty("--tile-accent-rgb", theme.rgb);
+}
 
 function renderGrid(state) {
   round1Grid.innerHTML = "";
@@ -1309,10 +1324,11 @@ function renderGrid(state) {
     ...categories.map((category) => category.prompts.length),
   );
 
-  categories.forEach((category) => {
+  categories.forEach((category, categoryIndex) => {
     const heading = document.createElement("div");
     heading.className = "board-category";
     heading.textContent = category.category;
+    applyGridColumnTheme(heading, categoryIndex);
     round1Grid.appendChild(heading);
   });
 
@@ -1322,6 +1338,7 @@ function renderGrid(state) {
       const square = document.createElement("button");
       square.className = "clue-square";
       square.type = "button";
+      applyGridColumnTheme(square, categoryIndex);
 
       if (!prompt) {
         square.classList.add("empty-square");

@@ -161,6 +161,15 @@ h1 {
   letter-spacing: 0;
 }
 
+#role-screen h1,
+#waiting-room h1,
+#game-screen h1 {
+  background: linear-gradient(90deg, var(--accent), var(--face), var(--buzz));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 h2 {
   margin: 0 0 8px;
   color: var(--muted-2);
@@ -585,12 +594,22 @@ button:disabled,
   justify-content: center;
   min-height: clamp(42px, 7vw, 68px);
   padding: 7px 5px;
+  border-color: rgba(var(--tile-accent-rgb, 0, 229, 255), 0.42);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--tile-accent-rgb, 0, 229, 255), 0.28),
+      rgba(var(--tile-accent-rgb, 0, 229, 255), 0.08)
+    ),
+    var(--surface-2);
   color: #ffffff;
   font-size: clamp(9px, 1.25vw, 14px);
-  font-weight: 900;
+  font-weight: 950;
   line-height: 1.1;
   overflow-wrap: anywhere;
+  text-align: center;
   text-transform: uppercase;
+  text-shadow: 0 1px 10px rgba(var(--tile-accent-rgb, 0, 229, 255), 0.35);
 }
 
 .clue-square {
@@ -600,8 +619,19 @@ button:disabled,
   aspect-ratio: 1.38 / 1;
   padding: 5px;
   background:
-    linear-gradient(180deg, rgba(0, 229, 255, 0.1), transparent), #252b4f;
-  color: #7df9ff;
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(var(--tile-accent-rgb, 0, 229, 255), 0.26),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(var(--tile-accent-rgb, 0, 229, 255), 0.12),
+      transparent
+    ),
+    #252b4f;
+  color: var(--tile-accent, #7df9ff);
+  border-color: rgba(var(--tile-accent-rgb, 0, 229, 255), 0.3);
   cursor: pointer;
   font-size: clamp(16px, 3.4vw, 32px);
   font-weight: 950;
@@ -618,11 +648,8 @@ button:disabled,
   inset: 1px;
   z-index: -1;
   border-radius: calc(var(--radius-sm) - 2px);
-  background: linear-gradient(
-    135deg,
-    rgba(77, 212, 198, 0.13),
-    transparent 54%
-  );
+  background:
+    linear-gradient(135deg, rgba(var(--tile-accent-rgb, 0, 229, 255), 0.28), transparent 54%);
   opacity: 0;
   transition: opacity 0.16s ease;
   pointer-events: none;
@@ -635,11 +662,16 @@ button:disabled,
 
 .clue-square:not(:disabled):hover,
 .clue-square:not(:disabled):focus-visible {
-  border-color: var(--accent);
-  background: #303b6a;
+  border-color: var(--tile-accent, var(--accent));
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--tile-accent-rgb, 0, 229, 255), 0.38), transparent 64%),
+    #303b6a;
   color: #ffffff;
   transform: translateY(-1px);
   outline: none;
+  box-shadow:
+    0 0 0 1px rgba(var(--tile-accent-rgb, 0, 229, 255), 0.28),
+    0 10px 24px rgba(var(--tile-accent-rgb, 0, 229, 255), 0.14);
 }
 
 .clue-square:disabled {
