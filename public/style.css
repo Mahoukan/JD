@@ -555,6 +555,26 @@ button:disabled,
   width: min(280px, 100%);
 }
 
+.question-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 6px;
+}
+
+.question-quit-btn {
+  width: auto;
+  min-height: 34px;
+  margin-top: 0;
+  padding: 7px 10px;
+  font-size: 12px;
+  opacity: 0.82;
+}
+
+.question-quit-btn:hover,
+.question-quit-btn:focus-visible {
+  opacity: 1;
+}
+
 .board-layout {
   display: grid;
   grid-template-columns: 1fr;
