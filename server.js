@@ -11,6 +11,7 @@ import {
   stripAnsweredTracking
 } from "./src/grid-normalizer.js";
 import { testDatabaseConnection } from "./src/db.js";
+import { sessionMiddleware } from "./src/session.js";
 const app = express();
 const server = http.createServer(app);
 
@@ -32,7 +33,12 @@ let availableGrids = discoverAvailableGrids();
 const selectedGrid = availableGrids[0] ?? createFallbackGridOption();
 const initialGrid = loadGridByFilename(selectedGrid.filename) ?? createEmptyGrid(selectedGrid);
 
+app.set("trust proxy", 1);
+
 app.use(express.json());
+app.use(sessionMiddleware);
+
+io.engine.use(sessionMiddleware);
 app.get("/api/db-health", async (req, res) => {
   try {
     const result = await testDatabaseConnection();
@@ -49,6 +55,24 @@ app.get("/api/db-health", async (req, res) => {
       error: "Database connection failed.",
     });
   }
+});
+
+app.get("/api/session-test", (req, res) => {
+  req.session.views = Number(req.session.views || 0) + 1;
+
+  res.json({
+    ok: true,
+    message: "Session is working.",
+    views: req.session.views,
+  });
+});
+
+app.get("/api/me", (req, res) => {
+  res.json({
+    ok: true,
+    loggedIn: Boolean(req.session.player),
+    player: req.session.player || null,
+  });
 });
 
 app.get(["/", "/index.html"], (req, res) => {
