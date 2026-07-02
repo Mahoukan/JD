@@ -85,16 +85,17 @@
       </div>
 
       <div class="board-selection">
+        <!-- TODO: Rename legacy board/jeopardy/clue/answer/wager/daily-double DOM IDs and CSS classes in a follow-up pass. -->
         <div id="board-selector-panel" class="board-selector-panel hidden">
-          <label for="board-select">Board</label>
+          <label for="board-select">Grid</label>
           <select id="board-select"></select>
         </div>
-        <p id="selected-board-name" class="selected-board-name">Selected board: Loading...</p>
+        <p id="selected-board-name" class="selected-board-name">Selected grid: Loading...</p>
       </div>
 
       <div id="host-controls" class="host-controls hidden">
         <button id="start-game-btn" class="primary-button">Start Game</button>
-        <button id="import-board-btn" class="secondary-button" type="button">Import Board</button>
+        <button id="import-board-btn" class="secondary-button" type="button">Import Grid</button>
         <input id="import-board-input" class="hidden" type="file" accept="application/json,.json" />
       </div>
 
@@ -112,18 +113,18 @@
         <div>
           <h1>Trivia Showdown</h1>
           <p id="round-status" class="round-status">Trivia Showdown</p>
-          <p id="board-status" class="subtle">Loading board...</p>
+          <p id="board-status" class="subtle">Loading grid...</p>
         </div>
         <div class="board-actions">
-          <button id="start-double-jeopardy-btn" class="secondary-button board-action-button hidden">Start Second Trivia Showdown</button>
-          <button id="start-final-jeopardy-btn" class="secondary-button board-action-button hidden">Start Final Trivia Showdown</button>
-          <button id="reset-board-btn" class="secondary-button board-action-button hidden">Reset Board</button>
+          <button id="start-double-jeopardy-btn" class="secondary-button board-action-button hidden">Start Power Round</button>
+          <button id="start-final-jeopardy-btn" class="secondary-button board-action-button hidden">Start Face-a-Face</button>
+          <button id="reset-board-btn" class="secondary-button board-action-button hidden">Reset Grid</button>
           <button class="secondary-button board-action-button quit-game-btn" type="button">Quit to Main</button>
         </div>
       </div>
 
       <div class="board-layout">
-        <div id="jeopardy-board" class="jeopardy-board" aria-label="Trivia Showdown board"></div>
+        <div id="jeopardy-board" class="jeopardy-board" aria-label="Trivia Showdown grid"></div>
 
         <aside class="score-panel" aria-label="Player scores">
           <h2>Scores</h2>
@@ -144,20 +145,20 @@
       <p id="question-category" class="question-category"></p>
       <h1 id="question-value" class="question-value"></h1>
       <p id="question-clue" class="question-clue"></p>
-      <button id="clue-image-thumb-btn" class="clue-image-thumb hidden" type="button" aria-label="Open clue image">
-        <img id="clue-image-thumb" alt="Clue image" />
+      <button id="clue-image-thumb-btn" class="clue-image-thumb hidden" type="button" aria-label="Open prompt image">
+        <img id="clue-image-thumb" alt="Prompt image" />
       </button>
       <div id="timer-panel" class="timer-panel">
         <span id="timer-label" class="timer-label">Reading time</span>
         <span id="timer-value" class="timer-value">0.0</span>
         <span id="timer-status" class="timer-status">Paused</span>
       </div>
-      <p id="buzzing-status" class="buzzing-status">Read the clue...</p>
+      <p id="buzzing-status" class="buzzing-status">Read the prompt...</p>
       <div id="host-answer-panel" class="host-answer-panel hidden">
-        <p class="host-answer-label">Host Answer</p>
+        <p class="host-answer-label">Host Guess</p>
         <p id="host-answer-text" class="host-answer-text"></p>
       </div>
-      <div id="question-answer" class="question-answer answer-hidden">Answer hidden</div>
+      <div id="question-answer" class="question-answer answer-hidden">Guess hidden</div>
       <p id="result-message" class="result-message"></p>
       <p id="buzz-message" class="buzz-message"></p>
       <ul id="buzz-list" class="buzz-list"></ul>
@@ -177,15 +178,15 @@
           <button id="correct-btn" class="judge-button correct-button">Correct</button>
           <button id="incorrect-btn" class="judge-button incorrect-button">Incorrect</button>
         </div>
-        <button id="reveal-answer-btn" class="primary-button">Reveal Answer</button>
-        <button id="back-to-board-btn" class="primary-button">Back to Board</button>
+        <button id="reveal-answer-btn" class="primary-button">Reveal Guess</button>
+        <button id="back-to-board-btn" class="primary-button">Back to Grid</button>
       </div>
       <button class="secondary-button quit-game-btn in-round-quit-btn" type="button">Quit to Main Screen</button>
     </section>
 
     <section id="daily-double-screen" class="screen card hidden">
-      <p class="daily-double-kicker">Daily Double!</p>
-      <h1>Daily Double</h1>
+      <p class="daily-double-kicker">Risk Tile!</p>
+      <h1>Risk Tile</h1>
       <p id="daily-double-detail" class="daily-double-detail"></p>
 
       <div id="daily-double-player-panel" class="daily-double-panel hidden">
@@ -195,10 +196,10 @@
       </div>
 
       <form id="daily-double-wager-form" class="daily-double-panel hidden">
-        <label for="daily-double-wager-input">Wager</label>
+        <label for="daily-double-wager-input">Bet</label>
         <input id="daily-double-wager-input" type="number" step="1" min="0" inputmode="numeric" />
         <p id="daily-double-wager-error" class="daily-double-error" aria-live="polite"></p>
-        <button id="daily-double-wager-btn" class="primary-button" type="submit">Submit Wager</button>
+        <button id="daily-double-wager-btn" class="primary-button" type="submit">Submit Bet</button>
       </form>
 
       <p id="daily-double-waiting" class="daily-double-waiting"></p>
@@ -206,30 +207,30 @@
     </section>
 
     <section id="final-jeopardy-screen" class="screen card hidden">
-      <p class="final-kicker">Final Trivia Showdown</p>
-      <h1>Final Trivia Showdown</h1>
+      <p class="final-kicker">Face-a-Face</p>
+      <h1>Face-a-Face</h1>
       <p id="final-category" class="final-category"></p>
       <p id="final-clue" class="final-clue hidden"></p>
       <p id="final-status" class="final-status"></p>
 
       <form id="final-wager-form" class="final-panel hidden">
-        <label for="final-wager-input">Wager</label>
+        <label for="final-wager-input">Bet</label>
         <input id="final-wager-input" type="number" step="1" min="0" inputmode="numeric" />
         <p id="final-wager-error" class="final-error" aria-live="polite"></p>
-        <button id="final-wager-btn" class="primary-button" type="submit">Submit Wager</button>
+        <button id="final-wager-btn" class="primary-button" type="submit">Submit Bet</button>
       </form>
 
       <form id="final-answer-form" class="final-panel hidden">
-        <label for="final-answer-input">Answer</label>
+        <label for="final-answer-input">Guess</label>
         <textarea id="final-answer-input" rows="3"></textarea>
         <p id="final-answer-error" class="final-error" aria-live="polite"></p>
-        <button id="final-answer-btn" class="primary-button" type="submit">Submit Answer</button>
+        <button id="final-answer-btn" class="primary-button" type="submit">Submit Guess</button>
       </form>
 
       <div id="final-host-panel" class="final-panel hidden">
         <h2>Host Controls</h2>
         <ul id="final-status-list" class="final-status-list"></ul>
-        <button id="reveal-final-clue-btn" class="primary-button hidden" type="button">Reveal Final Clue</button>
+        <button id="reveal-final-clue-btn" class="primary-button hidden" type="button">Reveal Face-a-Face Prompt</button>
         <button id="start-final-review-btn" class="primary-button hidden" type="button">Start Review</button>
         <button id="show-final-results-btn" class="primary-button hidden" type="button">Show Final Results</button>
       </div>
@@ -277,10 +278,10 @@
       </div>
     </form>
   </div>
-  <div id="image-lightbox" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Clue image preview">
+  <div id="image-lightbox" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Prompt image preview">
     <div class="image-lightbox">
       <button id="image-lightbox-close-btn" class="image-lightbox-close" type="button" aria-label="Close image preview">Close</button>
-      <img id="image-lightbox-img" alt="Clue image preview" />
+      <img id="image-lightbox-img" alt="Prompt image preview" />
     </div>
   </div>
   <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>

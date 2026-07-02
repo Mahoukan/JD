@@ -4,8 +4,8 @@ const roleScreen = document.getElementById("role-screen");
 const waitingRoom = document.getElementById("waiting-room");
 const gameScreen = document.getElementById("game-screen");
 const questionScreen = document.getElementById("question-screen");
-const dailyDoubleScreen = document.getElementById("daily-double-screen");
-const finalJeopardyScreen = document.getElementById("final-jeopardy-screen");
+const riskTileScreen = document.getElementById("daily-double-screen");
+const faceAFaceScreen = document.getElementById("final-jeopardy-screen");
 
 const hostBtn = document.getElementById("host-btn");
 const playerBtn = document.getElementById("player-btn");
@@ -22,22 +22,22 @@ const copyLobbyCodeBtn = document.getElementById("copy-lobby-code-btn");
 const changeRoleBtn = document.getElementById("change-role-btn");
 const quitGameButtons = document.querySelectorAll(".quit-game-btn");
 const startGameBtn = document.getElementById("start-game-btn");
-const importBoardBtn = document.getElementById("import-board-btn");
-const importBoardInput = document.getElementById("import-board-input");
+const importGridBtn = document.getElementById("import-board-btn");
+const importGridInput = document.getElementById("import-board-input");
 
 const hostControls = document.getElementById("host-controls");
 const waitingMessage = document.getElementById("waiting-message");
-const boardSelectorPanel = document.getElementById("board-selector-panel");
-const boardSelect = document.getElementById("board-select");
-const selectedBoardName = document.getElementById("selected-board-name");
-const jeopardyBoard = document.getElementById("jeopardy-board");
+const gridSelectorPanel = document.getElementById("board-selector-panel");
+const gridSelect = document.getElementById("board-select");
+const selectedGridName = document.getElementById("selected-board-name");
+const round1Grid = document.getElementById("jeopardy-board");
 const roundStatus = document.getElementById("round-status");
-const boardStatus = document.getElementById("board-status");
-const resetBoardBtn = document.getElementById("reset-board-btn");
-const startDoubleJeopardyBtn = document.getElementById(
+const gridStatus = document.getElementById("board-status");
+const resetGridBtn = document.getElementById("reset-board-btn");
+const startPowerRoundBtn = document.getElementById(
   "start-double-jeopardy-btn",
 );
-const startFinalJeopardyBtn = document.getElementById(
+const startFaceAFaceBtn = document.getElementById(
   "start-final-jeopardy-btn",
 );
 const scoreList = document.getElementById("score-list");
@@ -60,17 +60,17 @@ const confirmConfirmBtn = document.getElementById("confirm-confirm-btn");
 const toastContainer = document.getElementById("toast-container");
 const questionCategory = document.getElementById("question-category");
 const questionValue = document.getElementById("question-value");
-const questionClue = document.getElementById("question-clue");
-const clueImageThumbBtn = document.getElementById("clue-image-thumb-btn");
-const clueImageThumb = document.getElementById("clue-image-thumb");
+const questionPrompt = document.getElementById("question-clue");
+const promptImageThumbBtn = document.getElementById("clue-image-thumb-btn");
+const promptImageThumb = document.getElementById("clue-image-thumb");
 const timerPanel = document.getElementById("timer-panel");
 const timerLabel = document.getElementById("timer-label");
 const timerValue = document.getElementById("timer-value");
 const timerStatus = document.getElementById("timer-status");
 const buzzingStatus = document.getElementById("buzzing-status");
-const hostAnswerPanel = document.getElementById("host-answer-panel");
-const hostAnswerText = document.getElementById("host-answer-text");
-const questionAnswer = document.getElementById("question-answer");
+const hostGuessPanel = document.getElementById("host-answer-panel");
+const hostGuessText = document.getElementById("host-answer-text");
+const questionGuess = document.getElementById("question-answer");
 const resultMessage = document.getElementById("result-message");
 const buzzMessage = document.getElementById("buzz-message");
 const buzzList = document.getElementById("buzz-list");
@@ -84,39 +84,39 @@ const timerControls = document.getElementById("timer-controls");
 const pauseTimerBtn = document.getElementById("pause-timer-btn");
 const resumeTimerBtn = document.getElementById("resume-timer-btn");
 const addTimeBtn = document.getElementById("add-time-btn");
-const revealAnswerBtn = document.getElementById("reveal-answer-btn");
-const backToBoardBtn = document.getElementById("back-to-board-btn");
-const dailyDoubleDetail = document.getElementById("daily-double-detail");
-const dailyDoublePlayerPanel = document.getElementById(
+const revealGuessBtn = document.getElementById("reveal-answer-btn");
+const backToGridBtn = document.getElementById("back-to-board-btn");
+const riskTileDetail = document.getElementById("daily-double-detail");
+const riskTilePlayerPanel = document.getElementById(
   "daily-double-player-panel",
 );
-const dailyDoublePlayerSelect = document.getElementById(
+const riskTilePlayerSelect = document.getElementById(
   "daily-double-player-select",
 );
-const dailyDoublePlayerBtn = document.getElementById("daily-double-player-btn");
-const dailyDoubleWagerForm = document.getElementById("daily-double-wager-form");
-const dailyDoubleWagerInput = document.getElementById(
+const riskTilePlayerBtn = document.getElementById("daily-double-player-btn");
+const riskTileBetForm = document.getElementById("daily-double-wager-form");
+const riskTileBetInput = document.getElementById(
   "daily-double-wager-input",
 );
-const dailyDoubleWagerError = document.getElementById(
+const riskTileBetError = document.getElementById(
   "daily-double-wager-error",
 );
-const dailyDoubleWagerBtn = document.getElementById("daily-double-wager-btn");
-const dailyDoubleWaiting = document.getElementById("daily-double-waiting");
+const riskTileBetBtn = document.getElementById("daily-double-wager-btn");
+const riskTileWaiting = document.getElementById("daily-double-waiting");
 const finalCategory = document.getElementById("final-category");
-const finalClue = document.getElementById("final-clue");
+const finalPrompt = document.getElementById("final-clue");
 const finalStatus = document.getElementById("final-status");
-const finalWagerForm = document.getElementById("final-wager-form");
-const finalWagerInput = document.getElementById("final-wager-input");
-const finalWagerError = document.getElementById("final-wager-error");
-const finalWagerBtn = document.getElementById("final-wager-btn");
-const finalAnswerForm = document.getElementById("final-answer-form");
-const finalAnswerInput = document.getElementById("final-answer-input");
-const finalAnswerError = document.getElementById("final-answer-error");
-const finalAnswerBtn = document.getElementById("final-answer-btn");
+const finalBetForm = document.getElementById("final-wager-form");
+const finalBetInput = document.getElementById("final-wager-input");
+const finalBetError = document.getElementById("final-wager-error");
+const finalBetBtn = document.getElementById("final-wager-btn");
+const finalGuessForm = document.getElementById("final-answer-form");
+const finalGuessInput = document.getElementById("final-answer-input");
+const finalGuessError = document.getElementById("final-answer-error");
+const finalGuessBtn = document.getElementById("final-answer-btn");
 const finalHostPanel = document.getElementById("final-host-panel");
 const finalStatusList = document.getElementById("final-status-list");
-const revealFinalClueBtn = document.getElementById("reveal-final-clue-btn");
+const revealFinalPromptBtn = document.getElementById("reveal-final-clue-btn");
 const startFinalReviewBtn = document.getElementById("start-final-review-btn");
 const showFinalResultsBtn = document.getElementById("show-final-results-btn");
 const finalReviewPanel = document.getElementById("final-review-panel");
@@ -154,9 +154,10 @@ let lastRichPresenceKey = "";
 let browserIdentityReady = false;
 let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
-let resetBoardConfirmTimeout = null;
+let resetGridConfirmTimeout = null;
 let currentLobby = "";
-const browserDisplayNameStorageKey = "jeopardyDisplayName";
+const browserDisplayNameStorageKey = "triviaShowdownDisplayName";
+const legacyBrowserDisplayNameStorageKey = "jeopardyDisplayName";
 const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
 const browserLobbyCodeStorageKey = "triviaShowdownLobbyCode";
 const discordActivityStartTimestamp = Date.now();
@@ -305,9 +306,22 @@ async function initialiseDiscordIdentity() {
 
 function getStoredBrowserDisplayName() {
   try {
-    return sanitiseBrowserDisplayName(
-      localStorage.getItem(browserDisplayNameStorageKey) || "",
+    const storedName = localStorage.getItem(browserDisplayNameStorageKey);
+
+    if (storedName) {
+      return sanitiseBrowserDisplayName(storedName);
+    }
+
+    const legacyName = sanitiseBrowserDisplayName(
+      localStorage.getItem(legacyBrowserDisplayNameStorageKey) || "",
     );
+
+    if (legacyName) {
+      localStorage.setItem(browserDisplayNameStorageKey, legacyName);
+      localStorage.removeItem(legacyBrowserDisplayNameStorageKey);
+    }
+
+    return legacyName;
   } catch {
     return "";
   }
@@ -593,35 +607,35 @@ function getRichPresenceText(state, playerCount, maxPlayers) {
     };
   }
 
-  if (state.phase === "finalWager") {
+  if (state.phase === "finalBet") {
     return {
-      details: "Final Showdown",
-      state: "Placing Wagers",
+      details: "Face-a-Face",
+      state: "Placing Bets",
     };
   }
 
-  if (state.phase === "finalAnswers") {
+  if (state.phase === "finalGuesses") {
     return {
-      details: "Final Showdown",
-      state: "Submitting Answers",
+      details: "Face-a-Face",
+      state: "Submitting Guesses",
     };
   }
 
   if (state.phase === "finalReview") {
     return {
-      details: "Final Showdown",
+      details: "Face-a-Face",
       state: "Host Reviewing",
     };
   }
 
   if (
-    state.phase === "dailyDoublePlayerSelect" ||
-    state.phase === "dailyDoubleWager" ||
-    state.phase === "dailyDoubleQuestion"
+    state.phase === "riskTilePlayerSelect" ||
+    state.phase === "riskTileBet" ||
+    state.phase === "riskTileQuestion"
   ) {
     return {
-      details: "Daily Double",
-      state: "Special Wager",
+      details: "Risk Tile",
+      state: "Special Bet",
     };
   }
 
@@ -632,7 +646,7 @@ function getRichPresenceText(state, playerCount, maxPlayers) {
 }
 
 function getRichPresenceRoundDetails(round) {
-  return round === "doubleJeopardy" ? "Round Two" : "Round One";
+  return round === "round2" ? "Power Round" : "Warm Up";
 }
 
 function getRichPresenceWinnerName(state) {
@@ -718,14 +732,14 @@ function closeConfirm() {
   confirmModal.classList.add("hidden");
 }
 
-function clearResetBoardConfirm() {
-  if (resetBoardConfirmTimeout) {
-    clearTimeout(resetBoardConfirmTimeout);
-    resetBoardConfirmTimeout = null;
+function clearResetGridConfirm() {
+  if (resetGridConfirmTimeout) {
+    clearTimeout(resetGridConfirmTimeout);
+    resetGridConfirmTimeout = null;
   }
 
-  resetBoardBtn.textContent = "Reset Board";
-  resetBoardBtn.classList.remove("warning-button");
+  resetGridBtn.textContent = "Reset Grid";
+  resetGridBtn.classList.remove("warning-button");
 }
 
 socket.on("connected", (user) => {
@@ -745,11 +759,11 @@ socket.on("gameState", (state) => {
   updateRoleButtons(state);
   updateWaitingRoom(state);
   updateHostControls();
-  renderBoard(state);
+  renderGrid(state);
   renderScores(state);
   renderQuestion(state);
   renderDailyDouble(state);
-  renderFinalJeopardy(state);
+  renderFaceAFace(state);
   updateScoreEditModal(state);
   updateScreen(state);
 });
@@ -903,26 +917,26 @@ startGameBtn.addEventListener("click", () => {
   socket.emit("startGame");
 });
 
-importBoardBtn.addEventListener("click", () => {
-  importBoardInput.value = "";
-  importBoardInput.click();
+importGridBtn.addEventListener("click", () => {
+  importGridInput.value = "";
+  importGridInput.click();
 });
 
-importBoardInput.addEventListener("change", () => {
-  const file = importBoardInput.files?.[0];
+importGridInput.addEventListener("change", () => {
+  const file = importGridInput.files?.[0];
 
   if (!file) {
     return;
   }
 
   if (!file.name.toLowerCase().endsWith(".json")) {
-    showToast("Choose a .json board file.", "error");
+    showToast("Choose a .json grid file.", "error");
     return;
   }
 
   file.text()
     .then((contents) => {
-      socket.emit("importBoard", {
+      socket.emit("importGrid", {
         filename: file.name,
         contents,
       });
@@ -939,21 +953,21 @@ socket.on("identityUpdated", (user) => {
   };
 });
 
-socket.on("boardImportResult", (result = {}) => {
+socket.on("gridImportResult", (result = {}) => {
   if (result.ok) {
-    showToast(`Imported ${result.board?.name || "board"}.`, "success");
+    showToast(`Imported ${result.grid?.name || "grid"}.`, "success");
     return;
   }
 
-  showToast(result.error || "Board import failed.", "error");
+  showToast(result.error || "Grid import failed.", "error");
 });
 
-clueImageThumbBtn.addEventListener("click", () => {
-  if (!clueImageThumb.src) {
+promptImageThumbBtn.addEventListener("click", () => {
+  if (!promptImageThumb.src) {
     return;
   }
 
-  imageLightboxImg.src = clueImageThumb.src;
+  imageLightboxImg.src = promptImageThumb.src;
   imageLightbox.classList.remove("hidden");
   imageLightboxCloseBtn.focus();
 });
@@ -1002,39 +1016,39 @@ browserChangeNameButtons.forEach((button) => {
   });
 });
 
-boardSelect.addEventListener("change", () => {
-  socket.emit("selectBoard", {
-    filename: boardSelect.value,
+gridSelect.addEventListener("change", () => {
+  socket.emit("selectGrid", {
+    filename: gridSelect.value,
   });
 });
 
-resetBoardBtn.addEventListener("click", () => {
-  if (resetBoardConfirmTimeout) {
-    socket.emit("resetBoard");
-    clearResetBoardConfirm();
+resetGridBtn.addEventListener("click", () => {
+  if (resetGridConfirmTimeout) {
+    socket.emit("resetGrid");
+    clearResetGridConfirm();
     return;
   }
 
-  resetBoardBtn.textContent = "Click Again to Confirm";
-  resetBoardBtn.classList.add("warning-button");
-  showToast("Click Reset Board again to confirm.", "error");
-  resetBoardConfirmTimeout = setTimeout(clearResetBoardConfirm, 4000);
+  resetGridBtn.textContent = "Click Again to Confirm";
+  resetGridBtn.classList.add("warning-button");
+  showToast("Click Reset Grid again to confirm.", "error");
+  resetGridConfirmTimeout = setTimeout(clearResetGridConfirm, 4000);
 });
 
-startDoubleJeopardyBtn.addEventListener("click", () => {
-  socket.emit("startDoubleJeopardy");
+startPowerRoundBtn.addEventListener("click", () => {
+  socket.emit("startPowerRound");
 });
 
-startFinalJeopardyBtn.addEventListener("click", () => {
-  socket.emit("startFinalJeopardy");
+startFaceAFaceBtn.addEventListener("click", () => {
+  socket.emit("startFaceAFace");
 });
 
-backToBoardBtn.addEventListener("click", () => {
-  socket.emit("returnToBoard");
+backToGridBtn.addEventListener("click", () => {
+  socket.emit("returnToGrid");
 });
 
-revealAnswerBtn.addEventListener("click", () => {
-  socket.emit("revealAnswer");
+revealGuessBtn.addEventListener("click", () => {
+  socket.emit("revealGuess");
 });
 
 buzzBtn.addEventListener("click", () => {
@@ -1061,29 +1075,29 @@ addTimeBtn.addEventListener("click", () => {
   socket.emit("addTimerTime", 5000);
 });
 
-dailyDoublePlayerBtn.addEventListener("click", () => {
+riskTilePlayerBtn.addEventListener("click", () => {
   socket.emit("selectDailyDoublePlayer", {
-    playerId: dailyDoublePlayerSelect.value,
+    playerId: riskTilePlayerSelect.value,
   });
 });
 
-dailyDoubleWagerForm.addEventListener("submit", (event) => {
+riskTileBetForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  submitDailyDoubleWager();
+  submitDailyDoubleBet();
 });
 
-finalWagerForm.addEventListener("submit", (event) => {
+finalBetForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  submitFinalWager();
+  submitFinalBet();
 });
 
-finalAnswerForm.addEventListener("submit", (event) => {
+finalGuessForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  submitFinalAnswer();
+  submitFinalGuess();
 });
 
-revealFinalClueBtn.addEventListener("click", () => {
-  socket.emit("revealFinalClue");
+revealFinalPromptBtn.addEventListener("click", () => {
+  socket.emit("revealFinalPrompt");
 });
 
 startFinalReviewBtn.addEventListener("click", () => {
@@ -1161,7 +1175,7 @@ function updateWaitingRoom(state) {
   renderList(hostList, state.host ? [state.host] : [], "No host yet");
   renderList(playerList, state.players, "No players yet");
   renderList(spectatorList, state.spectators, "No spectators yet");
-  renderBoardSelection(state);
+  renderGridSelection(state);
 }
 
 function updateHostControls() {
@@ -1182,7 +1196,7 @@ function updateScreen(state) {
     return;
   }
 
-  if (state.phase === "board") {
+  if (state.phase === "grid") {
     showScreen("game");
     return;
   }
@@ -1193,179 +1207,179 @@ function updateScreen(state) {
   }
 
   if (
-    state.phase === "dailyDoublePlayerSelect" ||
-    state.phase === "dailyDoubleWager"
+    state.phase === "riskTilePlayerSelect" ||
+    state.phase === "riskTileBet"
   ) {
-    showScreen("dailyDouble");
+    showScreen("riskTile");
     return;
   }
 
-  if (state.phase === "dailyDoubleQuestion") {
+  if (state.phase === "riskTileQuestion") {
     showScreen("question");
     return;
   }
 
-  if (isFinalJeopardyPhase(state.phase)) {
-    showScreen("finalJeopardy");
+  if (isFaceAFacePhase(state.phase)) {
+    showScreen("faceAFace");
   }
 }
 
-function renderBoardSelection(state) {
+function renderGridSelection(state) {
   const isHost = currentUser?.role === "host";
-  const boards = state.availableBoards || [];
-  const selectedBoard = getSelectedBoard(state);
+  const grids = state.availableGrids || [];
+  const selectedGrid = getSelectedGrid(state);
 
-  boardSelectorPanel.classList.toggle("hidden", !isHost);
-  selectedBoardName.textContent = `Selected board: ${selectedBoard?.name || "None"}`;
+  gridSelectorPanel.classList.toggle("hidden", !isHost);
+  selectedGridName.textContent = `Selected grid: ${selectedGrid?.name || "None"}`;
 
   if (!isHost) {
     return;
   }
 
-  boardSelect.innerHTML = "";
-  boardSelect.disabled = boards.length === 0;
+  gridSelect.innerHTML = "";
+  gridSelect.disabled = grids.length === 0;
 
-  if (boards.length === 0) {
+  if (grids.length === 0) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No boards available";
-    boardSelect.appendChild(option);
+    option.textContent = "No grids available";
+    gridSelect.appendChild(option);
     return;
   }
 
-  boards.forEach((board) => {
+  grids.forEach((grid) => {
     const option = document.createElement("option");
-    option.value = board.filename;
-    option.textContent = board.name;
-    option.selected = board.filename === state.selectedBoardFilename;
-    boardSelect.appendChild(option);
+    option.value = grid.filename;
+    option.textContent = grid.name;
+    option.selected = grid.filename === state.selectedGridFilename;
+    gridSelect.appendChild(option);
   });
 }
 
-function getSelectedBoard(state) {
+function getSelectedGrid(state) {
   return (
-    state.availableBoards?.find(
-      (board) => board.filename === state.selectedBoardFilename,
+    state.availableGrids?.find(
+      (grid) => grid.filename === state.selectedGridFilename,
     ) ||
-    (state.board
+    (state.grid
       ? {
-          name: state.board.name || "Trivia Showdown Board",
-          filename: state.selectedBoardFilename,
+          name: state.grid.name || "Trivia Showdown Grid",
+          filename: state.selectedGridFilename,
         }
       : null)
   );
 }
 
-function renderBoard(state) {
-  jeopardyBoard.innerHTML = "";
+function renderGrid(state) {
+  round1Grid.innerHTML = "";
 
   const categories = getCurrentRoundCategories(state);
   const isHost = currentUser?.role === "host";
-  const canStartDoubleJeopardy =
+  const canStartPowerRound =
     isHost &&
-    state.phase === "board" &&
-    state.currentRound === "jeopardy" &&
-    hasDoubleJeopardyBoard(state);
-  const canStartFinalJeopardy =
+    state.phase === "grid" &&
+    state.currentRound === "round1" &&
+    hasPowerRoundGrid(state);
+  const canStartFaceAFace =
     isHost &&
-    state.phase === "board" &&
-    state.currentRound === "doubleJeopardy" &&
-    Boolean(state.board?.finalJeopardy);
+    state.phase === "grid" &&
+    state.currentRound === "round2" &&
+    Boolean(state.grid?.rounds?.final);
 
-  resetBoardBtn.classList.toggle("hidden", !isHost || state.phase !== "board");
-  startDoubleJeopardyBtn.classList.toggle("hidden", !canStartDoubleJeopardy);
-  startFinalJeopardyBtn.classList.toggle("hidden", !canStartFinalJeopardy);
+  resetGridBtn.classList.toggle("hidden", !isHost || state.phase !== "grid");
+  startPowerRoundBtn.classList.toggle("hidden", !canStartPowerRound);
+  startFaceAFaceBtn.classList.toggle("hidden", !canStartFaceAFace);
 
-  if (!isHost || state.phase !== "board") {
-    clearResetBoardConfirm();
+  if (!isHost || state.phase !== "grid") {
+    clearResetGridConfirm();
   }
 
   roundStatus.textContent = getRoundName(state.currentRound);
 
   if (!categories?.length) {
-    boardStatus.textContent = `No ${getRoundName(state.currentRound)} board loaded.`;
+    gridStatus.textContent = `No ${getRoundName(state.currentRound)} grid loaded.`;
     return;
   }
 
   const rows = Math.max(
-    ...categories.map((category) => category.questions.length),
+    ...categories.map((category) => category.prompts.length),
   );
 
   categories.forEach((category) => {
     const heading = document.createElement("div");
     heading.className = "board-category";
     heading.textContent = category.category;
-    jeopardyBoard.appendChild(heading);
+    round1Grid.appendChild(heading);
   });
 
   for (let questionIndex = 0; questionIndex < rows; questionIndex += 1) {
     categories.forEach((category, categoryIndex) => {
-      const question = category.questions[questionIndex];
+      const prompt = category.prompts[questionIndex];
       const square = document.createElement("button");
       square.className = "clue-square";
       square.type = "button";
 
-      if (!question) {
+      if (!prompt) {
         square.classList.add("empty-square");
         square.disabled = true;
         square.setAttribute("aria-hidden", "true");
-        jeopardyBoard.appendChild(square);
+        round1Grid.appendChild(square);
         return;
       }
 
-      if (question.answered) {
+      if (prompt.answered) {
         square.classList.add("used");
         square.textContent = "";
         square.disabled = true;
         square.setAttribute(
           "aria-label",
-          `${category.category} for ${question.value}, already used`,
+          `${category.category} for ${prompt.value}, already used`,
         );
-        jeopardyBoard.appendChild(square);
+        round1Grid.appendChild(square);
         return;
       }
 
-      square.textContent = `$${question.value}`;
+      square.textContent = `$${prompt.value}`;
       square.disabled = !isHost;
       square.setAttribute(
         "aria-label",
-        `${category.category} for ${question.value}`,
+        `${category.category} for ${prompt.value}`,
       );
 
       if (isHost) {
         square.addEventListener("click", () => {
-          socket.emit("selectClue", { categoryIndex, questionIndex });
+          socket.emit("selectPrompt", { categoryIndex, questionIndex });
         });
       }
 
-      jeopardyBoard.appendChild(square);
+      round1Grid.appendChild(square);
     });
   }
 
-  boardStatus.textContent = state.board.name || "Trivia Showdown Board";
+  gridStatus.textContent = state.grid.name || "Trivia Showdown Grid";
 }
 
 function getCurrentRoundCategories(state) {
-  return state.board?.[state.currentRound || "jeopardy"]?.board || [];
+  return state.grid?.rounds?.[state.currentRound || "round1"]?.categories || [];
 }
 
-function hasDoubleJeopardyBoard(state) {
+function hasPowerRoundGrid(state) {
   return (
-    Array.isArray(state.board?.doubleJeopardy?.board) &&
-    state.board.doubleJeopardy.board.length > 0
+    Array.isArray(state.grid?.rounds?.round2?.categories) &&
+    state.grid.rounds.round2.categories.length > 0
   );
 }
 
 function getRoundName(round) {
   switch (round) {
-    case "jeopardy":
-      return "Round One";
+    case "round1":
+      return "Warm Up";
 
-    case "doubleJeopardy":
-      return "Round Two";
+    case "round2":
+      return "Power Round";
 
-    case "finalJeopardy":
-      return "Final Round";
+    case "faceAFace":
+      return "Face-a-Face";
 
     default:
       return "";
@@ -1545,10 +1559,10 @@ function updateScoreEditModal(state) {
 }
 
 function renderQuestion(state) {
-  const currentClue = state.currentClue;
+  const currentPrompt = state.currentPrompt;
   const isHost = currentUser?.role === "host";
   const isPlayer = currentUser?.role === "player";
-  const isDailyDoubleQuestion = state.phase === "dailyDoubleQuestion";
+  const isDailyDoubleQuestion = state.phase === "riskTileQuestion";
   const playerHasBuzzed = state.buzzes?.some(
     (buzz) => buzz.id === currentUser?.id,
   );
@@ -1556,16 +1570,16 @@ function renderQuestion(state) {
     (player) => player.id === currentUser?.id,
   );
   const hasActiveBuzz = isDailyDoubleQuestion
-    ? Boolean(state.dailyDouble?.submitted) && !state.dailyDouble?.judged
-    : Boolean(state.buzzedPlayer) && !state.answerRevealed;
+    ? Boolean(state.riskTileState?.submitted) && !state.riskTileState?.judged
+    : Boolean(state.buzzedPlayer) && !state.guessRevealed;
   const buzzingAvailable =
     state.phase === "question" &&
     isPlayer &&
     state.buzzingOpen &&
-    !state.answerRevealed &&
+    !state.guessRevealed &&
     !playerHasBuzzed &&
     !playerIsLockedOut &&
-    Boolean(currentClue);
+    Boolean(currentPrompt);
 
   questionHostControls.classList.toggle("hidden", !isHost);
   playerBuzzControls.classList.toggle(
@@ -1577,44 +1591,44 @@ function renderQuestion(state) {
   incorrectBtn.disabled = !hasActiveBuzz;
   renderTimer(state);
 
-  if (!currentClue) {
+  if (!currentPrompt) {
     questionCategory.textContent = "";
     questionValue.textContent = "";
-    questionClue.textContent = "";
+    questionPrompt.textContent = "";
     buzzingStatus.textContent = "";
-    hostAnswerPanel.classList.add("hidden");
-    hostAnswerText.textContent = "";
-    questionAnswer.textContent = "Answer hidden";
-    questionAnswer.classList.add("answer-hidden");
+    hostGuessPanel.classList.add("hidden");
+    hostGuessText.textContent = "";
+    questionGuess.textContent = "Guess hidden";
+    questionGuess.classList.add("answer-hidden");
     resultMessage.textContent = "";
     buzzMessage.textContent = "";
     buzzList.innerHTML = "";
     lockedOutMessage.textContent = "";
-    clueImageThumbBtn.classList.add("hidden");
-    clueImageThumb.removeAttribute("src");
-    revealAnswerBtn.disabled = false;
+    promptImageThumbBtn.classList.add("hidden");
+    promptImageThumb.removeAttribute("src");
+    revealGuessBtn.disabled = false;
     return;
   }
 
-  questionCategory.textContent = currentClue.category;
-  questionValue.textContent = `$${currentClue.value}`;
-  questionClue.textContent = currentClue.clue;
-  renderClueImage(currentClue.image);
-  renderHostAnswer(currentClue, isHost);
+  questionCategory.textContent = currentPrompt.category;
+  questionValue.textContent = `$${currentPrompt.value}`;
+  questionPrompt.textContent = currentPrompt.prompt;
+  renderPromptImage(currentPrompt.image);
+  renderHostGuess(currentPrompt, isHost);
 
-  if (state.answerRevealed) {
-    questionAnswer.textContent = currentClue.answer || "";
-    questionAnswer.classList.remove("answer-hidden");
+  if (state.guessRevealed) {
+    questionGuess.textContent = currentPrompt.guessAnswer || "";
+    questionGuess.classList.remove("answer-hidden");
   } else {
-    questionAnswer.textContent = "Answer hidden";
-    questionAnswer.classList.add("answer-hidden");
+    questionGuess.textContent = "Guess hidden";
+    questionGuess.classList.add("answer-hidden");
   }
 
-  revealAnswerBtn.disabled = Boolean(state.answerRevealed);
+  revealGuessBtn.disabled = Boolean(state.guessRevealed);
   resultMessage.textContent = state.resultMessage || "";
   renderBuzzMessage(state, isDailyDoubleQuestion);
   buzzingStatus.textContent = isDailyDoubleQuestion
-    ? "No buzzing for Daily Double."
+    ? "No buzzing for Risk Tile."
     : getBuzzingStatus(state);
   lockedOutMessage.textContent = state.lockedOutPlayers?.length
     ? `Locked out: ${state.lockedOutPlayers.map((player) => player.name).join(", ")}`
@@ -1626,78 +1640,78 @@ function renderQuestion(state) {
   );
 }
 
-function renderHostAnswer(currentClue, isHost) {
-  // The server only includes currentClue.answer for hosts before Reveal Answer.
-  const canShowHostAnswer = isHost && Boolean(currentClue?.answer);
+function renderHostGuess(currentPrompt, isHost) {
+  // The server only includes currentPrompt.guessAnswer for hosts before Reveal Guess.
+  const canShowHostGuess = isHost && Boolean(currentPrompt?.guessAnswer);
 
-  hostAnswerPanel.classList.toggle("hidden", !canShowHostAnswer);
-  hostAnswerText.textContent = canShowHostAnswer ? currentClue.answer : "";
+  hostGuessPanel.classList.toggle("hidden", !canShowHostGuess);
+  hostGuessText.textContent = canShowHostGuess ? currentPrompt.guessAnswer : "";
 }
 
-function renderClueImage(imagePath) {
+function renderPromptImage(imagePath) {
   if (!imagePath) {
-    clueImageThumbBtn.classList.add("hidden");
-    clueImageThumb.removeAttribute("src");
+    promptImageThumbBtn.classList.add("hidden");
+    promptImageThumb.removeAttribute("src");
     return;
   }
 
-  clueImageThumb.src = imagePath.startsWith("media/")
+  promptImageThumb.src = imagePath.startsWith("media/")
     ? imagePath
     : `media/${imagePath}`;
-  clueImageThumbBtn.classList.remove("hidden");
+  promptImageThumbBtn.classList.remove("hidden");
 }
 
 function renderDailyDouble(state) {
-  const dailyDouble = state.dailyDouble || {};
+  const riskTile = state.riskTileState || {};
   const isHost = currentUser?.role === "host";
-  const isSelectedPlayer = dailyDouble.playerId === currentUser?.id;
+  const isSelectedPlayer = riskTile.playerId === currentUser?.id;
 
-  dailyDoublePlayerPanel.classList.toggle(
+  riskTilePlayerPanel.classList.toggle(
     "hidden",
-    !isHost || state.phase !== "dailyDoublePlayerSelect",
+    !isHost || state.phase !== "riskTilePlayerSelect",
   );
-  dailyDoubleWagerForm.classList.toggle(
+  riskTileBetForm.classList.toggle(
     "hidden",
-    !isSelectedPlayer || state.phase !== "dailyDoubleWager",
+    !isSelectedPlayer || state.phase !== "riskTileBet",
   );
-  dailyDoubleWaiting.textContent = "";
+  riskTileWaiting.textContent = "";
 
-  if (state.phase === "dailyDoublePlayerSelect") {
-    dailyDoubleDetail.textContent =
-      "Choose the player who found the Daily Double.";
+  if (state.phase === "riskTilePlayerSelect") {
+    riskTileDetail.textContent =
+      "Choose the player who found the Risk Tile.";
     renderDailyDoublePlayerOptions(state.players || [], state.currentTurnPlayerId);
 
     if (!isHost) {
-      dailyDoubleWaiting.textContent =
+      riskTileWaiting.textContent =
         "Waiting for the host to choose a player.";
     }
     return;
   }
 
-  if (state.phase === "dailyDoubleWager") {
-    dailyDoubleDetail.textContent = `${dailyDouble.playerName} will wager up to ${formatScore(dailyDouble.maxWager)}.`;
-    dailyDoubleWagerInput.max = String(dailyDouble.maxWager || 0);
-    dailyDoubleWagerError.textContent = "";
-    dailyDoubleWagerBtn.disabled = false;
+  if (state.phase === "riskTileBet") {
+    riskTileDetail.textContent = `${riskTile.playerName} will bet up to ${formatScore(riskTile.maxBet)}.`;
+    riskTileBetInput.max = String(riskTile.maxBet || 0);
+    riskTileBetError.textContent = "";
+    riskTileBetBtn.disabled = false;
 
     if (isSelectedPlayer) {
-      dailyDoubleWagerInput.value = "";
-      dailyDoubleWagerInput.focus();
+      riskTileBetInput.value = "";
+      riskTileBetInput.focus();
     } else {
-      dailyDoubleWaiting.textContent = `Waiting for ${dailyDouble.playerName || "the selected player"} to submit a wager.`;
+      riskTileWaiting.textContent = `Waiting for ${riskTile.playerName || "the selected player"} to submit a bet.`;
     }
   }
 }
 
 function renderDailyDoublePlayerOptions(players, currentTurnPlayerId) {
-  dailyDoublePlayerSelect.innerHTML = "";
-  dailyDoublePlayerBtn.disabled = players.length === 0;
+  riskTilePlayerSelect.innerHTML = "";
+  riskTilePlayerBtn.disabled = players.length === 0;
 
   if (players.length === 0) {
     const option = document.createElement("option");
     option.value = "";
     option.textContent = "No players available";
-    dailyDoublePlayerSelect.appendChild(option);
+    riskTilePlayerSelect.appendChild(option);
     return;
   }
 
@@ -1706,49 +1720,49 @@ function renderDailyDoublePlayerOptions(players, currentTurnPlayerId) {
     option.value = player.id;
     option.textContent = `${player.name} (${formatScore(player.score)})`;
     option.selected = player.id === currentTurnPlayerId;
-    dailyDoublePlayerSelect.appendChild(option);
+    riskTilePlayerSelect.appendChild(option);
   });
 }
 
-function submitDailyDoubleWager() {
-  const maxWager = Number(currentState?.dailyDouble?.maxWager || 0);
-  const trimmedInput = dailyDoubleWagerInput.value.trim();
-  const parsedWager = Number(trimmedInput);
+function submitDailyDoubleBet() {
+  const maxBet = Number(currentState?.riskTileState?.maxBet || 0);
+  const trimmedInput = riskTileBetInput.value.trim();
+  const parsedBet = Number(trimmedInput);
 
   if (
     trimmedInput === "" ||
-    !Number.isFinite(parsedWager) ||
-    !Number.isInteger(parsedWager)
+    !Number.isFinite(parsedBet) ||
+    !Number.isInteger(parsedBet)
   ) {
-    dailyDoubleWagerError.textContent = "Enter a whole number.";
+    riskTileBetError.textContent = "Enter a whole number.";
     return;
   }
 
-  if (parsedWager < 0) {
-    dailyDoubleWagerError.textContent = "Wager cannot be negative.";
+  if (parsedBet < 0) {
+    riskTileBetError.textContent = "Bet cannot be negative.";
     return;
   }
 
-  if (parsedWager > maxWager) {
-    dailyDoubleWagerError.textContent = `Maximum wager is ${formatScore(maxWager)}.`;
+  if (parsedBet > maxBet) {
+    riskTileBetError.textContent = `Maximum bet is ${formatScore(maxBet)}.`;
     return;
   }
 
-  dailyDoubleWagerError.textContent = "";
-  dailyDoubleWagerBtn.disabled = true;
-  socket.emit("submitDailyDoubleWager", {
-    wager: parsedWager,
+  riskTileBetError.textContent = "";
+  riskTileBetBtn.disabled = true;
+  socket.emit("submitDailyDoubleBet", {
+    bet: parsedBet,
   });
 }
 
 function getDailyDoubleQuestionMessage(state) {
-  const dailyDouble = state.dailyDouble || {};
+  const riskTile = state.riskTileState || {};
 
-  if (!dailyDouble.playerName) {
+  if (!riskTile.playerName) {
     return "";
   }
 
-  return `${dailyDouble.playerName} wagered ${formatScore(dailyDouble.wager)}.`;
+  return `${riskTile.playerName} bet ${formatScore(riskTile.bet)}.`;
 }
 
 function renderBuzzMessage(state, isDailyDoubleQuestion) {
@@ -1763,13 +1777,13 @@ function renderBuzzMessage(state, isDailyDoubleQuestion) {
     return;
   }
 
-  buzzMessage.appendChild(document.createTextNode("Current answering: "));
+  buzzMessage.appendChild(document.createTextNode("Current guessing: "));
   buzzMessage.appendChild(createUserIdentity(state.buzzedPlayer));
 }
 
-function renderFinalJeopardy(state) {
-  const finalState = state.finalJeopardyState || {};
-  const finalClueData = state.board?.finalJeopardy || {};
+function renderFaceAFace(state) {
+  const finalState = state.faceAFaceState || {};
+  const finalPromptData = state.grid?.rounds?.final || {};
   const eligiblePlayerIds = finalState.eligiblePlayerIds || [];
   const currentPlayer = state.players.find(
     (player) => player.id === currentUser?.id,
@@ -1777,66 +1791,66 @@ function renderFinalJeopardy(state) {
   const isHost = currentUser?.role === "host";
   const isEligible = eligiblePlayerIds.includes(currentUser?.id);
 
-  finalCategory.textContent = finalClueData.category
-    ? `Category: ${finalClueData.category}`
+  finalCategory.textContent = finalPromptData.category
+    ? `Category: ${finalPromptData.category}`
     : "Category unavailable";
-  finalClue.textContent = finalClueData.clue || "";
-  finalClue.classList.toggle(
+  finalPrompt.textContent = finalPromptData.prompt || "";
+  finalPrompt.classList.toggle(
     "hidden",
-    !["finalAnswers", "finalReview", "finalResults"].includes(state.phase),
+    !["finalGuesses", "finalReview", "finalResults"].includes(state.phase),
   );
   finalHostPanel.classList.toggle(
     "hidden",
-    !isHost || !isFinalJeopardyPhase(state.phase),
+    !isHost || !isFaceAFacePhase(state.phase),
   );
   finalReviewPanel.classList.toggle("hidden", state.phase !== "finalReview");
   finalRankings.classList.toggle("hidden", state.phase !== "finalResults");
 
-  finalWagerForm.classList.toggle(
+  finalBetForm.classList.toggle(
     "hidden",
-    !(state.phase === "finalWager" && isEligible),
+    !(state.phase === "finalBet" && isEligible),
   );
-  finalAnswerForm.classList.toggle(
+  finalGuessForm.classList.toggle(
     "hidden",
-    !(state.phase === "finalAnswers" && isEligible),
+    !(state.phase === "finalGuesses" && isEligible),
   );
-  revealFinalClueBtn.classList.toggle(
+  revealFinalPromptBtn.classList.toggle(
     "hidden",
-    !(isHost && state.phase === "finalWager"),
+    !(isHost && state.phase === "finalBet"),
   );
   startFinalReviewBtn.classList.toggle(
     "hidden",
-    !(isHost && state.phase === "finalAnswers"),
+    !(isHost && state.phase === "finalGuesses"),
   );
   showFinalResultsBtn.classList.toggle(
     "hidden",
     !(isHost && state.phase === "finalReview" && allFinalJudged(state)),
   );
 
-  if (state.phase === "finalWager" && isEligible && currentPlayer) {
-    finalWagerInput.max = String(currentPlayer.score);
+  if (state.phase === "finalBet" && isEligible && currentPlayer) {
+    finalBetInput.max = String(currentPlayer.score);
   }
 
-  if (state.phase === "finalWager" && isEligible) {
-    finalStatus.textContent = finalState.wagerStatuses?.[currentUser?.id]
-      ? "Wager submitted. You can still change it until the host reveals the clue."
-      : "Submit your wager.";
+  if (state.phase === "finalBet" && isEligible) {
+    finalStatus.textContent = finalState.betStatuses?.[currentUser?.id]
+      ? "Bet submitted. You can still change it until the host reveals the prompt."
+      : "Submit your bet.";
   } else if (
-    state.phase === "finalWager" &&
+    state.phase === "finalBet" &&
     !isEligible &&
     currentUser?.role === "player"
   ) {
-    finalStatus.textContent = "You are not eligible for Final Trivia Showdown.";
-  } else if (state.phase === "finalWager") {
-    finalStatus.textContent = "Eligible players are submitting wagers.";
-  } else if (state.phase === "finalAnswers") {
+    finalStatus.textContent = "You are not eligible for Face-a-Face.";
+  } else if (state.phase === "finalBet") {
+    finalStatus.textContent = "Eligible players are submitting bets.";
+  } else if (state.phase === "finalGuesses") {
     finalStatus.textContent = isEligible
-      ? finalState.answerStatuses?.[currentUser?.id]
-        ? "Answer submitted. You can still change it until the host starts review."
-        : "Submit your answer."
-      : "Eligible players are submitting answers.";
+      ? finalState.guessStatuses?.[currentUser?.id]
+        ? "Guess submitted. You can still change it until the host starts review."
+        : "Submit your guess."
+      : "Eligible players are submitting guesses.";
   } else if (state.phase === "finalReview") {
-    finalStatus.textContent = "Host is reviewing Final Trivia Showdown answers.";
+    finalStatus.textContent = "Host is reviewing Face-a-Face guesses.";
   } else if (state.phase === "finalResults") {
     finalStatus.textContent = "Final rankings";
   } else {
@@ -1848,71 +1862,71 @@ function renderFinalJeopardy(state) {
   renderFinalRankings(state);
 }
 
-function submitFinalWager() {
+function submitFinalBet() {
   const currentPlayer = currentState?.players.find(
     (player) => player.id === currentUser?.id,
   );
-  const trimmedInput = finalWagerInput.value.trim();
-  const parsedWager = Number(trimmedInput);
+  const trimmedInput = finalBetInput.value.trim();
+  const parsedBet = Number(trimmedInput);
 
   if (
     !currentPlayer ||
     trimmedInput === "" ||
-    !Number.isFinite(parsedWager) ||
-    !Number.isInteger(parsedWager)
+    !Number.isFinite(parsedBet) ||
+    !Number.isInteger(parsedBet)
   ) {
-    finalWagerError.textContent = "Enter a whole number.";
+    finalBetError.textContent = "Enter a whole number.";
     return;
   }
 
-  if (parsedWager < 0 || parsedWager > currentPlayer.score) {
-    finalWagerError.textContent = `Wager must be between $0 and ${formatScore(currentPlayer.score)}.`;
+  if (parsedBet < 0 || parsedBet > currentPlayer.score) {
+    finalBetError.textContent = `Bet must be between $0 and ${formatScore(currentPlayer.score)}.`;
     return;
   }
 
-  finalWagerError.textContent = "";
-  socket.emit("submitFinalWager", {
-    wager: parsedWager,
+  finalBetError.textContent = "";
+  socket.emit("submitFinalBet", {
+    bet: parsedBet,
   });
 }
 
-function submitFinalAnswer() {
-  const trimmedAnswer = finalAnswerInput.value.trim();
+function submitFinalGuess() {
+  const trimmedGuess = finalGuessInput.value.trim();
 
-  if (!trimmedAnswer) {
-    finalAnswerError.textContent = "Enter an answer.";
+  if (!trimmedGuess) {
+    finalGuessError.textContent = "Enter a guess.";
     return;
   }
 
-  finalAnswerError.textContent = "";
-  socket.emit("submitFinalAnswer", {
-    answer: trimmedAnswer,
+  finalGuessError.textContent = "";
+  socket.emit("submitFinalGuess", {
+    guess: trimmedGuess,
   });
 }
 
 function renderFinalStatusList(state) {
   finalStatusList.innerHTML = "";
 
-  if (currentUser?.role !== "host" || !isFinalJeopardyPhase(state.phase)) {
+  if (currentUser?.role !== "host" || !isFaceAFacePhase(state.phase)) {
     return;
   }
 
-  const finalState = state.finalJeopardyState || {};
+  const finalState = state.faceAFaceState || {};
   const eligiblePlayerIds = finalState.eligiblePlayerIds || [];
 
   state.players.forEach((player) => {
     const item = document.createElement("li");
     const isEligible = eligiblePlayerIds.includes(player.id);
-    const wagerSubmitted = Boolean(finalState.wagerStatuses?.[player.id]);
-    const answerSubmitted = Boolean(finalState.answerStatuses?.[player.id]);
+    const betSubmitted = Boolean(finalState.betStatuses?.[player.id]);
+    const guessSubmitted = Boolean(finalState.guessStatuses?.[player.id]);
     const judgement = finalState.judged?.[player.id];
 
     if (!isEligible) {
       item.textContent = `${player.name}: ineligible`;
-    } else if (state.phase === "finalWager") {
-      item.textContent = `${player.name}: ${wagerSubmitted ? "wager submitted" : "waiting"}`;
-    } else if (state.phase === "finalAnswers") {
-      item.textContent = `${player.name}: ${answerSubmitted ? "answer submitted" : "waiting"}`;
+    } else if (state.phase === "finalBet") {
+      item.textContent = `${player.name}: ${betSubmitted ? "bet submitted" : "waiting"}`;
+    } else if (state.phase === "finalGuesses") {
+      item.textContent = `${player.name}: ${guessSubmitted ? "guess submitted" : "waiting"}`;
     } else {
       item.textContent = `${player.name}: ${judgement || "unjudged"}`;
     }
@@ -1928,7 +1942,7 @@ function renderFinalReview(state) {
     return;
   }
 
-  const finalState = state.finalJeopardyState || {};
+  const finalState = state.faceAFaceState || {};
   const eligiblePlayerIds = finalState.eligiblePlayerIds || [];
   const isHost = currentUser?.role === "host";
 
@@ -1949,12 +1963,12 @@ function renderFinalReview(state) {
     row.appendChild(name);
 
     const revealed = finalState.revealedPlayerIds?.includes(playerId);
-    const answer = document.createElement("p");
-    answer.className = "final-revealed-answer";
-    answer.textContent = revealed
-      ? finalState.revealedAnswers?.[playerId] || ""
-      : "Answer hidden";
-    row.appendChild(answer);
+    const guess = document.createElement("p");
+    guess.className = "final-revealed-answer";
+    guess.textContent = revealed
+      ? finalState.revealedGuesses?.[playerId] || ""
+      : "Guess hidden";
+    row.appendChild(guess);
 
     const judgement = finalState.judged?.[playerId];
     const status = document.createElement("p");
@@ -1966,9 +1980,9 @@ function renderFinalReview(state) {
       const revealButton = document.createElement("button");
       revealButton.className = "secondary-button";
       revealButton.type = "button";
-      revealButton.textContent = "Reveal Answer";
+      revealButton.textContent = "Reveal Guess";
       revealButton.addEventListener("click", () => {
-        socket.emit("revealFinalAnswerForPlayer", { playerId });
+        socket.emit("revealFinalGuessForPlayer", { playerId });
       });
       row.appendChild(revealButton);
     }
@@ -1982,7 +1996,7 @@ function renderFinalReview(state) {
       correctButton.type = "button";
       correctButton.textContent = "Correct";
       correctButton.addEventListener("click", () => {
-        socket.emit("judgeFinalAnswer", { playerId, result: "correct" });
+        socket.emit("judgeFinalGuess", { playerId, result: "correct" });
       });
 
       const incorrectButton = document.createElement("button");
@@ -1990,7 +2004,7 @@ function renderFinalReview(state) {
       incorrectButton.type = "button";
       incorrectButton.textContent = "Incorrect";
       incorrectButton.addEventListener("click", () => {
-        socket.emit("judgeFinalAnswer", { playerId, result: "incorrect" });
+        socket.emit("judgeFinalGuess", { playerId, result: "incorrect" });
       });
 
       controls.appendChild(correctButton);
@@ -2109,19 +2123,19 @@ function getRankingLabel(index) {
   return `${index + 1}th Place`;
 }
 
-function isFinalJeopardyPhase(phase) {
+function isFaceAFacePhase(phase) {
   return [
     "finalCategory",
-    "finalWager",
-    "finalClue",
-    "finalAnswers",
+    "finalBet",
+    "finalPrompt",
+    "finalGuesses",
     "finalReview",
     "finalResults",
   ].includes(phase);
 }
 
 function allFinalJudged(state) {
-  const finalState = state.finalJeopardyState || {};
+  const finalState = state.faceAFaceState || {};
   return (finalState.eligiblePlayerIds || []).every((playerId) =>
     Boolean(finalState.judged?.[playerId]),
   );
@@ -2149,7 +2163,7 @@ function renderTimer(state) {
     ? "Time expired"
     : timer.type === "reading"
       ? "Reading time"
-      : "Answer time";
+      : "Guess time";
   timerValue.textContent = formatTimer(timer.remainingMs);
   timerStatus.textContent = timer.expired
     ? "Host decides"
@@ -2164,23 +2178,23 @@ function renderTimer(state) {
 }
 
 function getBuzzingStatus(state) {
-  if (state.answerRevealed) {
+  if (state.guessRevealed) {
     return "Buzzing closed.";
   }
 
-  if (state.timer?.expired && state.timer.type === "answer") {
+  if (state.timer?.expired && state.timer.type === "guess") {
     return "Time expired - host decides.";
   }
 
   if (state.buzzedPlayer) {
-    return `${state.buzzedPlayer.name} answering...`;
+    return `${state.buzzedPlayer.name} guessing...`;
   }
 
   if (state.buzzingOpen) {
     return "Buzzing open!";
   }
 
-  return "Read the clue...";
+  return "Read the prompt...";
 }
 
 function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
@@ -2211,7 +2225,7 @@ function renderBuzzes(buzzes, buzzedPlayer, lockedOutPlayers) {
 
 function getBuzzStatus(buzz, buzzedPlayer, lockedOutPlayerIds) {
   if (buzz.id === buzzedPlayer?.id) {
-    return "answering now";
+    return "guessing now";
   }
 
   if (lockedOutPlayerIds.has(buzz.id)) {
@@ -2226,8 +2240,8 @@ function showScreen(screen) {
   waitingRoom.classList.add("hidden");
   gameScreen.classList.add("hidden");
   questionScreen.classList.add("hidden");
-  dailyDoubleScreen.classList.add("hidden");
-  finalJeopardyScreen.classList.add("hidden");
+  riskTileScreen.classList.add("hidden");
+  faceAFaceScreen.classList.add("hidden");
 
   if (screen === "role") {
     roleScreen.classList.remove("hidden");
@@ -2245,12 +2259,12 @@ function showScreen(screen) {
     questionScreen.classList.remove("hidden");
   }
 
-  if (screen === "dailyDouble") {
-    dailyDoubleScreen.classList.remove("hidden");
+  if (screen === "riskTile") {
+    riskTileScreen.classList.remove("hidden");
   }
 
-  if (screen === "finalJeopardy") {
-    finalJeopardyScreen.classList.remove("hidden");
+  if (screen === "faceAFace") {
+    faceAFaceScreen.classList.remove("hidden");
   }
 }
 
@@ -2330,3 +2344,6 @@ function formatTimer(remainingMs) {
 }
 
 registerServiceWorker();
+
+
+

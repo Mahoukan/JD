@@ -4,6 +4,11 @@ import http from "http";
 import { basename, dirname, join } from "path";
 import { Server } from "socket.io";
 import { fileURLToPath } from "url";
+import {
+  normalizeGridForStorage,
+  normalizeGridPack,
+  stripAnsweredTracking
+} from "./src/grid-normalizer.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -21,10 +26,10 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, "package.json"), "ut
 const buildCommit = process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || packageJson.version;
 const BUILD_VERSION = process.env.BUILD_VERSION ||
   `${buildCommit}-${Date.now()}`;
-const boardsDirectory = join(__dirname, "public", "boards");
-let availableBoards = discoverAvailableBoards();
-const selectedBoard = availableBoards[0] ?? createFallbackBoardOption();
-const initialBoard = loadBoardByFilename(selectedBoard.filename) ?? createEmptyBoard(selectedBoard);
+const gridsDirectory = join(__dirname, "public", "boards");
+let availableGrids = discoverAvailableGrids();
+const selectedGrid = availableGrids[0] ?? createFallbackGridOption();
+const initialGrid = loadGridByFilename(selectedGrid.filename) ?? createEmptyGrid(selectedGrid);
 
 app.use(express.json());
 
@@ -178,26 +183,26 @@ function createInitialGameState() {
     players: [],
     spectators: [],
     phase: "waiting",
-    availableBoards,
-    selectedBoardFilename: selectedBoard.filename,
-    board: structuredCloneBoard(initialBoard),
-    currentRound: "jeopardy",
+    availableGrids,
+    selectedGridFilename: selectedGrid.filename,
+    grid: structuredCloneGrid(initialGrid),
+    currentRound: "round1",
     currentTurnPlayerId: null,
-    currentClue: null,
-    answerRevealed: false,
+    currentPrompt: null,
+    guessRevealed: false,
     buzzingOpen: false,
     buzzedPlayer: null,
     buzzes: [],
     lockedOutPlayers: [],
-    dailyDouble: createEmptyDailyDouble(),
-    finalJeopardyState: createEmptyFinalJeopardyState(),
+    riskTileState: createEmptyRiskTileState(),
+    faceAFaceState: createEmptyFaceAFaceState(),
     timer: createEmptyTimer(),
     resultMessage: ""
   };
 }
 
-function structuredCloneBoard(board) {
-  return JSON.parse(JSON.stringify(board));
+function structuredCloneGrid(grid) {
+  return JSON.parse(JSON.stringify(grid));
 }
 
 function setActiveGameContext(gameContext) {
@@ -252,6 +257,10 @@ function onGameEvent(socket, eventName, handler) {
   });
 }
 
+function onGameEvents(socket, eventNames, handler) {
+  eventNames.forEach((eventName) => onGameEvent(socket, eventName, handler));
+}
+
 function setSocketGame(socket, gameId) {
   const nextGameId = sanitizeGameId(gameId) || "development";
   const previousGameId = socket.data.gameId || "development";
@@ -278,7 +287,7 @@ function leaveCurrentGame(socket) {
 
   if (gameState.host === null) {
     gameState.phase = "waiting";
-    resetCurrentClueState();
+    resetCurrentPromptState();
   }
 
   socket.data.role = null;
@@ -320,19 +329,19 @@ function createVisibleGameState(socket) {
     spectators: gameState.spectators,
     hostAvailable: gameState.host === null,
     phase: gameState.phase,
-    availableBoards: gameState.availableBoards,
-    selectedBoardFilename: gameState.selectedBoardFilename,
-    board: getVisibleBoard(socket),
+    availableGrids: gameState.availableGrids,
+    selectedGridFilename: gameState.selectedGridFilename,
+    grid: getVisibleGrid(socket),
     currentRound: gameState.currentRound,
     currentTurnPlayerId: gameState.currentTurnPlayerId,
-    currentClue: getVisibleCurrentClue(socket),
-    answerRevealed: gameState.answerRevealed,
+    currentPrompt: getVisibleCurrentPrompt(socket),
+    guessRevealed: gameState.guessRevealed,
     buzzingOpen: gameState.buzzingOpen,
     buzzedPlayer: gameState.buzzedPlayer,
     buzzes: gameState.buzzes,
     lockedOutPlayers: gameState.lockedOutPlayers,
-    dailyDouble: gameState.dailyDouble,
-    finalJeopardyState: getVisibleFinalJeopardyState(),
+    riskTileState: gameState.riskTileState,
+    faceAFaceState: getVisibleFaceAFaceState(),
     timer: getVisibleTimer(),
     resultMessage: gameState.resultMessage
   };
@@ -533,10 +542,10 @@ io.on("connection", (socket) => {
       return;
     }
 
-    gameState.phase = "board";
-    gameState.currentRound = "jeopardy";
+    gameState.phase = "grid";
+    gameState.currentRound = "round1";
     gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
-    resetCurrentClueState();
+    resetCurrentPromptState();
     sendGameState();
   });
 
@@ -554,54 +563,55 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "selectClue", ({ categoryIndex, questionIndex } = {}) => {
+  onGameEvent(socket, "selectPrompt", ({ categoryIndex, questionIndex } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can select clues.");
+      socket.emit("actionRejected", "Only the host can select prompts.");
       return;
     }
 
-    if (gameState.phase !== "board") {
-      socket.emit("actionRejected", "The board is not active.");
+    if (gameState.phase !== "grid") {
+      socket.emit("actionRejected", "The grid is not active.");
       return;
     }
 
     const category = getCurrentRoundCategories()?.[categoryIndex];
-    const question = category?.questions?.[questionIndex];
+    const prompt = category?.prompts?.[questionIndex];
 
-    if (!category || !question) {
-      socket.emit("actionRejected", "That clue is not on the board.");
+    if (!category || !prompt) {
+      socket.emit("actionRejected", "That prompt is not on the grid.");
       return;
     }
 
-    if (question.answered) {
-      socket.emit("actionRejected", "That clue has already been answered.");
+    if (prompt.answered) {
+      socket.emit("actionRejected", "That prompt has already been guessed.");
       return;
     }
 
     stopTimer();
-    gameState.currentClue = {
+    gameState.currentPrompt = {
       categoryIndex,
       questionIndex,
       round: gameState.currentRound,
       category: category.category,
-      value: question.value,
-      clue: question.clue,
-      answer: question.answer,
-      image: isSafeRelativeMediaPath(question.image) ? question.image : "",
-      dailyDouble: Boolean(question.dailyDouble)
+      value: prompt.value,
+      prompt: prompt.prompt,
+      guessAnswer: prompt.guessAnswer,
+      image: isSafeRelativeMediaPath(prompt.image) ? prompt.image : "",
+      type: prompt.type || "",
+      riskTile: prompt.type === "risk"
     };
-    gameState.answerRevealed = false;
+    gameState.guessRevealed = false;
     gameState.buzzingOpen = false;
     gameState.buzzedPlayer = null;
     gameState.buzzes = [];
     gameState.lockedOutPlayers = [];
-    gameState.dailyDouble = createEmptyDailyDouble();
+    gameState.riskTileState = createEmptyRiskTileState();
 
-    if (question.dailyDouble) {
+    if (prompt.type === "risk") {
       gameState.resultMessage = "";
-      gameState.phase = "dailyDoublePlayerSelect";
+      gameState.phase = "riskTilePlayerSelect";
     } else {
-      gameState.resultMessage = "Read the clue...";
+      gameState.resultMessage = "Read the prompt...";
       gameState.phase = "question";
       startTimer("reading", READING_TIMER_MS);
     }
@@ -609,141 +619,141 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "startDoubleJeopardy", () => {
+  onGameEvents(socket, ["startPowerRound", "startDoubleJeopardy"], () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Double Trivia Showdown.");
+      socket.emit("actionRejected", "Only the host can start Power Round.");
       return;
     }
 
-    if (gameState.phase !== "board") {
-      socket.emit("actionRejected", "Double Trivia Showdown can only start from the board.");
+    if (gameState.phase !== "grid") {
+      socket.emit("actionRejected", "Power Round can only start from the grid.");
       return;
     }
 
-    if (gameState.currentRound !== "jeopardy") {
-      socket.emit("actionRejected", "Double Trivia Showdown has already started.");
+    if (gameState.currentRound !== "round1") {
+      socket.emit("actionRejected", "Power Round has already started.");
       return;
     }
 
-    if (!hasRoundBoard("doubleJeopardy")) {
-      socket.emit("actionRejected", "This board does not include Double Trivia Showdown.");
+    if (!hasRoundGrid("round2")) {
+      socket.emit("actionRejected", "This grid does not include Power Round.");
       return;
     }
 
-    gameState.currentRound = "doubleJeopardy";
-    gameState.phase = "board";
-    resetCurrentClueState();
+    gameState.currentRound = "round2";
+    gameState.phase = "grid";
+    resetCurrentPromptState();
     sendGameState();
   });
 
-  onGameEvent(socket, "startFinalJeopardy", () => {
+  onGameEvents(socket, ["startFaceAFace", "startFinalJeopardy"], () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Final Trivia Showdown.");
+      socket.emit("actionRejected", "Only the host can start Face-a-Face.");
       return;
     }
 
-    if (gameState.phase !== "board" || gameState.currentRound !== "doubleJeopardy") {
-      socket.emit("actionRejected", "Final Trivia Showdown can only start from the Second Trivia Showdown board.");
+    if (gameState.phase !== "grid" || gameState.currentRound !== "round2") {
+      socket.emit("actionRejected", "Face-a-Face can only start from the Power Round grid.");
       return;
     }
 
-    if (!gameState.board.finalJeopardy) {
-      socket.emit("actionRejected", "This board does not include Final Trivia Showdown.");
+    if (!gameState.grid.rounds?.final) {
+      socket.emit("actionRejected", "This grid does not include Face-a-Face.");
       return;
     }
 
-    resetCurrentClueState();
-    gameState.finalJeopardyState = createFinalJeopardyState();
-    gameState.phase = "finalWager";
+    resetCurrentPromptState();
+    gameState.faceAFaceState = createFaceAFaceState();
+    gameState.phase = "finalBet";
     sendGameState();
   });
 
-  onGameEvent(socket, "submitFinalWager", ({ wager } = {}) => {
-    if (gameState.phase !== "finalWager") {
-      socket.emit("actionRejected", "Final Trivia Showdown wagering is not active.");
+  onGameEvent(socket, "submitFinalBet", ({ bet } = {}) => {
+    if (gameState.phase !== "finalBet") {
+      socket.emit("actionRejected", "Face-a-Face betting is not active.");
       return;
     }
 
-    const player = getEligibleFinalPlayer(socket.id);
+    const player = getEligibleFaceAFacePlayer(socket.id);
 
     if (!player) {
-      socket.emit("actionRejected", "You are not eligible for Final Trivia Showdown.");
+      socket.emit("actionRejected", "You are not eligible for Face-a-Face.");
       return;
     }
 
-    const parsedWager = Number(wager);
+    const parsedBet = Number(bet);
 
-    if (!Number.isFinite(parsedWager) || !Number.isInteger(parsedWager)) {
-      socket.emit("actionRejected", "Wager must be a finite integer.");
+    if (!Number.isFinite(parsedBet) || !Number.isInteger(parsedBet)) {
+      socket.emit("actionRejected", "Bet must be a finite integer.");
       return;
     }
 
-    if (parsedWager < 0 || parsedWager > player.score) {
-      socket.emit("actionRejected", "Wager must be between $0 and your current score.");
+    if (parsedBet < 0 || parsedBet > player.score) {
+      socket.emit("actionRejected", "Bet must be between $0 and your current score.");
       return;
     }
 
-    gameState.finalJeopardyState.wagers[player.id] = parsedWager;
+    gameState.faceAFaceState.bets[player.id] = parsedBet;
     sendGameState();
   });
 
-  onGameEvent(socket, "revealFinalClue", () => {
+  onGameEvent(socket, "revealFinalPrompt", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reveal the Final Trivia Showdown clue.");
+      socket.emit("actionRejected", "Only the host can reveal the Face-a-Face prompt.");
       return;
     }
 
-    if (gameState.phase !== "finalWager") {
-      socket.emit("actionRejected", "Final Trivia Showdown wagering is not active.");
+    if (gameState.phase !== "finalBet") {
+      socket.emit("actionRejected", "Face-a-Face betting is not active.");
       return;
     }
 
-    if (!allFinalWagersSubmitted()) {
-      socket.emit("actionRejected", "All eligible players must submit wagers first.");
+    if (!allFaceAFaceBetsSubmitted()) {
+      socket.emit("actionRejected", "All eligible players must submit bets first.");
       return;
     }
 
-    gameState.phase = "finalAnswers";
+    gameState.phase = "finalGuesses";
     sendGameState();
   });
 
-  onGameEvent(socket, "submitFinalAnswer", ({ answer } = {}) => {
-    if (gameState.phase !== "finalAnswers") {
-      socket.emit("actionRejected", "Final Trivia Showdown answers are not active.");
+  onGameEvent(socket, "submitFinalGuess", ({ guess } = {}) => {
+    if (gameState.phase !== "finalGuesses") {
+      socket.emit("actionRejected", "Face-a-Face guesses are not active.");
       return;
     }
 
-    const player = getEligibleFinalPlayer(socket.id);
+    const player = getEligibleFaceAFacePlayer(socket.id);
 
-    if (!player || gameState.finalJeopardyState.wagers[player.id] === undefined) {
-      socket.emit("actionRejected", "You must be eligible and have a wager submitted.");
+    if (!player || gameState.faceAFaceState.bets[player.id] === undefined) {
+      socket.emit("actionRejected", "You must be eligible and have a bet submitted.");
       return;
     }
 
-    const trimmedAnswer = String(answer || "").trim();
+    const trimmedGuess = String(guess || "").trim();
 
-    if (!trimmedAnswer) {
-      socket.emit("actionRejected", "Final Trivia Showdown answer cannot be empty.");
+    if (!trimmedGuess) {
+      socket.emit("actionRejected", "Face-a-Face guess cannot be empty.");
       return;
     }
 
-    gameState.finalJeopardyState.answers[player.id] = trimmedAnswer;
+    gameState.faceAFaceState.guesses[player.id] = trimmedGuess;
     sendGameState();
   });
 
   onGameEvent(socket, "startFinalReview", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can start Final Trivia Showdown review.");
+      socket.emit("actionRejected", "Only the host can start Face-a-Face review.");
       return;
     }
 
-    if (gameState.phase !== "finalAnswers") {
-      socket.emit("actionRejected", "Final Trivia Showdown answers are not active.");
+    if (gameState.phase !== "finalGuesses") {
+      socket.emit("actionRejected", "Face-a-Face guesses are not active.");
       return;
     }
 
-    if (!allFinalAnswersSubmitted()) {
-      socket.emit("actionRejected", "All eligible players must submit answers first.");
+    if (!allFaceAFaceGuessesSubmitted()) {
+      socket.emit("actionRejected", "All eligible players must submit guesses first.");
       return;
     }
 
@@ -751,76 +761,76 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "revealFinalAnswerForPlayer", ({ playerId } = {}) => {
+  onGameEvent(socket, "revealFinalGuessForPlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reveal Final Trivia Showdown answers.");
+      socket.emit("actionRejected", "Only the host can reveal Face-a-Face guesses.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
+      socket.emit("actionRejected", "Face-a-Face review is not active.");
       return;
     }
 
-    if (!isEligibleFinalPlayerId(playerId) || !gameState.finalJeopardyState.answers[playerId]) {
-      socket.emit("actionRejected", "That player does not have a Final Trivia Showdown answer.");
+    if (!isEligibleFaceAFacePlayerId(playerId) || !gameState.faceAFaceState.guesses[playerId]) {
+      socket.emit("actionRejected", "That player does not have a Face-a-Face guess.");
       return;
     }
 
-    if (!gameState.finalJeopardyState.revealedPlayerIds.includes(playerId)) {
-      gameState.finalJeopardyState.revealedPlayerIds.push(playerId);
+    if (!gameState.faceAFaceState.revealedPlayerIds.includes(playerId)) {
+      gameState.faceAFaceState.revealedPlayerIds.push(playerId);
     }
 
     sendGameState();
   });
 
-  onGameEvent(socket, "judgeFinalAnswer", ({ playerId, result } = {}) => {
+  onGameEvent(socket, "judgeFinalGuess", ({ playerId, result } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can judge Final Trivia Showdown answers.");
+      socket.emit("actionRejected", "Only the host can judge Face-a-Face guesses.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
+      socket.emit("actionRejected", "Face-a-Face review is not active.");
       return;
     }
 
     if (!["correct", "incorrect"].includes(result)) {
-      socket.emit("actionRejected", "Invalid Final Trivia Showdown judgement.");
+      socket.emit("actionRejected", "Invalid Face-a-Face judgment.");
       return;
     }
 
     const player = gameState.players.find((currentPlayer) => currentPlayer.id === playerId);
-    const wager = gameState.finalJeopardyState.wagers[playerId];
+    const bet = gameState.faceAFaceState.bets[playerId];
 
-    if (!player || wager === undefined || !gameState.finalJeopardyState.revealedPlayerIds.includes(playerId)) {
-      socket.emit("actionRejected", "Reveal this player's answer before judging.");
+    if (!player || bet === undefined || !gameState.faceAFaceState.revealedPlayerIds.includes(playerId)) {
+      socket.emit("actionRejected", "Reveal this player's guess before judging.");
       return;
     }
 
-    if (gameState.finalJeopardyState.judged[playerId]) {
-      socket.emit("actionRejected", "That Final Trivia Showdown answer has already been judged.");
+    if (gameState.faceAFaceState.judged[playerId]) {
+      socket.emit("actionRejected", "That Face-a-Face guess has already been judged.");
       return;
     }
 
-    player.score += result === "correct" ? wager : -wager;
-    gameState.finalJeopardyState.judged[playerId] = result;
+    player.score += result === "correct" ? bet : -bet;
+    gameState.faceAFaceState.judged[playerId] = result;
     sendGameState();
   });
 
   onGameEvent(socket, "showFinalResults", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can show Final Trivia Showdown results.");
+      socket.emit("actionRejected", "Only the host can show Face-a-Face results.");
       return;
     }
 
     if (gameState.phase !== "finalReview") {
-      socket.emit("actionRejected", "Final Trivia Showdown review is not active.");
+      socket.emit("actionRejected", "Face-a-Face review is not active.");
       return;
     }
 
-    if (!allFinalAnswersJudged()) {
-      socket.emit("actionRejected", "All Final Trivia Showdown answers must be judged first.");
+    if (!allFaceAFaceGuessesJudged()) {
+      socket.emit("actionRejected", "All Face-a-Face guesses must be judged first.");
       return;
     }
 
@@ -839,8 +849,8 @@ io.on("connection", (socket) => {
       return;
     }
 
-    if (gameState.answerRevealed) {
-      socket.emit("actionRejected", "Buzzing is closed after the answer is revealed.");
+    if (gameState.guessRevealed) {
+      socket.emit("actionRejected", "Buzzing is closed after the guess is revealed.");
       return;
     }
 
@@ -850,7 +860,7 @@ io.on("connection", (socket) => {
     }
 
     if (gameState.lockedOutPlayers.some((player) => player.id === socket.id)) {
-      socket.emit("actionRejected", "You are locked out for this clue.");
+      socket.emit("actionRejected", "You are locked out for this prompt.");
       return;
     }
 
@@ -881,27 +891,27 @@ io.on("connection", (socket) => {
 
     if (!gameState.buzzedPlayer) {
       gameState.buzzedPlayer = player;
-      startTimer("answer", ANSWER_TIMER_MS);
+      startTimer("guess", ANSWER_TIMER_MS);
     }
 
     sendGameState();
   });
 
   onGameEvent(socket, "markCorrect", () => {
-    if (gameState.phase === "dailyDoubleQuestion") {
-      const validationError = validateDailyDoubleJudgement(socket);
+    if (gameState.phase === "riskTileQuestion") {
+      const validationError = validateDailyDoubleJudgment(socket);
 
       if (validationError) {
         socket.emit("actionRejected", validationError);
         return;
       }
 
-      judgeDailyDouble(true);
+      judgeRiskTile(true);
       sendGameState();
       return;
     }
 
-    const validationError = validateHostJudgement(socket);
+    const validationError = validateHostJudgment(socket);
 
     if (validationError) {
       socket.emit("actionRejected", validationError);
@@ -915,31 +925,31 @@ io.on("connection", (socket) => {
       return;
     }
 
-    player.score += gameState.currentClue.value;
+    player.score += gameState.currentPrompt.value;
     gameState.currentTurnPlayerId = player.id;
-    gameState.answerRevealed = true;
+    gameState.guessRevealed = true;
     gameState.buzzingOpen = false;
-    gameState.resultMessage = `${player.name} is correct! +$${gameState.currentClue.value}`;
+    gameState.resultMessage = `${player.name} is correct! +$${gameState.currentPrompt.value}`;
     stopTimer();
-    markCurrentClueAnswered();
+    markCurrentPromptGuessed();
     sendGameState();
   });
 
   onGameEvent(socket, "markIncorrect", () => {
-    if (gameState.phase === "dailyDoubleQuestion") {
-      const validationError = validateDailyDoubleJudgement(socket);
+    if (gameState.phase === "riskTileQuestion") {
+      const validationError = validateDailyDoubleJudgment(socket);
 
       if (validationError) {
         socket.emit("actionRejected", validationError);
         return;
       }
 
-      judgeDailyDouble(false);
+      judgeRiskTile(false);
       sendGameState();
       return;
     }
 
-    const validationError = validateHostJudgement(socket);
+    const validationError = validateHostJudgment(socket);
 
     if (validationError) {
       socket.emit("actionRejected", validationError);
@@ -953,17 +963,17 @@ io.on("connection", (socket) => {
       return;
     }
 
-    player.score -= gameState.currentClue.value;
+    player.score -= gameState.currentPrompt.value;
     gameState.lockedOutPlayers.push({
       id: player.id,
       name: player.name,
       avatarUrl: player.avatarUrl || "",
       discordUserId: player.discordUserId || ""
     });
-    gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -$${gameState.currentClue.value}`;
+    gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -$${gameState.currentPrompt.value}`;
     gameState.buzzedPlayer = null;
     gameState.buzzes = [];
-    gameState.answerRevealed = false;
+    gameState.guessRevealed = false;
     gameState.phase = "question";
     gameState.buzzingOpen = true;
     stopTimer();
@@ -972,12 +982,12 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "selectDailyDoublePlayer", ({ playerId } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can choose the Daily Double player.");
+      socket.emit("actionRejected", "Only the host can choose the Risk Tile player.");
       return;
     }
 
-    if (gameState.phase !== "dailyDoublePlayerSelect") {
-      socket.emit("actionRejected", "Daily Double player selection is not active.");
+    if (gameState.phase !== "riskTilePlayerSelect") {
+      socket.emit("actionRejected", "Risk Tile player selection is not active.");
       return;
     }
 
@@ -988,98 +998,98 @@ io.on("connection", (socket) => {
       return;
     }
 
-    gameState.dailyDouble = {
+    gameState.riskTileState = {
       playerId: player.id,
       playerName: player.name,
-      wager: null,
-      maxWager: Math.max(player.score, 1000),
+      bet: null,
+      maxBet: Math.max(player.score, 1000),
       submitted: false,
       judged: false
     };
-    gameState.phase = "dailyDoubleWager";
+    gameState.phase = "riskTileBet";
     gameState.resultMessage = "";
     sendGameState();
   });
 
-  onGameEvent(socket, "submitDailyDoubleWager", ({ wager } = {}) => {
-    if (gameState.phase !== "dailyDoubleWager") {
-      socket.emit("actionRejected", "Daily Double wagering is not active.");
+  onGameEvent(socket, "submitDailyDoubleBet", ({ bet } = {}) => {
+    if (gameState.phase !== "riskTileBet") {
+      socket.emit("actionRejected", "Risk Tile betting is not active.");
       return;
     }
 
-    if (gameState.dailyDouble.playerId !== socket.id) {
-      socket.emit("actionRejected", "Only the selected Daily Double player can wager.");
+    if (gameState.riskTileState.playerId !== socket.id) {
+      socket.emit("actionRejected", "Only the selected Risk Tile player can bet.");
       return;
     }
 
-    const parsedWager = Number(wager);
+    const parsedBet = Number(bet);
 
-    if (!Number.isFinite(parsedWager) || !Number.isInteger(parsedWager)) {
-      socket.emit("actionRejected", "Wager must be a finite integer.");
+    if (!Number.isFinite(parsedBet) || !Number.isInteger(parsedBet)) {
+      socket.emit("actionRejected", "Bet must be a finite integer.");
       return;
     }
 
-    if (parsedWager < 0) {
-      socket.emit("actionRejected", "Wager cannot be negative.");
+    if (parsedBet < 0) {
+      socket.emit("actionRejected", "Bet cannot be negative.");
       return;
     }
 
-    if (parsedWager > gameState.dailyDouble.maxWager) {
-      socket.emit("actionRejected", "Wager cannot exceed the maximum.");
+    if (parsedBet > gameState.riskTileState.maxBet) {
+      socket.emit("actionRejected", "Bet cannot exceed the maximum.");
       return;
     }
 
-    gameState.dailyDouble.wager = parsedWager;
-    gameState.dailyDouble.submitted = true;
-    gameState.phase = "dailyDoubleQuestion";
+    gameState.riskTileState.bet = parsedBet;
+    gameState.riskTileState.submitted = true;
+    gameState.phase = "riskTileQuestion";
     gameState.resultMessage = "";
     sendGameState();
   });
 
-  onGameEvent(socket, "selectBoard", ({ filename } = {}) => {
+  onGameEvent(socket, "selectGrid", ({ filename } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can select a board.");
+      socket.emit("actionRejected", "Only the host can select a grid.");
       return;
     }
 
-    if (gameState.phase !== "waiting" && gameState.phase !== "board") {
-      socket.emit("actionRejected", "Boards can only be changed before a clue is active.");
+    if (gameState.phase !== "waiting" && gameState.phase !== "grid") {
+      socket.emit("actionRejected", "Grids can only be changed before a prompt is active.");
       return;
     }
 
-    const boardOption = getBoardOption(filename);
+    const gridOption = getGridOption(filename);
 
-    if (!boardOption) {
-      socket.emit("actionRejected", "That board is not available.");
+    if (!gridOption) {
+      socket.emit("actionRejected", "That grid is not available.");
       return;
     }
 
-    const board = loadBoardByFilename(boardOption.filename);
+    const grid = loadGridByFilename(gridOption.filename);
 
-    if (!board) {
-      socket.emit("actionRejected", "That board could not be loaded.");
+    if (!grid) {
+      socket.emit("actionRejected", "That grid could not be loaded.");
       return;
     }
 
-    gameState.board = board;
-    gameState.selectedBoardFilename = boardOption.filename;
-    gameState.currentRound = "jeopardy";
-    resetCurrentClueState();
+    gameState.grid = grid;
+    gameState.selectedGridFilename = gridOption.filename;
+    gameState.currentRound = "round1";
+    resetCurrentPromptState();
 
-    if (gameState.phase === "board") {
-      gameState.phase = "board";
+    if (gameState.phase === "grid") {
+      gameState.phase = "grid";
     }
 
     sendGameState();
   });
 
-  onGameEvent(socket, "resetBoard", () => {
+  onGameEvent(socket, "resetGrid", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reset the board.");
+      socket.emit("actionRejected", "Only the host can reset the grid.");
       return;
     }
 
-    resetBoardState();
+    resetGridState();
     sendGameState();
   });
 
@@ -1091,7 +1101,7 @@ io.on("connection", (socket) => {
 
     stopTimer();
     gameState.phase = "waiting";
-    resetCurrentClueState();
+    resetCurrentPromptState();
     sendGameState();
   });
 
@@ -1101,28 +1111,28 @@ io.on("connection", (socket) => {
       return;
     }
 
-    resetFullGameToBoard();
+    resetFullGameToGrid();
     sendGameState();
   });
 
-  onGameEvent(socket, "importBoard", ({ filename, contents } = {}) => {
+  onGameEvent(socket, "importGrid", ({ filename, contents } = {}) => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("boardImportResult", {
+      socket.emit("gridImportResult", {
         ok: false,
-        error: "Only the host can import boards."
+        error: "Only the host can import grids."
       });
       return;
     }
 
-    const result = importBoardFile({ filename, contents });
+    const result = importGridFile({ filename, contents });
 
-    socket.emit("boardImportResult", result);
+    socket.emit("gridImportResult", result);
 
     if (!result.ok) {
       return;
     }
 
-    refreshBoardsForAllGames();
+    refreshGridsForAllGames();
     broadcastAllGameStates();
   });
 
@@ -1150,23 +1160,23 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "revealAnswer", () => {
+  onGameEvent(socket, "revealGuess", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can reveal the answer.");
+      socket.emit("actionRejected", "Only the host can reveal the guess.");
       return;
     }
 
-    if (!gameState.currentClue) {
-      socket.emit("actionRejected", "No clue is currently selected.");
+    if (!gameState.currentPrompt) {
+      socket.emit("actionRejected", "No prompt is currently selected.");
       return;
     }
 
-    if (gameState.phase !== "question" && gameState.phase !== "dailyDoubleQuestion") {
+    if (gameState.phase !== "question" && gameState.phase !== "riskTileQuestion") {
       socket.emit("actionRejected", "There is no active question.");
       return;
     }
 
-    gameState.answerRevealed = true;
+    gameState.guessRevealed = true;
     gameState.buzzingOpen = false;
     stopTimer();
     sendGameState();
@@ -1209,18 +1219,18 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "returnToBoard", () => {
+  onGameEvent(socket, "returnToGrid", () => {
     if (gameState.host?.id !== socket.id) {
-      socket.emit("actionRejected", "Only the host can return to the board.");
+      socket.emit("actionRejected", "Only the host can return to the grid.");
       return;
     }
 
-    if (gameState.currentClue) {
-      markCurrentClueAnswered();
+    if (gameState.currentPrompt) {
+      markCurrentPromptGuessed();
     }
 
-    gameState.phase = "board";
-    resetCurrentClueState();
+    gameState.phase = "grid";
+    resetCurrentPromptState();
     sendGameState();
   });
 
@@ -1236,7 +1246,7 @@ io.on("connection", (socket) => {
 
     if (gameState.host === null) {
       gameState.phase = "waiting";
-      resetCurrentClueState();
+      resetCurrentPromptState();
     }
 
     sendGameState();
@@ -1302,26 +1312,26 @@ function setCurrentTurnPlayer(playerId) {
   return true;
 }
 
-function getVisibleBoard(socket) {
+function getVisibleGrid(socket) {
   if (socket?.id === gameState.host?.id) {
-    return gameState.board;
+    return gameState.grid;
   }
 
-  const board = structuredCloneBoard(gameState.board);
-  removeBoardAnswers(board.jeopardy);
-  removeBoardAnswers(board.doubleJeopardy);
+  const grid = structuredCloneGrid(gameState.grid);
+  removeGridGuessAnswers(grid.rounds?.round1);
+  removeGridGuessAnswers(grid.rounds?.round2);
 
-  if (board.finalJeopardy) {
-    delete board.finalJeopardy.answer;
+  if (grid.rounds?.final) {
+    delete grid.rounds.final.guessAnswer;
   }
 
-  return board;
+  return grid;
 }
 
-function removeBoardAnswers(round) {
-  round?.board?.forEach((category) => {
-    category.questions?.forEach((question) => {
-      delete question.answer;
+function removeGridGuessAnswers(round) {
+  round?.categories?.forEach((category) => {
+    category.prompts?.forEach((prompt) => {
+      delete prompt.guessAnswer;
     });
   });
 }
@@ -1403,8 +1413,8 @@ function updateUserIdentity(socketId, identity) {
   gameState.buzzes = gameState.buzzes.map((buzz) => applyIdentity(buzz));
   gameState.lockedOutPlayers = gameState.lockedOutPlayers.map((player) => applyIdentity(player));
 
-  if (gameState.dailyDouble.playerId === socketId && identity.name) {
-    gameState.dailyDouble.playerName = identity.name;
+  if (gameState.riskTileState.playerId === socketId && identity.name) {
+    gameState.riskTileState.playerName = identity.name;
   }
 }
 
@@ -1526,28 +1536,28 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
   gameState.buzzes = gameState.buzzes.map(applyReplacement);
   gameState.lockedOutPlayers = gameState.lockedOutPlayers.map(applyReplacement);
 
-  if (gameState.dailyDouble.playerId === previousSocketId) {
-    gameState.dailyDouble.playerId = nextSocketId;
-    gameState.dailyDouble.playerName = identity.name || gameState.dailyDouble.playerName;
+  if (gameState.riskTileState.playerId === previousSocketId) {
+    gameState.riskTileState.playerId = nextSocketId;
+    gameState.riskTileState.playerName = identity.name || gameState.riskTileState.playerName;
   }
 
   if (gameState.currentTurnPlayerId === previousSocketId) {
     gameState.currentTurnPlayerId = nextSocketId;
   }
 
-  replaceFinalJeopardyPlayerId(previousSocketId, nextSocketId);
+  replaceFaceAFacePlayerId(previousSocketId, nextSocketId);
 }
 
-function replaceFinalJeopardyPlayerId(previousSocketId, nextSocketId) {
-  const finalState = gameState.finalJeopardyState;
+function replaceFaceAFacePlayerId(previousSocketId, nextSocketId) {
+  const finalState = gameState.faceAFaceState;
   finalState.eligiblePlayerIds = finalState.eligiblePlayerIds.map((playerId) =>
     playerId === previousSocketId ? nextSocketId : playerId
   );
   finalState.revealedPlayerIds = finalState.revealedPlayerIds.map((playerId) =>
     playerId === previousSocketId ? nextSocketId : playerId
   );
-  rekeyObject(finalState.wagers, previousSocketId, nextSocketId);
-  rekeyObject(finalState.answers, previousSocketId, nextSocketId);
+  rekeyObject(finalState.bets, previousSocketId, nextSocketId);
+  rekeyObject(finalState.guesses, previousSocketId, nextSocketId);
   rekeyObject(finalState.judged, previousSocketId, nextSocketId);
 }
 
@@ -1560,62 +1570,62 @@ function rekeyObject(target, previousKey, nextKey) {
   delete target[previousKey];
 }
 
-function discoverAvailableBoards() {
+function discoverAvailableGrids() {
   let filenames = [];
 
   try {
-    filenames = readdirSync(boardsDirectory)
+    filenames = readdirSync(gridsDirectory)
       .filter((filename) => filename.toLowerCase().endsWith(".json"))
       .sort((first, second) => first.localeCompare(second));
   } catch (error) {
-    console.warn(`Could not read boards directory: ${error.message}`);
+    console.warn(`Could not read grids directory: ${error.message}`);
     return [];
   }
 
-  return filenames.reduce((boards, filename) => {
-    const board = loadBoardFile(filename);
+  return filenames.reduce((grids, filename) => {
+    const grid = loadGridFile(filename);
 
-    if (!board) {
-      return boards;
+    if (!grid) {
+      return grids;
     }
 
-    boards.push({
-      id: board.id || filename.replace(/\.json$/i, ""),
-      name: board.name || filename,
+    grids.push({
+      id: grid.id || filename.replace(/\.json$/i, ""),
+      name: grid.name || filename,
       filename
     });
-    return boards;
+    return grids;
   }, []);
 }
 
-function refreshAvailableBoards() {
-  availableBoards = discoverAvailableBoards();
-  return availableBoards;
+function refreshAvailableGrids() {
+  availableGrids = discoverAvailableGrids();
+  return availableGrids;
 }
 
-function refreshBoardsForAllGames() {
-  const boards = refreshAvailableBoards();
+function refreshGridsForAllGames() {
+  const grids = refreshAvailableGrids();
 
   GameManager.games.forEach((gameContext) => {
-    gameContext.state.availableBoards = boards;
+    gameContext.state.availableGrids = grids;
 
-    if (!boards.some((board) => board.filename === gameContext.state.selectedBoardFilename)) {
-      const firstBoard = boards[0] ?? createFallbackBoardOption();
+    if (!grids.some((grid) => grid.filename === gameContext.state.selectedGridFilename)) {
+      const firstGrid = grids[0] ?? createFallbackGridOption();
       setActiveGameContext(gameContext);
-      gameContext.state.selectedBoardFilename = firstBoard.filename;
-      gameContext.state.board = loadBoardByFilename(firstBoard.filename) ?? createEmptyBoard(firstBoard);
-      gameContext.state.currentRound = "jeopardy";
-      resetCurrentClueState();
+      gameContext.state.selectedGridFilename = firstGrid.filename;
+      gameContext.state.grid = loadGridByFilename(firstGrid.filename) ?? createEmptyGrid(firstGrid);
+      gameContext.state.currentRound = "round1";
+      resetCurrentPromptState();
       saveActiveTimerHandles();
     }
   });
 }
 
-function importBoardFile({ filename, contents }) {
+function importGridFile({ filename, contents }) {
   const originalFilename = typeof filename === "string" ? basename(filename) : "";
 
   if (!originalFilename.toLowerCase().endsWith(".json")) {
-    return { ok: false, error: "Choose a .json board file." };
+    return { ok: false, error: "Choose a .json grid file." };
   }
 
   if (typeof contents !== "string" || !contents.trim()) {
@@ -1623,80 +1633,81 @@ function importBoardFile({ filename, contents }) {
   }
 
   if (Buffer.byteLength(contents, "utf8") > 2 * 1024 * 1024) {
-    return { ok: false, error: "Board file is too large. Keep it under 2 MB." };
+    return { ok: false, error: "Grid file is too large. Keep it under 2 MB." };
   }
 
-  let board;
+  let rawGrid;
 
   try {
-    board = JSON.parse(contents);
+    rawGrid = JSON.parse(contents);
   } catch {
     return { ok: false, error: "Invalid JSON. Check the file syntax and try again." };
   }
 
-  const validationError = validateBoardSchema(board);
+  const grid = normalizeGridPack(rawGrid);
+  const validationError = validateGridSchema(grid);
 
   if (validationError) {
     return { ok: false, error: validationError };
   }
 
-  if (availableBoards.some((currentBoard) => currentBoard.id === board.id)) {
-    return { ok: false, error: `A board with ID "${board.id}" already exists.` };
+  if (availableGrids.some((currentGrid) => currentGrid.id === grid.id)) {
+    return { ok: false, error: `A grid with ID "${grid.id}" already exists.` };
   }
 
-  const safeFilename = getUniqueBoardFilename(originalFilename, board.id);
+  const safeFilename = getUniqueGridFilename(originalFilename, grid.id);
 
   try {
     writeFileSync(
-      join(boardsDirectory, safeFilename),
-      `${JSON.stringify(stripAnsweredTracking(board), null, 2)}\n`,
+      join(gridsDirectory, safeFilename),
+      `${JSON.stringify(normalizeGridForStorage(grid), null, 2)}\n`,
       "utf8"
     );
   } catch (error) {
-    return { ok: false, error: `Could not save board: ${error.message}` };
+    return { ok: false, error: `Could not save grid: ${error.message}` };
   }
 
   return {
     ok: true,
-    board: {
-      id: board.id,
-      name: board.name,
+    grid: {
+      id: grid.id,
+      name: grid.name,
       filename: safeFilename
     }
   };
 }
 
-function validateBoardSchema(board) {
-  if (!board || typeof board !== "object" || Array.isArray(board)) {
-    return "Board JSON must be an object.";
+function validateGridSchema(grid) {
+  if (!grid || typeof grid !== "object" || Array.isArray(grid)) {
+    return "Grid JSON must be an object.";
   }
 
-  if (!isNonEmptyString(board.id)) {
-    return "Board must include a non-empty id.";
+  if (!isNonEmptyString(grid.id)) {
+    return "Grid must include a non-empty id.";
   }
 
-  if (!isNonEmptyString(board.name)) {
-    return "Board must include a non-empty name.";
+  if (!isNonEmptyString(grid.name)) {
+    return "Grid must include a non-empty name.";
   }
 
-  if (!Array.isArray(board.jeopardy?.board) || board.jeopardy.board.length === 0) {
-    return "Board must include Trivia Showdown board with at least one category.";
+  if (!Array.isArray(grid.rounds?.round1?.categories) || grid.rounds.round1.categories.length === 0) {
+    return "Grid must include Trivia Showdown grid with at least one category.";
   }
 
-  for (const round of ["jeopardy", "doubleJeopardy"]) {
-    if (!Array.isArray(board[round]?.board)) {
+  for (const round of ["round1", "round2"]) {
+    if (!Array.isArray(grid.rounds?.[round]?.categories)) {
       continue;
     }
 
-    const categoryError = validateRoundCategories(board[round].board, round);
+    const categoryError = validateRoundCategories(grid.rounds[round].categories, round);
 
     if (categoryError) {
       return categoryError;
     }
   }
 
-  if (board.finalJeopardy !== undefined && (!isNonEmptyString(board.finalJeopardy.category) || !isNonEmptyString(board.finalJeopardy.clue) || !isNonEmptyString(board.finalJeopardy.answer))) {
-    return "final Trivia Showdown must include category, clue, and answer.";
+  if (grid.rounds?.final !== null && grid.rounds?.final !== undefined && (!isNonEmptyString(grid.rounds.final.category) || !isNonEmptyString(grid.rounds.final.prompt) || !isNonEmptyString(grid.rounds.final.guessAnswer))) {
+    return "Face-a-Face must include category, prompt, and guess answer.";
   }
 
   return "";
@@ -1705,24 +1716,24 @@ function validateBoardSchema(board) {
 function validateRoundCategories(categories, round) {
   for (const [categoryIndex, category] of categories.entries()) {
     if (!isNonEmptyString(category.category)) {
-      return `${round}.board[${categoryIndex}] must include a category name.`;
+      return `${round}.categories[${categoryIndex}] must include a category name.`;
     }
 
-    if (!Array.isArray(category.questions) || category.questions.length === 0) {
-      return `${round}.board[${categoryIndex}] must include questions.`;
+    if (!Array.isArray(category.prompts) || category.prompts.length === 0) {
+      return `${round}.categories[${categoryIndex}] must include prompts.`;
     }
 
-    for (const [questionIndex, question] of category.questions.entries()) {
-      if (!Number.isFinite(Number(question.value))) {
-        return `${round}.board[${categoryIndex}].questions[${questionIndex}] must include a numeric value.`;
+    for (const [promptIndex, prompt] of category.prompts.entries()) {
+      if (!Number.isFinite(Number(prompt.value))) {
+        return `${round}.categories[${categoryIndex}].prompts[${promptIndex}] must include a numeric value.`;
       }
 
-      if (!isNonEmptyString(question.clue) || !isNonEmptyString(question.answer)) {
-        return `${round}.board[${categoryIndex}].questions[${questionIndex}] must include clue and answer.`;
+      if (!isNonEmptyString(prompt.prompt) || !isNonEmptyString(prompt.guessAnswer)) {
+        return `${round}.categories[${categoryIndex}].prompts[${promptIndex}] must include prompt and guess answer.`;
       }
 
-      if (question.image !== undefined && !isSafeRelativeMediaPath(question.image)) {
-        return `${round}.board[${categoryIndex}].questions[${questionIndex}] has an invalid image path.`;
+      if (prompt.image !== undefined && !isSafeRelativeMediaPath(prompt.image)) {
+        return `${round}.categories[${categoryIndex}].prompts[${promptIndex}] has an invalid image path.`;
       }
     }
   }
@@ -1743,12 +1754,12 @@ function isSafeRelativeMediaPath(value) {
     !value.split("/").includes("..");
 }
 
-function getUniqueBoardFilename(originalFilename, boardId) {
-  const preferredBase = slugifyBoardFilename(originalFilename.replace(/\.json$/i, "") || boardId);
+function getUniqueGridFilename(originalFilename, gridId) {
+  const preferredBase = slugifyGridFilename(originalFilename.replace(/\.json$/i, "") || gridId);
   let filename = `${preferredBase}.json`;
   let index = 2;
 
-  while (availableBoards.some((board) => board.filename === filename)) {
+  while (availableGrids.some((grid) => grid.filename === filename)) {
     filename = `${preferredBase}-${index}.json`;
     index += 1;
   }
@@ -1756,127 +1767,120 @@ function getUniqueBoardFilename(originalFilename, boardId) {
   return filename;
 }
 
-function slugifyBoardFilename(value) {
+function slugifyGridFilename(value) {
   return String(value || "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "imported-board";
+    .replace(/^-+|-+$/g, "") || "imported-grid";
 }
 
-function stripAnsweredTracking(board) {
-  const cleanBoard = JSON.parse(JSON.stringify(board));
-
-  ["jeopardy", "doubleJeopardy"].forEach((round) => {
-    cleanBoard[round]?.board?.forEach((category) => {
-      category.questions?.forEach((question) => {
-        delete question.answered;
-      });
-    });
-  });
-
-  return cleanBoard;
+function stripGuessedTracking(grid) {
+  return stripAnsweredTracking(grid);
 }
 
-function createFallbackBoardOption() {
+function createFallbackGridOption() {
   return {
-    id: "fallback-board",
-    name: "Fallback Board",
+    id: "fallback-grid",
+    name: "Fallback Grid",
     filename: "test-board.json"
   };
 }
 
-function createEmptyBoard(boardOption) {
+function createEmptyGrid(gridOption) {
   return {
-    id: boardOption.id,
-    name: boardOption.name,
-    jeopardy: {
-      board: []
-    },
-    doubleJeopardy: {
-      board: []
+    id: gridOption.id,
+    name: gridOption.name,
+    rounds: {
+      round1: {
+        categories: []
+      },
+      round2: {
+        categories: []
+      },
+      final: null
     }
   };
 }
 
-function getBoardOption(filename) {
+function getGridOption(filename) {
   if (typeof filename !== "string" || filename !== basename(filename)) {
     return null;
   }
 
-  return gameState.availableBoards.find((board) => board.filename === filename) || null;
+  return gameState.availableGrids.find((grid) => grid.filename === filename) || null;
 }
 
-function loadBoardByFilename(filename) {
+function loadGridByFilename(filename) {
   if (typeof filename !== "string" || filename !== basename(filename)) {
     return null;
   }
 
-  const boardOption = availableBoards.find((board) => board.filename === filename);
+  const gridOption = availableGrids.find((grid) => grid.filename === filename);
 
-  if (!boardOption) {
+  if (!gridOption) {
     return null;
   }
 
-  return loadBoardFile(boardOption.filename);
+  return loadGridFile(gridOption.filename);
 }
 
-function loadBoardFile(filename) {
+function loadGridFile(filename) {
   if (filename !== basename(filename)) {
-    console.warn(`Skipping board with unsafe filename: ${filename}`);
+    console.warn(`Skipping grid with unsafe filename: ${filename}`);
     return null;
   }
 
   try {
-    const board = JSON.parse(readFileSync(join(boardsDirectory, filename), "utf8"));
+    const grid = normalizeGridPack(JSON.parse(readFileSync(join(gridsDirectory, filename), "utf8")));
 
-    if (!Array.isArray(board.jeopardy?.board)) {
-      console.warn(`Skipping invalid board JSON: ${filename}`);
+    if (!Array.isArray(grid?.rounds?.round1?.categories)) {
+      console.warn(`Skipping invalid grid JSON: ${filename}`);
       return null;
     }
 
-    addAnsweredTracking(board);
-    return board;
+    addGuessedTracking(grid);
+    return grid;
   } catch (error) {
-    console.warn(`Skipping invalid board JSON ${filename}: ${error.message}`);
+    console.warn(`Skipping invalid grid JSON ${filename}: ${error.message}`);
     return null;
   }
 }
 
-function addAnsweredTracking(boardPack) {
-  ["jeopardy", "doubleJeopardy"].forEach((round) => {
-    boardPack[round]?.board?.forEach((category) => {
-      category.questions?.forEach((question) => {
-        question.answered = Boolean(question.answered);
+function addGuessedTracking(gridPack) {
+  ["round1", "round2"].forEach((round) => {
+    gridPack.rounds?.[round]?.categories?.forEach((category) => {
+      category.prompts?.forEach((prompt) => {
+        prompt.answered = Boolean(prompt.answered);
       });
     });
   });
 }
 
 function getCurrentRoundCategories() {
-  return gameState.board?.[gameState.currentRound]?.board || [];
+  return gameState.grid?.rounds?.[gameState.currentRound]?.categories || [];
 }
 
-function hasRoundBoard(round) {
-  return Array.isArray(gameState.board?.[round]?.board) && gameState.board[round].board.length > 0;
+function hasRoundGrid(round) {
+  return Array.isArray(gameState.grid?.rounds?.[round]?.categories) && gameState.grid.rounds[round].categories.length > 0;
 }
 
 function getRoundDisplayName(round = gameState.currentRound) {
   switch (round) {
-    case "jeopardy":
-      return "Round One";
+    case "round1":
+      return "Warm Up";
 
-    case "doubleJeopardy":
-      return "Round Two";
+    case "round2":
+      return "Power Round";
 
     default:
       return "Trivia Showdown";
   }
 }
 
-function resetRoundAnsweredTracking(round) {
-  gameState.board?.[round]?.board?.forEach((category) => {
-    category.questions?.forEach((question) => {
-      question.answered = false;
+function resetRoundGuessedTracking(round) {
+  gameState.grid?.rounds?.[round]?.categories?.forEach((category) => {
+    category.prompts?.forEach((prompt) => {
+      prompt.answered = false;
     });
   });
 }
@@ -1891,95 +1895,95 @@ function createEmptyTimer() {
   };
 }
 
-function createEmptyDailyDouble() {
+function createEmptyRiskTileState() {
   return {
     playerId: null,
     playerName: "",
-    wager: null,
-    maxWager: 0,
+    bet: null,
+    maxBet: 0,
     submitted: false,
     judged: false
   };
 }
 
-function createEmptyFinalJeopardyState() {
+function createEmptyFaceAFaceState() {
   return {
     eligiblePlayerIds: [],
-    wagers: {},
-    answers: {},
+    bets: {},
+    guesses: {},
     revealedPlayerIds: [],
     judged: {}
   };
 }
 
-function createFinalJeopardyState() {
+function createFaceAFaceState() {
   return {
-    ...createEmptyFinalJeopardyState(),
+    ...createEmptyFaceAFaceState(),
     eligiblePlayerIds: gameState.players
       .filter((player) => player.score > 0)
       .map((player) => player.id)
   };
 }
 
-function getVisibleFinalJeopardyState() {
-  const state = gameState.finalJeopardyState;
-  const answerStatuses = {};
-  const revealedAnswers = {};
+function getVisibleFaceAFaceState() {
+  const state = gameState.faceAFaceState;
+  const guessStatuses = {};
+  const revealedGuesses = {};
 
   state.eligiblePlayerIds.forEach((playerId) => {
-    answerStatuses[playerId] = Boolean(state.answers[playerId]);
+    guessStatuses[playerId] = Boolean(state.guesses[playerId]);
   });
 
   state.revealedPlayerIds.forEach((playerId) => {
-    if (state.answers[playerId]) {
-      revealedAnswers[playerId] = state.answers[playerId];
+    if (state.guesses[playerId]) {
+      revealedGuesses[playerId] = state.guesses[playerId];
     }
   });
 
   return {
     eligiblePlayerIds: state.eligiblePlayerIds,
-    wagerStatuses: getSubmissionStatuses(state.wagers),
-    answerStatuses,
+    betStatuses: getSubmissionStatuses(state.bets),
+    guessStatuses,
     revealedPlayerIds: state.revealedPlayerIds,
-    revealedAnswers,
+    revealedGuesses,
     judged: state.judged
   };
 }
 
 function getSubmissionStatuses(submissions) {
-  return gameState.finalJeopardyState.eligiblePlayerIds.reduce((statuses, playerId) => {
+  return gameState.faceAFaceState.eligiblePlayerIds.reduce((statuses, playerId) => {
     statuses[playerId] = submissions[playerId] !== undefined;
     return statuses;
   }, {});
 }
 
-function getEligibleFinalPlayer(playerId) {
-  if (!gameState.finalJeopardyState.eligiblePlayerIds.includes(playerId)) {
+function getEligibleFaceAFacePlayer(playerId) {
+  if (!gameState.faceAFaceState.eligiblePlayerIds.includes(playerId)) {
     return null;
   }
 
   return gameState.players.find((player) => player.id === playerId && player.score > 0) || null;
 }
 
-function isEligibleFinalPlayerId(playerId) {
-  return gameState.finalJeopardyState.eligiblePlayerIds.includes(playerId);
+function isEligibleFaceAFacePlayerId(playerId) {
+  return gameState.faceAFaceState.eligiblePlayerIds.includes(playerId);
 }
 
-function allFinalWagersSubmitted() {
-  return gameState.finalJeopardyState.eligiblePlayerIds.every((playerId) =>
-    gameState.finalJeopardyState.wagers[playerId] !== undefined
+function allFaceAFaceBetsSubmitted() {
+  return gameState.faceAFaceState.eligiblePlayerIds.every((playerId) =>
+    gameState.faceAFaceState.bets[playerId] !== undefined
   );
 }
 
-function allFinalAnswersSubmitted() {
-  return gameState.finalJeopardyState.eligiblePlayerIds.every((playerId) =>
-    Boolean(gameState.finalJeopardyState.answers[playerId])
+function allFaceAFaceGuessesSubmitted() {
+  return gameState.faceAFaceState.eligiblePlayerIds.every((playerId) =>
+    Boolean(gameState.faceAFaceState.guesses[playerId])
   );
 }
 
-function allFinalAnswersJudged() {
-  return gameState.finalJeopardyState.eligiblePlayerIds.every((playerId) =>
-    Boolean(gameState.finalJeopardyState.judged[playerId])
+function allFaceAFaceGuessesJudged() {
+  return gameState.faceAFaceState.eligiblePlayerIds.every((playerId) =>
+    Boolean(gameState.faceAFaceState.judged[playerId])
   );
 }
 
@@ -2081,7 +2085,7 @@ function handleTimerExpired() {
     gameState.resultMessage = "Buzzing open!";
   }
 
-  if (expiredType === "answer") {
+  if (expiredType === "guess") {
     gameState.resultMessage = "Time expired - host decides.";
   }
 
@@ -2106,169 +2110,172 @@ function canHostControlTimer(socket) {
     Boolean(gameState.timer.type);
 }
 
-function resetCurrentClueState() {
+function resetCurrentPromptState() {
   stopTimer();
-  gameState.currentClue = null;
-  gameState.answerRevealed = false;
+  gameState.currentPrompt = null;
+  gameState.guessRevealed = false;
   gameState.buzzingOpen = false;
   gameState.buzzedPlayer = null;
   gameState.buzzes = [];
   gameState.lockedOutPlayers = [];
-  gameState.dailyDouble = createEmptyDailyDouble();
-  gameState.finalJeopardyState = createEmptyFinalJeopardyState();
+  gameState.riskTileState = createEmptyRiskTileState();
+  gameState.faceAFaceState = createEmptyFaceAFaceState();
   gameState.resultMessage = "";
 }
 
-function resetBoardState() {
+function resetGridState() {
   stopTimer();
   gameState.players = gameState.players.map((player) => ({
     ...player,
     score: 0
   }));
   gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
-  gameState.currentClue = null;
-  gameState.answerRevealed = false;
+  gameState.currentPrompt = null;
+  gameState.guessRevealed = false;
   gameState.buzzingOpen = false;
   gameState.buzzedPlayer = null;
   gameState.buzzes = [];
   gameState.lockedOutPlayers = [];
-  gameState.dailyDouble = createEmptyDailyDouble();
+  gameState.riskTileState = createEmptyRiskTileState();
   gameState.resultMessage = "";
 
-  resetRoundAnsweredTracking(gameState.currentRound);
+  resetRoundGuessedTracking(gameState.currentRound);
 
   if (gameState.phase !== "waiting") {
-    gameState.phase = "board";
+    gameState.phase = "grid";
   }
 }
 
-function resetFullGameToBoard() {
+function resetFullGameToGrid() {
   stopTimer();
   gameState.players = gameState.players.map((player) => ({
     ...player,
     score: 0
   }));
   gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
-  gameState.currentRound = "jeopardy";
-  resetCurrentClueState();
-  resetRoundAnsweredTracking("jeopardy");
-  resetRoundAnsweredTracking("doubleJeopardy");
-  gameState.phase = "board";
+  gameState.currentRound = "round1";
+  resetCurrentPromptState();
+  resetRoundGuessedTracking("round1");
+  resetRoundGuessedTracking("round2");
+  gameState.phase = "grid";
 }
 
-function validateHostJudgement(socket) {
+function validateHostJudgment(socket) {
   if (gameState.host?.id !== socket.id) {
-    return "Only the host can judge answers.";
+    return "Only the host can judge guesses.";
   }
 
   if (gameState.phase !== "question") {
     return "Judging is only available during a question.";
   }
 
-  if (!gameState.currentClue) {
-    return "No clue is currently selected.";
+  if (!gameState.currentPrompt) {
+    return "No prompt is currently selected.";
   }
 
   if (!gameState.buzzedPlayer) {
     return "No player is waiting to be judged.";
   }
 
-  if (gameState.answerRevealed) {
-    return "This clue has already been revealed.";
+  if (gameState.guessRevealed) {
+    return "This prompt has already been revealed.";
   }
 
   return null;
 }
 
-function validateDailyDoubleJudgement(socket) {
+function validateDailyDoubleJudgment(socket) {
   if (gameState.host?.id !== socket.id) {
-    return "Only the host can judge answers.";
+    return "Only the host can judge guesses.";
   }
 
-  if (gameState.phase !== "dailyDoubleQuestion") {
-    return "Daily Double judging is only available during the Daily Double question.";
+  if (gameState.phase !== "riskTileQuestion") {
+    return "Risk Tile judging is only available during the Risk Tile question.";
   }
 
-  if (!gameState.currentClue) {
-    return "No Daily Double clue is currently selected.";
+  if (!gameState.currentPrompt) {
+    return "No Risk Tile prompt is currently selected.";
   }
 
-  if (!gameState.dailyDouble.submitted || gameState.dailyDouble.wager === null) {
-    return "No Daily Double wager has been submitted.";
+  if (!gameState.riskTileState.submitted || gameState.riskTileState.bet === null) {
+    return "No Risk Tile bet has been submitted.";
   }
 
-  if (gameState.dailyDouble.judged) {
-    return "This Daily Double has already been judged.";
+  if (gameState.riskTileState.judged) {
+    return "This Risk Tile has already been judged.";
   }
 
-  const player = gameState.players.find((currentPlayer) => currentPlayer.id === gameState.dailyDouble.playerId);
+  const player = gameState.players.find((currentPlayer) => currentPlayer.id === gameState.riskTileState.playerId);
 
   if (!player) {
-    return "The Daily Double player is no longer active.";
+    return "The Risk Tile player is no longer active.";
   }
 
   return null;
 }
 
-function judgeDailyDouble(isCorrect) {
-  const player = gameState.players.find((currentPlayer) => currentPlayer.id === gameState.dailyDouble.playerId);
-  const wager = gameState.dailyDouble.wager;
+function judgeRiskTile(isCorrect) {
+  const player = gameState.players.find((currentPlayer) => currentPlayer.id === gameState.riskTileState.playerId);
+  const bet = gameState.riskTileState.bet;
 
-  if (!player || wager === null) {
+  if (!player || bet === null) {
     return;
   }
 
   if (isCorrect) {
-    player.score += wager;
+    player.score += bet;
     gameState.currentTurnPlayerId = player.id;
-    gameState.resultMessage = `${player.name} is correct! +$${wager}`;
+    gameState.resultMessage = `${player.name} is correct! +$${bet}`;
   } else {
-    player.score -= wager;
-    gameState.resultMessage = `${player.name} is incorrect. -$${wager}`;
+    player.score -= bet;
+    gameState.resultMessage = `${player.name} is incorrect. -$${bet}`;
   }
 
-  gameState.dailyDouble.judged = true;
-  gameState.answerRevealed = true;
+  gameState.riskTileState.judged = true;
+  gameState.guessRevealed = true;
   gameState.buzzingOpen = false;
   stopTimer();
-  markCurrentClueAnswered();
+  markCurrentPromptGuessed();
 }
 
-function markCurrentClueAnswered() {
-  const round = gameState.currentClue.round || gameState.currentRound;
-  const category = gameState.board?.[round]?.board?.[gameState.currentClue.categoryIndex];
-  const question = category?.questions?.[gameState.currentClue.questionIndex];
+function markCurrentPromptGuessed() {
+  const round = gameState.currentPrompt.round || gameState.currentRound;
+  const category = gameState.grid?.rounds?.[round]?.categories?.[gameState.currentPrompt.categoryIndex];
+  const prompt = category?.prompts?.[gameState.currentPrompt.questionIndex];
 
-  if (question) {
-    question.answered = true;
+  if (prompt) {
+    prompt.answered = true;
   }
 }
 
-// Hosts receive the current answer for judging; other roles only get it after Reveal Answer.
-function getVisibleCurrentClue(socket) {
-  if (!gameState.currentClue) {
+// Hosts receive the current guess for judging; other roles only get it after Reveal Guess.
+function getVisibleCurrentPrompt(socket) {
+  if (!gameState.currentPrompt) {
     return null;
   }
 
-  const currentClue = {
-    categoryIndex: gameState.currentClue.categoryIndex,
-    questionIndex: gameState.currentClue.questionIndex,
-    round: gameState.currentClue.round,
-    category: gameState.currentClue.category,
-    value: gameState.currentClue.value,
-    clue: gameState.currentClue.clue,
-    image: gameState.currentClue.image || "",
-    dailyDouble: Boolean(gameState.currentClue.dailyDouble)
+  const currentPrompt = {
+    categoryIndex: gameState.currentPrompt.categoryIndex,
+    questionIndex: gameState.currentPrompt.questionIndex,
+    round: gameState.currentPrompt.round,
+    category: gameState.currentPrompt.category,
+    value: gameState.currentPrompt.value,
+    prompt: gameState.currentPrompt.prompt,
+    image: gameState.currentPrompt.image || "",
+    type: gameState.currentPrompt.type || "",
+    riskTile: Boolean(gameState.currentPrompt.riskTile)
   };
 
-  if (gameState.answerRevealed || socket?.id === gameState.host?.id) {
-    currentClue.answer = gameState.currentClue.answer;
+  if (gameState.guessRevealed || socket?.id === gameState.host?.id) {
+    currentPrompt.guessAnswer = gameState.currentPrompt.guessAnswer;
   }
 
-  return currentClue;
+  return currentPrompt;
 }
 
 server.listen(PORT, () => {
   console.log(`Discord Trivia Showdown Build: ${BUILD_VERSION}`);
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+

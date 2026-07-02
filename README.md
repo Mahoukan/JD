@@ -1,6 +1,6 @@
 # Trivia Showdown
 
-A real-time Jeopardy-style trivia party game for browsers and Discord Activities. One host runs the board, players buzz in and wager, and spectators can follow along live.
+A real-time Trivia Showdown party game for browsers and Discord Activities. One host runs the grid, players buzz in and bet, and spectators can follow along live.
 
 The app is built with Express, Socket.IO, and plain HTML/CSS/JavaScript.
 
@@ -10,17 +10,17 @@ The app is built with Express, Socket.IO, and plain HTML/CSS/JavaScript.
 - Discord Activity support with optional Discord display names and avatars
 - Host, player, and spectator roles
 - Waiting room with live user lists
-- Board selection from JSON files in `public/boards/`
-- Host board import from `.json` files without restarting the server
-- Clue image support from `public/media/`, including a lightbox preview
-- Main Trivia Showdown round and Second Trivia Showdown round
-- Daily Double flow with host player selection, player wager, and wager scoring
-- Final Trivia Showdown with private wagers, private answers, host review, judging, and rankings
-- Buzz-in flow with reading and answer timers
-- Host answer visibility before reveal
+- Grid selection from JSON files in `public/boards/`
+- Host grid import from `.json` files without restarting the server
+- Prompt image support from `public/media/`, including a lightbox preview
+- Warm Up and Power Round play
+- Risk Tile flow with host player selection, player bet, and bet scoring
+- Face-a-Face with private bets, private guesses, host review, judging, and rankings
+- Buzz-in flow with reading and guess timers
+- Host guess visibility before reveal
 - Host judging with Correct and Incorrect controls
 - Host score editing and current-turn controls
-- Host-only board reset
+- Host-only grid reset
 - Build badge and `/version` endpoint for deployment checks
 
 ## Tech Stack
@@ -94,74 +94,77 @@ BUILD_VERSION=
 
 1. Create a lobby as host, or join a lobby with a code.
 2. Choose Host, Player, or Spectator.
-3. The host selects a board or imports a board JSON file.
-4. The host starts the game and selects clues from the board.
-5. Players buzz after the clue opens. The host judges answers and controls the reveal.
-6. If the board includes a second round, the host can start Second Trivia Showdown.
-7. If the board includes a final round, eligible players submit wagers and answers in Final Trivia Showdown.
-8. The host reviews final answers, judges them, and shows the final rankings.
+3. The host selects a grid or imports a grid JSON file.
+4. The host starts the game and selects prompts from the grid.
+5. Players buzz after the prompt opens. The host judges guesses and controls the reveal.
+6. If the grid includes a Power Round, the host can start it after Warm Up.
+7. If the grid includes Face-a-Face, eligible players submit bets and guesses.
+8. The host reviews Face-a-Face guesses, judges them, and shows the final rankings.
 
-## Board JSON Format
+## Grid JSON Format
 
-Boards live in `public/boards/`. Each `.json` file is scanned by the server and appears in the host board selector.
+Grids live in `public/boards/`. Each `.json` file is scanned by the server and appears in the host grid selector.
 
 Minimal structure:
 
 ```json
 {
-  "id": "SAMPLE-BOARD",
-  "name": "Sample Board",
-  "jeopardy": {
-    "board": [
-      {
-        "category": "SCIENCE",
-        "questions": [
-          {
-            "value": 200,
-            "clue": "This planet is known as the Red Planet.",
-            "answer": "What is Mars?",
-            "image": "media/mars.png"
-          }
-        ]
-      }
-    ]
-  },
-  "doubleJeopardy": {
-    "board": [
-      {
-        "category": "SPACE",
-        "questions": [
-          {
-            "value": 400,
-            "clue": "This star is at the center of our solar system.",
-            "answer": "What is the Sun?",
-            "dailyDouble": true
-          }
-        ]
-      }
-    ]
-  },
-  "finalJeopardy": {
-    "category": "WORLD CAPITALS",
-    "clue": "This city is the capital of France.",
-    "answer": "What is Paris?"
+  "id": "SAMPLE-GRID",
+  "name": "Sample Grid",
+  "rounds": {
+    "round1": {
+      "categories": [
+        {
+          "category": "SCIENCE",
+          "prompts": [
+            {
+              "value": 200,
+              "prompt": "This planet is known as the Red Planet.",
+              "guessAnswer": "What is Mars?",
+              "image": "media/mars.png"
+            }
+          ]
+        }
+      ]
+    },
+    "round2": {
+      "categories": [
+        {
+          "category": "SPACE",
+          "prompts": [
+            {
+              "value": 400,
+              "prompt": "This star is at the center of our solar system.",
+              "guessAnswer": "What is the Sun?",
+              "type": "risk"
+            }
+          ]
+        }
+      ]
+    },
+    "final": {
+      "category": "WORLD CAPITALS",
+      "prompt": "This city is the capital of France.",
+      "guessAnswer": "What is Paris?"
+    }
   }
 }
 ```
 
 Notes:
 
-- `jeopardy.board` is required.
-- `doubleJeopardy.board` is optional. When present, the host can start Second Trivia Showdown.
-- `finalJeopardy` is optional. When present after the second round, the host can start Final Trivia Showdown.
-- Add `"dailyDouble": true` to a clue to trigger the Daily Double flow.
-- Add `"image": "media/example.png"` to show an image with a clue. Images should live in `public/media/`.
-- Runtime fields such as answered clues are managed in memory by the server.
-- Imported boards are saved into `public/boards/` and become available immediately.
+- `rounds.round1.categories` is required.
+- `rounds.round2.categories` is optional. When present, the host can start Power Round.
+- `rounds.final` is optional. When present after Power Round, the host can start Face-a-Face.
+- Add `"type": "risk"` to a prompt to trigger the Risk Tile flow.
+- Add `"image": "media/example.png"` to show an image with a prompt. Images should live in `public/media/`.
+- Runtime fields such as answered prompts are managed in memory by the server.
+- Imported grids are saved into `public/boards/` and become available immediately.
+- Legacy grid files using the previous keys are still accepted and normalized on load for compatibility.
 
-## Included Boards
+## Included Grids
 
-The repository includes several playable boards in `public/boards/`, including `Massive Mixed Trivia.json`, `academic-bowl.json`, `General-Knowledge.json`, `pub-quiz-jeopardy.json`, and themed classroom or pop-culture sets.
+The repository includes several playable grids in `public/boards/`, including `Massive Mixed Trivia.json`, `academic-bowl.json`, `General-Knowledge.json`, and themed classroom or pop-culture sets.
 
 ## Project Structure
 

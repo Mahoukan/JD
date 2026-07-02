@@ -1,17 +1,17 @@
 {
-  "name": "discord-jeopardy-activity",
+  "name": "trivia-showdown-activity",
   "version": "1.0.0",
-  "description": "A real-time Jeopardy-style Discord Activity built with Express and Socket.IO.",
+  "description": "A real-time Trivia Showdown Discord Activity built with Express and Socket.IO.",
   "type": "module",
   "author": "Your Name",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/discord-jeopardy-activity.git"
+    "url": "https://github.com/your-username/trivia-showdown-activity.git"
   },
   "scripts": {
     "build": "npm run build:discord-sdk",
-    "build:discord-sdk": "esbuild src/discord-sdk-entry.js --bundle --format=iife --outfile=public/discord-sdk.js",
+    "build:discord-sdk": "node scripts/build-discord-sdk.js",
     "prestart": "npm run build",
     "start": "node server.js",
     "dev": "npm run build && node server.js"
