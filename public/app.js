@@ -1279,7 +1279,6 @@ function renderGrid(state) {
   round1Grid.style.setProperty("--grid-columns", String(gridColumnCount));
 
   const isHost = currentUser?.role === "host";
-  const isHost = currentUser?.role === "host";
   const canStartPowerRound =
     isHost &&
     state.phase === "grid" &&
