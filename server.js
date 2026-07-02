@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import http from "http";
@@ -9,7 +10,7 @@ import {
   normalizeGridPack,
   stripAnsweredTracking
 } from "./src/grid-normalizer.js";
-
+import { testDatabaseConnection } from "./src/db.js";
 const app = express();
 const server = http.createServer(app);
 
@@ -32,6 +33,23 @@ const selectedGrid = availableGrids[0] ?? createFallbackGridOption();
 const initialGrid = loadGridByFilename(selectedGrid.filename) ?? createEmptyGrid(selectedGrid);
 
 app.use(express.json());
+app.get("/api/db-health", async (req, res) => {
+  try {
+    const result = await testDatabaseConnection();
+
+    res.json({
+      ok: true,
+      databaseTime: result.now,
+    });
+  } catch (error) {
+    console.error("Database health check failed:", error);
+
+    res.status(500).json({
+      ok: false,
+      error: "Database connection failed.",
+    });
+  }
+});
 
 app.get(["/", "/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
