@@ -107,14 +107,6 @@ app.get("/api/session-test", (req, res) => {
   });
 });
 
-app.get("/api/me", (req, res) => {
-  res.json({
-    ok: true,
-    loggedIn: Boolean(req.session.player),
-    player: req.session.player || null,
-  });
-});
-
 app.get(["/", "/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   res.setHeader("Pragma", "no-cache");
