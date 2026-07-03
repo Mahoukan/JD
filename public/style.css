@@ -1654,3 +1654,7 @@ button:disabled,
   justify-content: center;
   text-decoration: none;
 }
+
+.account-login-link.hidden {
+  display: none;
+}
