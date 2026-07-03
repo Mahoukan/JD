@@ -704,7 +704,9 @@ function getUser(socket) {
     provider: socket.data.provider || "",
     providerUserId: socket.data.providerUserId || "",
     clientToken: socket.data.clientToken || "",
-    role: socket.data.role || null
+    role: socket.data.role || null,
+    connected: true,
+    disconnectedAt: null
   };
 }
 
@@ -1239,6 +1241,42 @@ io.on("connection", (socket) => {
 
   onGameEvent(socket, "leaveGame", () => {
     leaveCurrentGame(socket);
+  });
+
+  onGameEvent(socket, "removeUser", ({ userId } = {}) => {
+    if (gameState.host?.id !== socket.id) {
+      socket.emit("actionRejected", "Only the host can remove users.");
+      return;
+    }
+
+    const targetUserId = sanitizePlainText(userId, 80);
+
+    if (!targetUserId) {
+      socket.emit("actionRejected", "Choose a user to remove.");
+      return;
+    }
+
+    if (targetUserId === gameState.host?.id) {
+      socket.emit("actionRejected", "The host cannot be removed.");
+      return;
+    }
+
+    const removedUser = removeUserFromAllRoles(targetUserId);
+
+    if (!removedUser) {
+      socket.emit("actionRejected", "That user is not in this game.");
+      return;
+    }
+
+    const removedSocket = io.sockets.sockets.get(targetUserId);
+
+    if (removedSocket) {
+      removedSocket.data.role = null;
+      removedSocket.emit("removedFromGame");
+      removedSocket.emit("leftGame");
+    }
+
+    sendGameState();
   });
 
   onGameEvent(socket, "startGame", () => {
@@ -2001,6 +2039,7 @@ io.on("connection", (socket) => {
     console.log(`Disconnected: ${socket.id}`);
 
     if (socket.data.discordUserId || socket.data.databasePlayerId || socket.data.clientToken) {
+      markUserDisconnected(socket.id);
       sendGameState();
       return;
     }
@@ -2041,11 +2080,18 @@ function addSocketToRole(socket, role) {
 }
 
 function removeUserFromAllRoles(socketId) {
+  let removedUser = null;
+
   if (gameState.host?.id === socketId) {
+    removedUser = gameState.host;
     gameState.host = null;
   }
 
   const removedPlayerIndex = gameState.players.findIndex((player) => player.id === socketId);
+  const removedPlayer = gameState.players[removedPlayerIndex] || null;
+  const removedSpectator = gameState.spectators.find((spectator) => spectator.id === socketId) || null;
+  removedUser = removedUser || removedPlayer || removedSpectator;
+
   gameState.players = gameState.players.filter((player) => player.id !== socketId);
   gameState.spectators = gameState.spectators.filter((spectator) => spectator.id !== socketId);
 
@@ -2053,6 +2099,70 @@ function removeUserFromAllRoles(socketId) {
     const nextPlayer = gameState.players[removedPlayerIndex] || gameState.players[0];
     gameState.currentTurnPlayerId = nextPlayer?.id || null;
   }
+
+  cleanupRemovedUserReferences(socketId);
+  ensureCurrentTurnPlayer();
+
+  return removedUser;
+}
+
+function cleanupRemovedUserReferences(socketId) {
+  if (gameState.buzzedPlayer?.id === socketId) {
+    gameState.buzzedPlayer = null;
+    gameState.buzzes = [];
+    gameState.buzzingOpen = gameState.phase === "question" && !gameState.guessRevealed;
+  }
+
+  gameState.buzzes = gameState.buzzes.filter((buzz) => buzz.id !== socketId);
+  gameState.lockedOutPlayers = gameState.lockedOutPlayers.filter((player) => player.id !== socketId);
+
+  if (gameState.riskTileState.playerId === socketId) {
+    gameState.riskTileState = createEmptyRiskTileState();
+
+    if (gameState.phase === "riskTileBet" || gameState.phase === "riskTileQuestion") {
+      gameState.phase = "riskTilePlayerSelect";
+      gameState.guessRevealed = false;
+      gameState.buzzingOpen = false;
+      gameState.resultMessage = "Risk Tile player was removed. Choose another player.";
+    }
+  }
+
+  removeFaceAFacePlayerId(socketId);
+}
+
+function markUserDisconnected(socketId) {
+  return updateUserConnection(socketId, false);
+}
+
+function markUserConnected(socketId) {
+  return updateUserConnection(socketId, true);
+}
+
+function updateUserConnection(socketId, connected) {
+  const disconnectedAt = connected ? null : new Date().toISOString();
+  let updated = false;
+
+  const applyConnection = (user) => {
+    if (!user || user.id !== socketId) {
+      return user;
+    }
+
+    updated = true;
+    return {
+      ...user,
+      connected,
+      disconnectedAt
+    };
+  };
+
+  gameState.host = applyConnection(gameState.host);
+  gameState.players = gameState.players.map(applyConnection);
+  gameState.spectators = gameState.spectators.map(applyConnection);
+  gameState.buzzedPlayer = applyConnection(gameState.buzzedPlayer);
+  gameState.buzzes = gameState.buzzes.map(applyConnection);
+  gameState.lockedOutPlayers = gameState.lockedOutPlayers.map(applyConnection);
+
+  return updated;
 }
 
 // Turn order is tracked by player id; the players array remains the source of truth.
@@ -2346,7 +2456,9 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
       databasePlayerId: identity.databasePlayerId || user.databasePlayerId || "",
       provider: identity.provider || user.provider || "",
       providerUserId: identity.providerUserId || user.providerUserId || "",
-      clientToken: identity.clientToken
+      clientToken: identity.clientToken,
+      connected: true,
+      disconnectedAt: null
     };
   };
 
@@ -2367,6 +2479,7 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
   }
 
   replaceFaceAFacePlayerId(previousSocketId, nextSocketId);
+  markUserConnected(nextSocketId);
 }
 
 function replaceFaceAFacePlayerId(previousSocketId, nextSocketId) {
@@ -2380,6 +2493,15 @@ function replaceFaceAFacePlayerId(previousSocketId, nextSocketId) {
   rekeyObject(finalState.bets, previousSocketId, nextSocketId);
   rekeyObject(finalState.guesses, previousSocketId, nextSocketId);
   rekeyObject(finalState.judged, previousSocketId, nextSocketId);
+}
+
+function removeFaceAFacePlayerId(playerId) {
+  const finalState = gameState.faceAFaceState;
+  finalState.eligiblePlayerIds = finalState.eligiblePlayerIds.filter((eligiblePlayerId) => eligiblePlayerId !== playerId);
+  finalState.revealedPlayerIds = finalState.revealedPlayerIds.filter((revealedPlayerId) => revealedPlayerId !== playerId);
+  delete finalState.bets[playerId];
+  delete finalState.guesses[playerId];
+  delete finalState.judged[playerId];
 }
 
 function rekeyObject(target, previousKey, nextKey) {

@@ -925,6 +925,10 @@ socket.on("leftGame", () => {
   showScreen("role");
 });
 
+socket.on("removedFromGame", () => {
+  showToast("You were removed from the game.", "info");
+});
+
 socket.on("lobbyError", (reason) => {
   lobbyStatus.textContent = reason || "Could not join lobby.";
   showToast(lobbyStatus.textContent, "error");
@@ -1345,9 +1349,9 @@ function updateLobbyPanel(state) {
 }
 
 function updateWaitingRoom(state) {
-  renderList(hostList, state.host ? [state.host] : [], "No host yet");
-  renderList(playerList, state.players, "No players yet");
-  renderList(spectatorList, state.spectators, "No spectators yet");
+  renderList(hostList, state.host ? [state.host] : [], "No host yet", "host");
+  renderList(playerList, state.players, "No players yet", "player");
+  renderList(spectatorList, state.spectators, "No spectators yet", "spectator");
   renderGridSelection(state);
 }
 
@@ -1592,6 +1596,7 @@ function renderScores(state) {
   state.players.forEach((player) => {
     const item = document.createElement("li");
     item.className = isHost ? "score-row editable-score-row" : "score-row";
+    item.classList.toggle("disconnected-user", player.connected === false);
 
     if (player.id === state.currentTurnPlayerId) {
       item.classList.add("current-turn-score-row");
@@ -1610,6 +1615,8 @@ function renderScores(state) {
     item.appendChild(score);
 
     if (isHost) {
+      item.classList.add("removable-score-row");
+
       const editButton = document.createElement("button");
       editButton.className = "score-edit-button";
       editButton.type = "button";
@@ -1619,6 +1626,8 @@ function renderScores(state) {
         openScoreEditModal(player);
       });
       item.appendChild(editButton);
+
+      item.appendChild(createRemoveUserButton(player));
     }
 
     scoreList.appendChild(item);
@@ -2461,7 +2470,7 @@ function showScreen(screen) {
   }
 }
 
-function renderList(element, users, emptyText) {
+function renderList(element, users, emptyText, role) {
   element.innerHTML = "";
 
   if (users.length === 0) {
@@ -2474,7 +2483,14 @@ function renderList(element, users, emptyText) {
 
   users.forEach((user) => {
     const item = document.createElement("li");
+    item.classList.toggle("disconnected-user", user.connected === false);
+    item.classList.toggle("removable-user-row", canRemoveUser(user, role));
     item.appendChild(createUserIdentity(user));
+
+    if (canRemoveUser(user, role)) {
+      item.appendChild(createRemoveUserButton(user));
+    }
+
     element.appendChild(item);
   });
 }
@@ -2484,6 +2500,14 @@ function createUserIdentity(user) {
   identity.className = "user-identity";
   identity.appendChild(createUserAvatar(user));
   identity.appendChild(createUserName(user));
+
+  if (user.connected === false) {
+    const badge = document.createElement("span");
+    badge.className = "disconnected-badge";
+    badge.textContent = "Disconnected";
+    identity.appendChild(badge);
+  }
+
   return identity;
 }
 
@@ -2509,6 +2533,34 @@ function createUserName(user) {
   name.className = "user-name";
   name.textContent = user.name;
   return name;
+}
+
+function canRemoveUser(user, role) {
+  return (
+    currentUser?.role === "host" &&
+    role !== "host" &&
+    user?.id &&
+    user.id !== currentUser.id
+  );
+}
+
+function createRemoveUserButton(user) {
+  const button = document.createElement("button");
+  button.className = "remove-user-button";
+  button.type = "button";
+  button.textContent = "Remove";
+  button.setAttribute("aria-label", `Remove ${user.name} from the game`);
+  button.addEventListener("click", () => {
+    showConfirm({
+      title: "Remove User",
+      message: `Remove ${user.name} from the game?`,
+      confirmText: "Remove",
+      onConfirm: () => {
+        socket.emit("removeUser", { userId: user.id });
+      },
+    });
+  });
+  return button;
 }
 
 function getInitials(name = "") {

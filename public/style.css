@@ -399,6 +399,13 @@ li {
   color: var(--text);
 }
 
+.removable-user-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
 .user-identity {
   display: inline-grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -434,10 +441,29 @@ li {
   white-space: nowrap;
 }
 
+.disconnected-user {
+  opacity: 0.78;
+}
+
+.disconnected-badge {
+  grid-column: 2;
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted-2);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .primary-button,
 .secondary-button,
 .judge-button,
 .score-edit-button,
+.remove-user-button,
 .board-action-button,
 .image-lightbox-close {
   min-height: 44px;
@@ -766,6 +792,10 @@ button:disabled,
   grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
+.removable-score-row {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+}
+
 .current-turn-score-row {
   border-color: rgba(77, 212, 198, 0.48);
   background: var(--accent-soft);
@@ -797,11 +827,28 @@ button:disabled,
   font-size: 12px;
 }
 
+.remove-user-button {
+  min-height: 32px;
+  border: 1px solid rgba(255, 77, 109, 0.36);
+  padding: 7px 9px;
+  background: var(--danger-soft);
+  color: #ffd9e1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .score-edit-button:hover,
-.score-edit-button:focus-visible {
+.score-edit-button:focus-visible,
+.remove-user-button:hover,
+.remove-user-button:focus-visible {
   border-color: var(--accent);
   color: var(--text);
   outline: none;
+}
+
+.remove-user-button:hover,
+.remove-user-button:focus-visible {
+  border-color: var(--danger);
 }
 
 .question-category {
