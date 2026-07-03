@@ -166,6 +166,7 @@ let currentLobby = "";
 let statsLoadToastShown = false;
 let statsPanelLoading = false;
 let lastStatsRefreshMatchId = "";
+let pendingStatsRefreshMatchId = "";
 let attemptedUrlLobbyJoin = false;
 const browserDisplayNameStorageKey = "triviaShowdownDisplayName";
 const legacyBrowserDisplayNameStorageKey = "jeopardyDisplayName";
@@ -988,20 +989,22 @@ copyLobbyCodeBtn.addEventListener("click", async () => {
   }
 });
 
-copyLobbyLinkBtn.addEventListener("click", async () => {
-  if (!currentLobby) {
-    return;
-  }
+if (copyLobbyLinkBtn) {
+  copyLobbyLinkBtn.addEventListener("click", async () => {
+    if (!currentLobby) {
+      return;
+    }
 
-  const inviteLink = getLobbyInviteLink(currentLobby);
+    const inviteLink = getLobbyInviteLink(currentLobby);
 
-  try {
-    await navigator.clipboard.writeText(inviteLink);
-    showToast("Invite link copied.", "success");
-  } catch {
-    showToast(inviteLink, "info");
-  }
-});
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      showToast("Invite link copied.", "success");
+    } catch {
+      showToast(inviteLink, "info");
+    }
+  });
+}
 
 hostBtn.addEventListener("click", () => {
   if (!ensureBrowserDisplayNameBeforeRole()) {
@@ -2580,6 +2583,17 @@ async function loadStatsPanel() {
     if (refreshStatsBtn) {
       refreshStatsBtn.disabled = false;
     }
+
+    const pendingMatchId = pendingStatsRefreshMatchId;
+    pendingStatsRefreshMatchId = "";
+
+    if (
+      pendingMatchId &&
+      currentState?.matchSavedId === pendingMatchId &&
+      pendingMatchId !== lastStatsRefreshMatchId
+    ) {
+      maybeRefreshStatsAfterSavedMatch(currentState);
+    }
   }
 }
 
@@ -2775,7 +2789,7 @@ function createRecentMatchItem(match) {
 
   const playerCount = Number(match.playerCount || 0);
   const meta = document.createElement("span");
-  meta.textContent = `Winner: ${match.winnerName || "Unknown"} · ${formatScore(playerCount)} ${playerCount === 1 ? "player" : "players"} · ${formatDateTime(match.endedAt)}`;
+  meta.textContent = `Winner: ${match.winnerName || "Unknown"} - ${formatScore(playerCount)} ${playerCount === 1 ? "player" : "players"} - ${formatDateTime(match.endedAt)}`;
   summary.appendChild(meta);
 
   const personal = document.createElement("span");
@@ -2831,7 +2845,7 @@ function renderMatchDetail(match) {
   const title = document.createElement("h3");
   title.textContent = match.gridName || "Trivia Showdown";
   const meta = document.createElement("p");
-  meta.textContent = `Winner: ${match.winnerName || "Unknown"} · ${formatDateTime(match.endedAt)}`;
+  meta.textContent = `Winner: ${match.winnerName || "Unknown"} - ${formatDateTime(match.endedAt)}`;
   summary.appendChild(title);
   summary.appendChild(meta);
   matchDetailContent.appendChild(summary);
@@ -2850,7 +2864,7 @@ function renderMatchDetail(match) {
       avatarUrl: player.avatarUrl || "",
     });
     const detail = document.createElement("span");
-    detail.textContent = `${formatPlacement(player.placement)} · ${formatScore(player.finalScore)} · ${player.result || "played"}`;
+    detail.textContent = `${formatPlacement(player.placement)} - ${formatScore(player.finalScore)} - ${player.result || "played"}`;
     item.appendChild(identity);
     item.appendChild(detail);
     rankings.appendChild(item);
@@ -2867,7 +2881,7 @@ function renderMatchDetail(match) {
     const prompt = document.createElement("p");
     prompt.textContent = match.faceAFace.prompt || "";
     const answer = document.createElement("p");
-    answer.textContent = `Guess answer: ${match.faceAFace.guessAnswer || "Unavailable"}`;
+    answer.textContent = `Correct guess: ${match.faceAFace.guessAnswer || "Unavailable"}`;
     face.appendChild(faceTitle);
     face.appendChild(category);
     face.appendChild(prompt);
@@ -2893,6 +2907,11 @@ function maybeRefreshStatsAfterSavedMatch(state) {
     !state.matchSavedId ||
     state.matchSavedId === lastStatsRefreshMatchId
   ) {
+    return;
+  }
+
+  if (statsPanelLoading) {
+    pendingStatsRefreshMatchId = state.matchSavedId;
     return;
   }
 

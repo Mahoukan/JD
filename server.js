@@ -123,6 +123,7 @@ app.post("/api/account/display-name", async (req, res) => {
     }
 
     req.session.player = {
+      ...req.session.player,
       id: player.id,
       displayName: player.display_name,
       avatarUrl: player.avatar_url || "",
@@ -245,7 +246,7 @@ app.get("/api/matches/me/recent", async (req, res) => {
           m.id AS match_id,
           m.grid_name,
           m.ended_at,
-          winner.display_name AS winner_name,
+          COALESCE(winner.display_name, winner_row.display_name) AS winner_name,
           COUNT(mp_all.match_id)::int AS player_count,
           my_row.final_score AS my_score,
           my_row.placement AS my_placement,
