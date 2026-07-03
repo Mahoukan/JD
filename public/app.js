@@ -18,6 +18,7 @@ const lobbyStatus = document.getElementById("lobby-status");
 const waitingLobbyPanel = document.getElementById("waiting-lobby-panel");
 const currentLobbyCode = document.getElementById("current-lobby-code");
 const copyLobbyCodeBtn = document.getElementById("copy-lobby-code-btn");
+const copyLobbyLinkBtn = document.getElementById("copy-lobby-link-btn");
 
 const changeRoleBtn = document.getElementById("change-role-btn");
 const quitGameButtons = document.querySelectorAll(".quit-game-btn");
@@ -165,6 +166,7 @@ let currentLobby = "";
 let statsLoadToastShown = false;
 let statsPanelLoading = false;
 let lastStatsRefreshMatchId = "";
+let attemptedUrlLobbyJoin = false;
 const browserDisplayNameStorageKey = "triviaShowdownDisplayName";
 const legacyBrowserDisplayNameStorageKey = "jeopardyDisplayName";
 const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
@@ -183,6 +185,7 @@ function initialiseIdentity() {
   }
 
   showLobbyControls();
+  prefillLobbyCodeFromUrl();
   initialiseBrowserOrAccountIdentity();
 }
 
@@ -378,6 +381,17 @@ function getStoredBrowserLobbyCode() {
   }
 }
 
+function getLobbyCodeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return sanitiseLobbyCode(params.get("lobby") || "");
+}
+
+function getLobbyInviteLink(lobbyCode) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("lobby", lobbyCode);
+  return url.toString();
+}
+
 function storeBrowserLobbyCode(lobbyCode) {
   try {
     if (lobbyCode) {
@@ -476,8 +490,9 @@ function applyBrowserDisplayName(name) {
     providerUserId: "",
   };
   renderLoggedOutAccount();
-  rejoinStoredBrowserLobby();
   emitBrowserIdentity();
+  maybeJoinLobbyFromUrl();
+  rejoinStoredBrowserLobby();
 }
 
 function applyLoggedInAccount(player) {
@@ -493,12 +508,17 @@ function applyLoggedInAccount(player) {
     providerUserId: player.providerUserId,
   };
   renderLoggedInAccount(player);
-  rejoinStoredBrowserLobby();
   emitAccountIdentity(player);
+  maybeJoinLobbyFromUrl();
+  rejoinStoredBrowserLobby();
 }
 
 function rejoinStoredBrowserLobby() {
   if (isLikelyDiscordActivity()) {
+    return;
+  }
+
+  if (getLobbyCodeFromUrl()) {
     return;
   }
 
@@ -524,6 +544,32 @@ function emitBrowserIdentity() {
     databasePlayerId: "",
     provider: "browser",
     providerUserId: "",
+    clientToken: getBrowserPlayerToken(),
+  });
+}
+
+function prefillLobbyCodeFromUrl() {
+  const lobbyCode = getLobbyCodeFromUrl();
+
+  if (lobbyCode) {
+    joinLobbyCode.value = lobbyCode;
+  }
+}
+
+function maybeJoinLobbyFromUrl() {
+  if (attemptedUrlLobbyJoin || isLikelyDiscordActivity()) {
+    return;
+  }
+
+  const lobbyCode = getLobbyCodeFromUrl();
+
+  if (!lobbyCode || !browserIdentityReady) {
+    return;
+  }
+
+  attemptedUrlLobbyJoin = true;
+  socket.emit("joinLobby", {
+    lobbyCode,
     clientToken: getBrowserPlayerToken(),
   });
 }
@@ -856,7 +902,9 @@ socket.on("lobbyJoined", ({ lobbyCode } = {}) => {
     : "Joined lobby.";
   message.textContent = "";
 
-  if (browserIdentityReady && !isLikelyDiscordActivity()) {
+  if (activeAccountPlayer && !isLikelyDiscordActivity()) {
+    emitAccountIdentity(activeAccountPlayer);
+  } else if (browserIdentityReady && !isLikelyDiscordActivity()) {
     emitBrowserIdentity();
   }
 });
@@ -937,6 +985,21 @@ copyLobbyCodeBtn.addEventListener("click", async () => {
     showToast("Lobby code copied.", "success");
   } catch {
     showToast(`Lobby code: ${currentLobby}`, "info");
+  }
+});
+
+copyLobbyLinkBtn.addEventListener("click", async () => {
+  if (!currentLobby) {
+    return;
+  }
+
+  const inviteLink = getLobbyInviteLink(currentLobby);
+
+  try {
+    await navigator.clipboard.writeText(inviteLink);
+    showToast("Invite link copied.", "success");
+  } catch {
+    showToast(inviteLink, "info");
   }
 });
 

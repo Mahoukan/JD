@@ -1472,7 +1472,7 @@ button:disabled,
   }
 
   .waiting-lobby-panel {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     text-align: left;
   }
 
