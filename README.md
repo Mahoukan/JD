@@ -116,7 +116,7 @@ BUILD_VERSION=
 
 ## Grid JSON Format
 
-Grids live in `public/boards/`. Each `.json` file is scanned by the server and appears in the host grid selector.
+Grids can come from the Postgres `saved_grids` table or from bundled JSON files in `public/boards/`. When saved database grids exist, the host grid selector loads those first. Bundled JSON boards remain fallback/seed boards if the database is empty or unavailable.
 
 Minimal structure:
 
@@ -181,7 +181,7 @@ Set `ADMIN_BOARD_PASSWORD` and visit `/admin/boards` to use the owner-only board
 
 Uploaded JSON is normalized and validated with the same grid rules as the normal host import flow, then stored in the Postgres `saved_grids` table with `created_by_player_id` set to `NULL`. Duplicate `grid_id` values are rejected by default.
 
-This is a separate database-management tool. The normal host Import Grid flow is unchanged, and the main game does not automatically load boards from `saved_grids` yet.
+This is a separate database-management tool. The game loads saved database boards first, while bundled JSON boards in `public/boards/` remain fallback/seed boards. The normal host Import Grid flow is still temporary/session-based and does not save uploads to `saved_grids`.
 
 ## Included Grids
 

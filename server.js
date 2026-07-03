@@ -11,6 +11,7 @@ import {
   stripAnsweredTracking
 } from "./src/grid-normalizer.js";
 import { db, query, testDatabaseConnection } from "./src/db.js";
+import { listSavedGrids, loadSavedGrid } from "./src/grid-store.js";
 import { sessionMiddleware } from "./src/session.js";
 import { isGoogleAuthConfigured, passport, setupPassport } from "./src/auth.js";
 import { saveCompletedMatch } from "./src/match-history.js";
@@ -33,9 +34,9 @@ const BUILD_VERSION = process.env.BUILD_VERSION ||
   `${buildCommit}-${Date.now()}`;
 const ADMIN_BOARD_PASSWORD = process.env.ADMIN_BOARD_PASSWORD || "";
 const gridsDirectory = join(__dirname, "public", "boards");
-let availableGrids = discoverAvailableGrids();
-const selectedGrid = availableGrids[0] ?? createFallbackGridOption();
-const initialGrid = loadGridByFilename(selectedGrid.filename) ?? createEmptyGrid(selectedGrid);
+let availableGrids = discoverFileGrids();
+let defaultSelectedGrid = availableGrids[0] ?? createFallbackGridOption();
+let defaultInitialGrid = loadGridFile(defaultSelectedGrid.filename) ?? createEmptyGrid(defaultSelectedGrid);
 
 app.set("trust proxy", 1);
 
@@ -1312,8 +1313,8 @@ function createInitialGameState() {
     matchSavedAt: null,
     matchSavePending: false,
     availableGrids,
-    selectedGridFilename: selectedGrid.filename,
-    grid: structuredCloneGrid(initialGrid),
+    selectedGridFilename: defaultSelectedGrid.filename,
+    grid: structuredCloneGrid(defaultInitialGrid),
     currentRound: "round1",
     currentTurnPlayerId: null,
     currentPrompt: null,
@@ -2291,7 +2292,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "selectGrid", ({ filename } = {}) => {
+  onGameEvent(socket, "selectGrid", async ({ filename } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can select a grid.");
       return;
@@ -2309,10 +2310,10 @@ io.on("connection", (socket) => {
       return;
     }
 
-    const grid = loadGridByFilename(gridOption.filename);
+    const grid = await loadGridByFilename(gridOption.filename);
 
     if (!grid) {
-      socket.emit("actionRejected", "That grid could not be loaded.");
+      socket.emit("actionRejected", "Could not load that grid.");
       return;
     }
 
@@ -2364,7 +2365,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "importGrid", ({ filename, contents } = {}) => {
+  onGameEvent(socket, "importGrid", async ({ filename, contents } = {}) => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("gridImportResult", {
         ok: false,
@@ -2381,7 +2382,7 @@ io.on("connection", (socket) => {
       return;
     }
 
-    refreshGridsForAllGames();
+    addAvailableGridOptionForAllGames(result.grid);
     broadcastAllGameStates();
   });
 
@@ -2987,7 +2988,21 @@ function rekeyObject(target, previousKey, nextKey) {
   delete target[previousKey];
 }
 
-function discoverAvailableGrids() {
+async function discoverAvailableGrids() {
+  try {
+    const databaseGrids = await listSavedGrids();
+
+    if (databaseGrids.length > 0) {
+      return databaseGrids;
+    }
+  } catch (error) {
+    console.warn(`Could not load database grids, using file fallback: ${error.message}`);
+  }
+
+  return discoverFileGrids();
+}
+
+function discoverFileGrids() {
   let filenames = [];
 
   try {
@@ -3009,31 +3024,52 @@ function discoverAvailableGrids() {
     grids.push({
       id: grid.id || filename.replace(/\.json$/i, ""),
       name: grid.name || filename,
-      filename
+      filename,
+      source: "file"
     });
     return grids;
   }, []);
 }
 
-function refreshAvailableGrids() {
-  availableGrids = discoverAvailableGrids();
+async function refreshAvailableGrids() {
+  availableGrids = await discoverAvailableGrids();
   return availableGrids;
 }
 
-function refreshGridsForAllGames() {
-  const grids = refreshAvailableGrids();
+async function refreshGridsForAllGames() {
+  const grids = await refreshAvailableGrids();
+  const firstGrid = grids[0] ?? createFallbackGridOption();
+  const loadedFirstGrid = await loadGridByFilename(firstGrid.filename);
+  defaultSelectedGrid = firstGrid;
+  defaultInitialGrid = loadedFirstGrid ?? createEmptyGrid(firstGrid);
 
-  GameManager.games.forEach((gameContext) => {
+  for (const gameContext of GameManager.games.values()) {
     gameContext.state.availableGrids = grids;
 
     if (!grids.some((grid) => grid.filename === gameContext.state.selectedGridFilename)) {
-      const firstGrid = grids[0] ?? createFallbackGridOption();
       setActiveGameContext(gameContext);
       gameContext.state.selectedGridFilename = firstGrid.filename;
-      gameContext.state.grid = loadGridByFilename(firstGrid.filename) ?? createEmptyGrid(firstGrid);
+      gameContext.state.grid = structuredCloneGrid(defaultInitialGrid);
       gameContext.state.currentRound = "round1";
       resetCurrentPromptState();
       saveActiveTimerHandles();
+    }
+  }
+}
+
+function addAvailableGridOptionForAllGames(gridOption) {
+  const nextOption = {
+    ...gridOption,
+    source: gridOption.source || "file"
+  };
+
+  if (!availableGrids.some((grid) => grid.filename === nextOption.filename || grid.id === nextOption.id)) {
+    availableGrids = [...availableGrids, nextOption];
+  }
+
+  GameManager.games.forEach((gameContext) => {
+    if (!gameContext.state.availableGrids.some((grid) => grid.filename === nextOption.filename || grid.id === nextOption.id)) {
+      gameContext.state.availableGrids = [...gameContext.state.availableGrids, nextOption];
     }
   });
 }
@@ -3068,7 +3104,7 @@ function importGridFile({ filename, contents }) {
     return { ok: false, error: validationError };
   }
 
-  if (availableGrids.some((currentGrid) => currentGrid.id === grid.id)) {
+  if (availableGrids.some((currentGrid) => currentGrid.id === grid.id) || discoverFileGrids().some((currentGrid) => currentGrid.id === grid.id)) {
     return { ok: false, error: `A grid with ID "${grid.id}" already exists.` };
   }
 
@@ -3089,7 +3125,8 @@ function importGridFile({ filename, contents }) {
     grid: {
       id: grid.id,
       name: grid.name,
-      filename: safeFilename
+      filename: safeFilename,
+      source: "file"
     }
   };
 }
@@ -3175,8 +3212,9 @@ function getUniqueGridFilename(originalFilename, gridId) {
   const preferredBase = slugifyGridFilename(originalFilename.replace(/\.json$/i, "") || gridId);
   let filename = `${preferredBase}.json`;
   let index = 2;
+  const fileGrids = discoverFileGrids();
 
-  while (availableGrids.some((grid) => grid.filename === filename)) {
+  while (fileGrids.some((grid) => grid.filename === filename)) {
     filename = `${preferredBase}-${index}.json`;
     index += 1;
   }
@@ -3220,15 +3258,34 @@ function createEmptyGrid(gridOption) {
 }
 
 function getGridOption(filename) {
-  if (typeof filename !== "string" || filename !== basename(filename)) {
+  if (typeof filename !== "string") {
+    return null;
+  }
+
+  if (!isDatabaseGridFilename(filename) && filename !== basename(filename)) {
     return null;
   }
 
   return gameState.availableGrids.find((grid) => grid.filename === filename) || null;
 }
 
-function loadGridByFilename(filename) {
-  if (typeof filename !== "string" || filename !== basename(filename)) {
+async function loadGridByFilename(filename) {
+  if (typeof filename !== "string") {
+    return null;
+  }
+
+  if (isDatabaseGridFilename(filename)) {
+    const grid = await loadSavedGrid(filename.slice(3));
+
+    if (!Array.isArray(grid?.rounds?.round1?.categories)) {
+      return null;
+    }
+
+    addGuessedTracking(grid);
+    return grid;
+  }
+
+  if (filename !== basename(filename)) {
     return null;
   }
 
@@ -3239,6 +3296,10 @@ function loadGridByFilename(filename) {
   }
 
   return loadGridFile(gridOption.filename);
+}
+
+function isDatabaseGridFilename(filename) {
+  return typeof filename === "string" && filename.startsWith("db:") && filename.length > 3;
 }
 
 function loadGridFile(filename) {
@@ -3695,9 +3756,21 @@ function getVisibleCurrentPrompt(socket) {
   return currentPrompt;
 }
 
-server.listen(PORT, () => {
-  console.log(`Discord Trivia Showdown Build: ${BUILD_VERSION}`);
-  console.log(`Server running on http://localhost:${PORT}`);
+async function startServer() {
+  await refreshGridsForAllGames();
+
+  server.listen(PORT, () => {
+    console.log(`Discord Trivia Showdown Build: ${BUILD_VERSION}`);
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.warn(`Grid startup refresh failed, using file fallback: ${error.message}`);
+  server.listen(PORT, () => {
+    console.log(`Discord Trivia Showdown Build: ${BUILD_VERSION}`);
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
 });
 
 
