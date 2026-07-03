@@ -155,6 +155,7 @@ let discordSdkClient = null;
 let lastRichPresenceKey = "";
 let browserIdentityReady = false;
 let browserNameModalMode = "initial";
+let activeAccountPlayer = null;
 let pendingConfirmAction = null;
 let resetGridConfirmTimeout = null;
 let currentLobby = "";
@@ -170,14 +171,28 @@ function initialiseIdentity() {
   if (isLikelyDiscordActivity()) {
     hideLobbyControls();
     hideBrowserNameControls();
+    renderDiscordAccount();
     initialiseDiscordIdentity();
     loadStatsPanel();
     return;
   }
 
   showLobbyControls();
+  initialiseBrowserOrAccountIdentity();
+}
+
+async function initialiseBrowserOrAccountIdentity() {
+  const account = await loadLoggedInAccount();
+
+  if (account) {
+    applyLoggedInAccount(account);
+    loadStatsPanel();
+    return;
+  }
+
+  renderLoggedOutAccount();
   initialiseBrowserIdentity();
-  loadLoggedInAccount().finally(loadStatsPanel);
+  loadStatsPanel();
 }
 
 function registerServiceWorker() {
@@ -443,6 +458,7 @@ function closeImageLightbox() {
 }
 
 function applyBrowserDisplayName(name) {
+  activeAccountPlayer = null;
   browserIdentityReady = true;
   storeBrowserDisplayName(name);
   currentUser = {
@@ -450,9 +466,30 @@ function applyBrowserDisplayName(name) {
     name,
     avatarUrl: "",
     discordUserId: "",
+    databasePlayerId: "",
+    provider: "browser",
+    providerUserId: "",
   };
+  renderLoggedOutAccount();
   rejoinStoredBrowserLobby();
   emitBrowserIdentity();
+}
+
+function applyLoggedInAccount(player) {
+  activeAccountPlayer = player;
+  browserIdentityReady = true;
+  currentUser = {
+    ...currentUser,
+    name: player.displayName || currentUser?.name || "",
+    avatarUrl: player.avatarUrl || "",
+    discordUserId: "",
+    databasePlayerId: player.id,
+    provider: player.provider,
+    providerUserId: player.providerUserId,
+  };
+  renderLoggedInAccount(player);
+  rejoinStoredBrowserLobby();
+  emitAccountIdentity(player);
 }
 
 function rejoinStoredBrowserLobby() {
@@ -479,6 +516,20 @@ function emitBrowserIdentity() {
     name,
     avatarUrl: "",
     discordUserId: "",
+    databasePlayerId: "",
+    provider: "browser",
+    providerUserId: "",
+    clientToken: getBrowserPlayerToken(),
+  });
+}
+
+function emitAccountIdentity(player) {
+  socket.emit("setUserIdentity", {
+    name: player.displayName,
+    avatarUrl: player.avatarUrl || "",
+    databasePlayerId: player.id,
+    provider: player.provider,
+    providerUserId: player.providerUserId,
     clientToken: getBrowserPlayerToken(),
   });
 }
@@ -994,13 +1045,26 @@ imageLightbox.addEventListener("click", (event) => {
   }
 });
 
-browserNameForm.addEventListener("submit", (event) => {
+browserNameForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const name = sanitiseBrowserDisplayName(browserNameInput.value);
 
   if (!name) {
     browserNameError.textContent = "Name is required.";
     browserNameInput.focus();
+    return;
+  }
+
+  if (browserNameModalMode === "account") {
+    try {
+      await saveAccountDisplayName(name);
+      closeBrowserNameModal();
+      showToast("Display name updated.", "success");
+    } catch (error) {
+      browserNameError.textContent =
+        error.message || "Could not update display name.";
+      browserNameInput.focus();
+    }
     return;
   }
 
@@ -1020,6 +1084,14 @@ browserNameCancelBtn.addEventListener("click", () => {
 browserChangeNameButtons.forEach((button) => {
   button.addEventListener("click", () => {
     if (isLikelyDiscordActivity()) {
+      return;
+    }
+
+    if (activeAccountPlayer) {
+      openBrowserNameModal({
+        mode: "account",
+        value: activeAccountPlayer.displayName || currentUser?.name || "",
+      });
       return;
     }
 
@@ -2592,31 +2664,12 @@ async function loadLoggedInAccount() {
     const data = await response.json();
 
     if (!data.ok || !data.loggedIn || !data.player) {
-      renderLoggedOutAccount();
-      return;
+      return null;
     }
 
-    renderLoggedInAccount(data.player);
-
-    currentUser = {
-      ...currentUser,
-      name: data.player.displayName || currentUser?.name,
-      avatarUrl: data.player.avatarUrl || currentUser?.avatarUrl || "",
-      databasePlayerId: data.player.id,
-      provider: data.player.provider,
-      providerUserId: data.player.providerUserId,
-    };
-
-    socket.emit("setUserIdentity", {
-      name: data.player.displayName,
-      avatarUrl: data.player.avatarUrl || "",
-      databasePlayerId: data.player.id,
-      provider: data.player.provider,
-      providerUserId: data.player.providerUserId,
-      clientToken: getBrowserPlayerToken(),
-    });
+    return data.player;
   } catch {
-    renderLoggedOutAccount();
+    return null;
   }
 }
 
@@ -2628,6 +2681,8 @@ function renderLoggedInAccount(player) {
   accountStatus.textContent = `Signed in as ${player.displayName}`;
   googleLoginLink.classList.add("hidden");
   logoutBtn.classList.remove("hidden");
+  showBrowserNameControls();
+  updateBrowserNameButtonLabels("Change Display Name");
 }
 
 function renderLoggedOutAccount() {
@@ -2635,9 +2690,50 @@ function renderLoggedOutAccount() {
     return;
   }
 
+  activeAccountPlayer = null;
   accountStatus.textContent = "Playing as guest";
   googleLoginLink.classList.remove("hidden");
   logoutBtn.classList.add("hidden");
+  updateBrowserNameButtonLabels("Change Name");
+}
+
+async function saveAccountDisplayName(name) {
+  const response = await fetch("/api/account/display-name", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      displayName: name,
+    }),
+  });
+  const data = await response.json();
+
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || "Could not update display name.");
+  }
+
+  applyLoggedInAccount(data.player);
+  loadStatsPanel();
+  return data.player;
+}
+
+function renderDiscordAccount() {
+  if (!accountPanel) {
+    return;
+  }
+
+  activeAccountPlayer = null;
+  accountStatus.textContent = "Using Discord identity";
+  googleLoginLink.classList.add("hidden");
+  logoutBtn.classList.add("hidden");
+  updateBrowserNameButtonLabels("Change Name");
+}
+
+function updateBrowserNameButtonLabels(label) {
+  browserChangeNameButtons.forEach((button) => {
+    button.textContent = label;
+  });
 }
 
 if (logoutBtn) {

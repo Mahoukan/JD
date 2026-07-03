@@ -80,6 +80,79 @@ app.get("/api/me", (req, res) => {
     player: req.session.player || null,
   });
 });
+
+app.post("/api/account/display-name", async (req, res) => {
+  if (!req.session.player?.id) {
+    res.status(401).json({
+      ok: false,
+      error: "You must be signed in to change your account name."
+    });
+    return;
+  }
+
+  const displayName = sanitizeAccountDisplayName(req.body?.displayName);
+
+  if (!displayName) {
+    res.status(400).json({
+      ok: false,
+      error: "Display name is required."
+    });
+    return;
+  }
+
+  try {
+    const result = await query(
+      `
+        UPDATE players
+        SET
+          display_name = $2,
+          last_seen_at = NOW()
+        WHERE id = $1
+        RETURNING id, display_name, avatar_url
+      `,
+      [req.session.player.id, displayName]
+    );
+    const player = result.rows[0];
+
+    if (!player) {
+      res.status(404).json({
+        ok: false,
+        error: "Account not found."
+      });
+      return;
+    }
+
+    req.session.player = {
+      id: player.id,
+      displayName: player.display_name,
+      avatarUrl: player.avatar_url || "",
+      provider: req.session.player.provider || "google",
+      providerUserId: req.session.player.providerUserId || ""
+    };
+
+    req.session.save((error) => {
+      if (error) {
+        console.error("Failed to save updated account session:", error);
+        res.status(500).json({
+          ok: false,
+          error: "Could not update display name."
+        });
+        return;
+      }
+
+      res.json({
+        ok: true,
+        player: req.session.player
+      });
+    });
+  } catch (error) {
+    console.error("Failed to update account display name:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Could not update display name."
+    });
+  }
+});
 app.get("/api/db-health", async (req, res) => {
   try {
     const result = await testDatabaseConnection();
@@ -507,6 +580,13 @@ function getAverageValue(value, fallback) {
 
 function roundStatValue(value) {
   return Number.isFinite(value) ? Math.round(value * 100) / 100 : 0;
+}
+
+function sanitizeAccountDisplayName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 40);
 }
 
 function createGameContext(id, options = {}) {
