@@ -638,6 +638,15 @@ app.post("/admin/boards/upload", async (req, res) => {
     filename: req.body?.filename,
     contents: req.body?.gridJson
   });
+
+  if (result.ok) {
+    try {
+      await refreshAvailableGridDefaults();
+    } catch (error) {
+      console.warn(`Could not refresh grids after admin upload: ${error.message}`);
+    }
+  }
+
   const type = result.ok ? "success" : "error";
   const message = encodeURIComponent(result.message || result.error || "Upload complete.");
 
@@ -1538,7 +1547,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  socket.on("createLobby", ({ clientToken } = {}) => {
+  socket.on("createLobby", async ({ clientToken } = {}) => {
     if (socket.data.isDiscordActivity) {
       socket.emit("lobbyError", "Lobby codes are not used inside Discord Activities.");
       return;
@@ -1546,6 +1555,12 @@ io.on("connection", (socket) => {
 
     if (clientToken) {
       socket.data.clientToken = sanitizeClientToken(clientToken);
+    }
+
+    try {
+      await refreshAvailableGridDefaults();
+    } catch (error) {
+      console.warn(`Could not refresh grids for new lobby, using current grid list: ${error.message}`);
     }
 
     const lobby = GameManager.createLobby();
@@ -2310,7 +2325,7 @@ io.on("connection", (socket) => {
       return;
     }
 
-    const grid = await loadGridByFilename(gridOption.filename);
+    const grid = await loadGridByFilename(gridOption.filename, gameState.availableGrids);
 
     if (!grid) {
       socket.emit("actionRejected", "Could not load that grid.");
@@ -3036,12 +3051,17 @@ async function refreshAvailableGrids() {
   return availableGrids;
 }
 
-async function refreshGridsForAllGames() {
+async function refreshAvailableGridDefaults() {
   const grids = await refreshAvailableGrids();
   const firstGrid = grids[0] ?? createFallbackGridOption();
   const loadedFirstGrid = await loadGridByFilename(firstGrid.filename);
   defaultSelectedGrid = firstGrid;
   defaultInitialGrid = loadedFirstGrid ?? createEmptyGrid(firstGrid);
+  return grids;
+}
+
+async function refreshGridsForAllGames() {
+  const grids = await refreshAvailableGridDefaults();
 
   for (const gameContext of GameManager.games.values()) {
     gameContext.state.availableGrids = grids;
@@ -3269,7 +3289,7 @@ function getGridOption(filename) {
   return gameState.availableGrids.find((grid) => grid.filename === filename) || null;
 }
 
-async function loadGridByFilename(filename) {
+async function loadGridByFilename(filename, gridOptions = availableGrids) {
   if (typeof filename !== "string") {
     return null;
   }
@@ -3289,7 +3309,7 @@ async function loadGridByFilename(filename) {
     return null;
   }
 
-  const gridOption = availableGrids.find((grid) => grid.filename === filename);
+  const gridOption = gridOptions.find((grid) => grid.filename === filename);
 
   if (!gridOption) {
     return null;
