@@ -189,14 +189,14 @@ async function updatePlayerStatsForMatch(client, rankings, endedAt) {
           updated_at
         )
         VALUES (
-          $1,
+          $1::uuid,
           1,
-          $2,
-          $3,
-          $4,
-          $4,
-          $5,
-          $6,
+          $2::integer,
+          $3::integer,
+          $4::integer,
+          $5::bigint,
+          $6::integer,
+          $7::timestamptz,
           NOW()
         )
         ON CONFLICT (player_id) DO UPDATE
@@ -214,6 +214,7 @@ async function updatePlayerStatsForMatch(client, rankings, endedAt) {
         playerId,
         isWin ? 1 : 0,
         isWin ? 0 : 1,
+        ranking.finalScore,
         ranking.finalScore,
         ranking.placement,
         endedAt
