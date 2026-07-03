@@ -214,6 +214,9 @@ function getUser(socket) {
     name: socket.data.name || `Guest ${socket.id.slice(0, 4)}`,
     avatarUrl: socket.data.avatarUrl || "",
     discordUserId: socket.data.discordUserId || "",
+    databasePlayerId: socket.data.databasePlayerId || "",
+    provider: socket.data.provider || "",
+    providerUserId: socket.data.providerUserId || "",
     clientToken: socket.data.clientToken || "",
     role: socket.data.role || null
   };
@@ -451,6 +454,9 @@ io.on("connection", (socket) => {
   socket.data.name = `Guest ${socket.id.slice(0, 4)}`;
   socket.data.avatarUrl = "";
   socket.data.discordUserId = "";
+  socket.data.databasePlayerId = "";
+  socket.data.provider = "";
+  socket.data.providerUserId = "";
   socket.data.clientToken = "";
   socket.data.role = null;
   socket.data.isDiscordActivity = false;
@@ -518,6 +524,9 @@ io.on("connection", (socket) => {
       name: socket.data.name,
       avatarUrl: socket.data.avatarUrl,
       discordUserId: "",
+      databasePlayerId: socket.data.databasePlayerId,
+      provider: socket.data.provider,
+      providerUserId: socket.data.providerUserId,
       clientToken: socket.data.clientToken
     });
 
@@ -536,11 +545,15 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId, clientToken } = {}) => {
+  // TODO: For saved match stats, prefer database identity from the verified Express session/Discord auth instead of trusting client-supplied fields.
+  onGameEvent(socket, "setUserIdentity", ({ name, avatarUrl, discordUserId, databasePlayerId, provider, providerUserId, clientToken } = {}) => {
     const identity = sanitizeIdentity({
       name,
       avatarUrl,
       discordUserId,
+      databasePlayerId,
+      provider,
+      providerUserId,
       clientToken
     });
     const restoredRole = restoreUserSession(socket, identity);
@@ -551,6 +564,9 @@ io.on("connection", (socket) => {
 
     socket.data.avatarUrl = identity.avatarUrl;
     socket.data.discordUserId = identity.discordUserId;
+    socket.data.databasePlayerId = identity.databasePlayerId || socket.data.databasePlayerId || "";
+    socket.data.provider = identity.provider || socket.data.provider || "";
+    socket.data.providerUserId = identity.providerUserId || socket.data.providerUserId || "";
     socket.data.clientToken = identity.clientToken;
     socket.data.role = restoredRole || socket.data.role;
     updateUserIdentity(socket.id, identity);
@@ -582,6 +598,9 @@ io.on("connection", (socket) => {
       name: socket.data.name,
       avatarUrl: socket.data.avatarUrl,
       discordUserId: socket.data.discordUserId,
+      databasePlayerId: socket.data.databasePlayerId,
+      provider: socket.data.provider,
+      providerUserId: socket.data.providerUserId,
       clientToken: socket.data.clientToken
     });
 
@@ -959,6 +978,9 @@ io.on("connection", (socket) => {
       name: player.name,
       avatarUrl: player.avatarUrl || "",
       discordUserId: player.discordUserId || "",
+      databasePlayerId: player.databasePlayerId || "",
+      provider: player.provider || "",
+      providerUserId: player.providerUserId || "",
       timestamp,
       delayMs: timestamp - firstBuzzTimestamp
     };
@@ -1044,7 +1066,10 @@ io.on("connection", (socket) => {
       id: player.id,
       name: player.name,
       avatarUrl: player.avatarUrl || "",
-      discordUserId: player.discordUserId || ""
+      discordUserId: player.discordUserId || "",
+      databasePlayerId: player.databasePlayerId || "",
+      provider: player.provider || "",
+      providerUserId: player.providerUserId || ""
     });
     gameState.resultMessage = `${player.name} is incorrect. Buzzer reopened. -${gameState.currentPrompt.value}`;
     gameState.buzzedPlayer = null;
@@ -1315,7 +1340,7 @@ io.on("connection", (socket) => {
   onGameEvent(socket, "disconnect", () => {
     console.log(`Disconnected: ${socket.id}`);
 
-    if (socket.data.discordUserId || socket.data.clientToken) {
+    if (socket.data.discordUserId || socket.data.databasePlayerId || socket.data.clientToken) {
       sendGameState();
       return;
     }
@@ -1414,17 +1439,25 @@ function removeGridGuessAnswers(round) {
   });
 }
 
-function sanitizeIdentity({ name, avatarUrl, discordUserId, clientToken }) {
+function sanitizeIdentity({ name, avatarUrl, discordUserId, databasePlayerId, provider, providerUserId, clientToken }) {
   return {
     name: sanitizeDisplayName(name),
     avatarUrl: sanitizeAvatarUrl(avatarUrl),
     discordUserId: sanitizePlainText(discordUserId, 40),
+    databasePlayerId: sanitizePlainText(databasePlayerId, 80),
+    provider: sanitizeIdentityProvider(provider),
+    providerUserId: sanitizePlainText(providerUserId, 120),
     clientToken: sanitizeClientToken(clientToken)
   };
 }
 
 function sanitizeClientToken(value) {
   return sanitizePlainText(value, 80);
+}
+
+function sanitizeIdentityProvider(value) {
+  const provider = sanitizePlainText(value, 20);
+  return ["google", "discord", "browser"].includes(provider) ? provider : "";
 }
 
 function sanitizeDisplayName(value) {
@@ -1476,6 +1509,9 @@ function updateUserIdentity(socketId, identity) {
       name: identity.name || user.name,
       avatarUrl: identity.avatarUrl,
       discordUserId: identity.discordUserId,
+      databasePlayerId: identity.databasePlayerId || user.databasePlayerId || "",
+      provider: identity.provider || user.provider || "",
+      providerUserId: identity.providerUserId || user.providerUserId || "",
       clientToken: identity.clientToken
     };
   };
@@ -1509,6 +1545,9 @@ function restoreUserSession(socket, identity) {
   socket.data.name = identity.name || existingSession.user.name || socket.data.name;
   socket.data.avatarUrl = identity.avatarUrl || existingSession.user.avatarUrl || "";
   socket.data.discordUserId = identity.discordUserId || existingSession.user.discordUserId || "";
+  socket.data.databasePlayerId = identity.databasePlayerId || existingSession.user.databasePlayerId || "";
+  socket.data.provider = identity.provider || existingSession.user.provider || "";
+  socket.data.providerUserId = identity.providerUserId || existingSession.user.providerUserId || "";
   socket.data.clientToken = identity.clientToken || existingSession.user.clientToken || "";
   return existingSession.role;
 }
@@ -1522,8 +1561,49 @@ function findRestorableSession(identity) {
     }
   }
 
+  if (identity.databasePlayerId) {
+    const databaseSession = findSessionByDatabasePlayerId(identity.databasePlayerId);
+
+    if (databaseSession) {
+      return databaseSession;
+    }
+  }
+
   if (identity.clientToken) {
     return findSessionByClientToken(identity.clientToken);
+  }
+
+  return null;
+}
+
+function findSessionByDatabasePlayerId(databasePlayerId) {
+  if (!databasePlayerId) {
+    return null;
+  }
+
+  if (gameState.host?.databasePlayerId === databasePlayerId) {
+    return {
+      role: "host",
+      user: gameState.host
+    };
+  }
+
+  const player = gameState.players.find((currentPlayer) => currentPlayer.databasePlayerId === databasePlayerId);
+
+  if (player) {
+    return {
+      role: "player",
+      user: player
+    };
+  }
+
+  const spectator = gameState.spectators.find((currentSpectator) => currentSpectator.databasePlayerId === databasePlayerId);
+
+  if (spectator) {
+    return {
+      role: "spectator",
+      user: spectator
+    };
   }
 
   return null;
@@ -1603,6 +1683,9 @@ function replaceUserSocketId(previousSocketId, nextSocketId, identity) {
       name: identity.name || user.name,
       avatarUrl: identity.avatarUrl,
       discordUserId: identity.discordUserId,
+      databasePlayerId: identity.databasePlayerId || user.databasePlayerId || "",
+      provider: identity.provider || user.provider || "",
+      providerUserId: identity.providerUserId || user.providerUserId || "",
       clientToken: identity.clientToken
     };
   };
