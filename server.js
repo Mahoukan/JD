@@ -1345,7 +1345,9 @@ io.on("connection", (socket) => {
       guessAnswer: prompt.guessAnswer,
       image: isSafeRelativeMediaPath(prompt.image) ? prompt.image : "",
       type: prompt.type || "",
-      riskTile: prompt.type === "risk"
+      riskTile: prompt.type === "risk",
+      selectedByPlayerId: gameState.currentTurnPlayerId || null,
+      correctPlayerId: null
     };
     gameState.guessRevealed = false;
     gameState.buzzingOpen = false;
@@ -1718,6 +1720,7 @@ io.on("connection", (socket) => {
     }
 
     player.score += gameState.currentPrompt.value;
+    gameState.currentPrompt.correctPlayerId = player.id;
     gameState.currentTurnPlayerId = player.id;
     gameState.guessRevealed = true;
     gameState.buzzingOpen = false;
@@ -2027,7 +2030,13 @@ io.on("connection", (socket) => {
     }
 
     if (gameState.currentPrompt) {
+      const hadCorrectGuess = Boolean(gameState.currentPrompt.correctPlayerId);
+
       markCurrentPromptGuessed();
+
+      if (!hadCorrectGuess) {
+        advanceTurnAfterNoCorrectGuess();
+      }
     }
 
     gameState.phase = "grid";
@@ -2183,6 +2192,26 @@ function setCurrentTurnPlayer(playerId) {
 
   gameState.currentTurnPlayerId = player.id;
   return true;
+}
+
+function advanceTurnAfterNoCorrectGuess() {
+  const activePlayers = gameState.players.filter((player) => player.connected !== false);
+
+  if (activePlayers.length === 0) {
+    gameState.currentTurnPlayerId = null;
+    return;
+  }
+
+  const startingPlayerId = gameState.currentPrompt?.selectedByPlayerId || gameState.currentTurnPlayerId;
+  const currentIndex = activePlayers.findIndex((player) => player.id === startingPlayerId);
+
+  if (currentIndex === -1) {
+    gameState.currentTurnPlayerId = activePlayers[0].id;
+    return;
+  }
+
+  const nextIndex = (currentIndex + 1) % activePlayers.length;
+  gameState.currentTurnPlayerId = activePlayers[nextIndex].id;
 }
 
 function getVisibleGrid(socket) {
@@ -3171,6 +3200,7 @@ function judgeRiskTile(isCorrect) {
 
   if (isCorrect) {
     player.score += bet;
+    gameState.currentPrompt.correctPlayerId = player.id;
     gameState.currentTurnPlayerId = player.id;
     gameState.resultMessage = `${player.name} is correct! +${bet}`;
   } else {

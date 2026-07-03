@@ -1640,7 +1640,7 @@ function renderTurnIndicator(state) {
 
   const label = document.createElement("span");
   label.className = "current-turn-label";
-  label.textContent = "Current Turn:";
+  label.textContent = "Next Chooser:";
   currentTurnDisplay.appendChild(label);
 
   if (currentTurnPlayer) {
