@@ -81,10 +81,21 @@ npm run dev
 
 ```env
 PORT=3001
+DATABASE_URL=
+SESSION_SECRET=
+PUBLIC_BASE_URL=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
 BUILD_VERSION=
 ```
+
+`DATABASE_URL` enables saved player accounts, stats, leaderboards, and match history. `SESSION_SECRET` should be set to a long random value in any shared or deployed environment.
+
+`PUBLIC_BASE_URL` should be the public origin for the deployed app, such as `https://your-app.example.com`. It is used for Google OAuth callback URLs.
+
+`GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` enable Google sign-in. If they are missing, the Google login route returns a clean configuration error and the browser login link is hidden.
 
 `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` are only needed for Discord Activity identity. Browser lobby play still works without them.
 
@@ -159,7 +170,7 @@ Notes:
 - Add `"type": "risk"` to a prompt to trigger the Risk Tile flow.
 - Add `"image": "media/example.png"` to show an image with a prompt. Images should live in `public/media/`.
 - Runtime fields such as answered prompts are managed in memory by the server.
-- Imported grids are saved into `public/boards/` and become available immediately.
+- Imported grids are saved into `public/boards/` and become available immediately. On redeploys or ephemeral hosting, imported grid files may be lost unless that directory is persisted or the files are committed/deployed with the app.
 - Legacy grid files using the previous keys are still accepted and normalized on load for compatibility.
 
 ## Included Grids
@@ -201,6 +212,11 @@ Recommended setup:
 - Start command: `npm start`
 - Environment variables:
   - `PORT` is usually provided by Railway automatically
+  - `DATABASE_URL` for saved accounts, stats, leaderboards, and match history
+  - `SESSION_SECRET` for encrypted session cookies
+  - `PUBLIC_BASE_URL` for OAuth callback URLs
+  - `GOOGLE_CLIENT_ID` if using Google sign-in
+  - `GOOGLE_CLIENT_SECRET` if using Google sign-in
   - `DISCORD_CLIENT_ID` if using Discord identity
   - `DISCORD_CLIENT_SECRET` if using Discord identity
   - `BUILD_VERSION` only if you want to override automatic build versioning

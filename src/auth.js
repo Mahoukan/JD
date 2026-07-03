@@ -16,6 +16,10 @@ function getGoogleCallbackUrl() {
   return `${baseUrl}/auth/google/callback`;
 }
 
+export function isGoogleAuthConfigured() {
+  return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+}
+
 async function findOrCreatePlayerFromIdentity({
   provider,
   providerUserId,
@@ -45,12 +49,11 @@ async function findOrCreatePlayerFromIdentity({
       `
         UPDATE players
         SET
-          display_name = $2,
-          avatar_url = $3,
+          avatar_url = $2,
           last_seen_at = NOW()
         WHERE id = $1
       `,
-      [player.id, displayName, avatarUrl],
+      [player.id, avatarUrl],
     );
 
     await query(
@@ -67,7 +70,7 @@ async function findOrCreatePlayerFromIdentity({
 
     return {
       id: player.id,
-      displayName,
+      displayName: player.display_name,
       avatarUrl,
       provider,
       providerUserId,
@@ -139,7 +142,7 @@ export async function findOrCreateGooglePlayer(profile) {
 }
 
 export function setupPassport() {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  if (!isGoogleAuthConfigured()) {
     console.warn("Google login is not configured. Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET.");
     return;
   }

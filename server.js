@@ -12,7 +12,7 @@ import {
 } from "./src/grid-normalizer.js";
 import { query, testDatabaseConnection } from "./src/db.js";
 import { sessionMiddleware } from "./src/session.js";
-import { passport, setupPassport } from "./src/auth.js";
+import { isGoogleAuthConfigured, passport, setupPassport } from "./src/auth.js";
 import { saveCompletedMatch } from "./src/match-history.js";
 const app = express();
 const server = http.createServer(app);
@@ -46,8 +46,28 @@ app.use(passport.session());
 
 io.engine.use(sessionMiddleware);
 
+app.get("/api/auth/config", (req, res) => {
+  res.json({
+    ok: true,
+    googleConfigured: isGoogleAuthConfigured()
+  });
+});
+
+function requireGoogleAuthConfigured(req, res, next) {
+  if (isGoogleAuthConfigured()) {
+    next();
+    return;
+  }
+
+  res.status(503).json({
+    ok: false,
+    error: "Google login is not configured."
+  });
+}
+
 app.get(
   "/auth/google",
+  requireGoogleAuthConfigured,
   passport.authenticate("google", {
     scope: ["profile", "email"],
   }),
@@ -55,6 +75,7 @@ app.get(
 
 app.get(
   "/auth/google/callback",
+  requireGoogleAuthConfigured,
   passport.authenticate("google", {
     failureRedirect: "/?login=failed",
   }),
@@ -200,7 +221,7 @@ app.get("/api/matches/recent", async (req, res) => {
           m.id,
           m.grid_name,
           m.ended_at,
-          COALESCE(winner.display_name, winner_row.display_name) AS winner_name,
+          winner.display_name AS winner_name,
           COUNT(mp.match_id)::int AS player_count
         FROM matches m
         LEFT JOIN match_players winner
@@ -508,6 +529,7 @@ app.get("/api/leaderboard", async (req, res) => {
     const result = await query(`
       SELECT *
       FROM player_stats_view
+      WHERE games_played > 0
       ORDER BY wins DESC, highest_score DESC, games_played DESC
       LIMIT 10
     `);
@@ -559,15 +581,17 @@ app.get("/api/leaderboard", async (req, res) => {
   }
 });
 
-app.get("/api/session-test", (req, res) => {
-  req.session.views = Number(req.session.views || 0) + 1;
+if (process.env.NODE_ENV !== "production") {
+  app.get("/api/session-test", (req, res) => {
+    req.session.views = Number(req.session.views || 0) + 1;
 
-  res.json({
-    ok: true,
-    message: "Session is working.",
-    views: req.session.views,
+    res.json({
+      ok: true,
+      message: "Session is working.",
+      views: req.session.views,
+    });
   });
-});
+}
 
 app.get(["/", "/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");

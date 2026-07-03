@@ -160,6 +160,7 @@ let lastRichPresenceKey = "";
 let browserIdentityReady = false;
 let browserNameModalMode = "initial";
 let activeAccountPlayer = null;
+let googleLoginConfigured = true;
 let pendingConfirmAction = null;
 let resetGridConfirmTimeout = null;
 let currentLobby = "";
@@ -191,6 +192,7 @@ function initialiseIdentity() {
 }
 
 async function initialiseBrowserOrAccountIdentity() {
+  await loadAuthConfig();
   const account = await loadLoggedInAccount();
 
   if (account) {
@@ -3017,6 +3019,15 @@ async function loadLoggedInAccount() {
   }
 }
 
+async function loadAuthConfig() {
+  try {
+    const config = await fetchJson("/api/auth/config");
+    googleLoginConfigured = config.googleConfigured !== false;
+  } catch {
+    googleLoginConfigured = true;
+  }
+}
+
 function renderLoggedInAccount(player) {
   if (!accountPanel) {
     return;
@@ -3036,7 +3047,7 @@ function renderLoggedOutAccount() {
 
   activeAccountPlayer = null;
   accountStatus.textContent = "Playing as guest";
-  googleLoginLink.classList.remove("hidden");
+  googleLoginLink.classList.toggle("hidden", !googleLoginConfigured);
   logoutBtn.classList.add("hidden");
   updateBrowserNameButtonLabels("Change Name");
 }
