@@ -10,9 +10,10 @@ import {
   normalizeGridPack,
   stripAnsweredTracking
 } from "./src/grid-normalizer.js";
-import { testDatabaseConnection } from "./src/db.js";
+import { query, testDatabaseConnection } from "./src/db.js";
 import { sessionMiddleware } from "./src/session.js";
 import { passport, setupPassport } from "./src/auth.js";
+import { saveCompletedMatch } from "./src/match-history.js";
 const app = express();
 const server = http.createServer(app);
 
@@ -94,6 +95,61 @@ app.get("/api/db-health", async (req, res) => {
       ok: false,
       error: "Database connection failed.",
     });
+  }
+});
+
+app.get("/api/matches/recent", async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT *
+      FROM recent_matches_view
+      LIMIT 10
+    `);
+
+    res.json({
+      ok: true,
+      matches: result.rows.map(formatRecentMatchRow)
+    });
+  } catch (error) {
+    if (error.code !== "42P01") {
+      console.error("Recent matches view query failed:", error);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load recent matches."
+      });
+      return;
+    }
+
+    try {
+      const fallbackResult = await query(`
+        SELECT
+          m.id,
+          m.grid_name,
+          m.ended_at,
+          winner.display_name AS winner_name,
+          COUNT(mp.match_id)::int AS player_count
+        FROM matches m
+        LEFT JOIN match_players winner
+          ON winner.match_id = m.id
+          AND winner.placement = 1
+        LEFT JOIN match_players mp
+          ON mp.match_id = m.id
+        GROUP BY m.id, m.grid_name, m.ended_at, winner.display_name
+        ORDER BY m.ended_at DESC
+        LIMIT 10
+      `);
+
+      res.json({
+        ok: true,
+        matches: fallbackResult.rows.map(formatRecentMatchRow)
+      });
+    } catch (fallbackError) {
+      console.error("Recent matches fallback query failed:", fallbackError);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load recent matches."
+      });
+    }
   }
 });
 
@@ -244,6 +300,16 @@ function exchangeDiscordToken({ clientId, clientSecret, code }) {
   });
 }
 
+function formatRecentMatchRow(row) {
+  return {
+    id: row.id,
+    gridName: row.grid_name || row.gridName || "",
+    endedAt: row.ended_at || row.endedAt || null,
+    winnerName: row.winner_name || row.winnerName || "",
+    playerCount: Number(row.player_count ?? row.playerCount ?? 0)
+  };
+}
+
 function createGameContext(id, options = {}) {
   return {
     id,
@@ -260,6 +326,10 @@ function createInitialGameState() {
     players: [],
     spectators: [],
     phase: "waiting",
+    gameStartedAt: null,
+    matchSavedId: "",
+    matchSavedAt: null,
+    matchSavePending: false,
     availableGrids,
     selectedGridFilename: selectedGrid.filename,
     grid: structuredCloneGrid(initialGrid),
@@ -330,7 +400,12 @@ function runInGameContext(gameContext, callback) {
 
 function onGameEvent(socket, eventName, handler) {
   socket.on(eventName, (...args) => {
-    runInSocketGame(socket, () => handler(...args));
+    runInSocketGame(socket, () => {
+      Promise.resolve(handler(...args)).catch((error) => {
+        console.error(`Error handling ${eventName}:`, error);
+        socket.emit("actionRejected", "Something went wrong. Try again.");
+      });
+    });
   });
 }
 
@@ -406,6 +481,9 @@ function createVisibleGameState(socket) {
     spectators: gameState.spectators,
     hostAvailable: gameState.host === null,
     phase: gameState.phase,
+    gameStartedAt: gameState.gameStartedAt,
+    matchSavedId: gameState.matchSavedId,
+    matchSavedAt: gameState.matchSavedAt,
     availableGrids: gameState.availableGrids,
     selectedGridFilename: gameState.selectedGridFilename,
     grid: getVisibleGrid(socket),
@@ -638,6 +716,10 @@ io.on("connection", (socket) => {
     gameState.phase = "grid";
     gameState.currentRound = "round1";
     gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
+    gameState.gameStartedAt = new Date().toISOString();
+    gameState.matchSavedId = "";
+    gameState.matchSavedAt = null;
+    gameState.matchSavePending = false;
     resetCurrentPromptState();
     sendGameState();
   });
@@ -913,7 +995,7 @@ io.on("connection", (socket) => {
     sendGameState();
   });
 
-  onGameEvent(socket, "showFinalResults", () => {
+  onGameEvent(socket, "showFinalResults", async () => {
     if (gameState.host?.id !== socket.id) {
       socket.emit("actionRejected", "Only the host can show Face-a-Face results.");
       return;
@@ -929,8 +1011,42 @@ io.on("connection", (socket) => {
       return;
     }
 
-    gameState.phase = "finalResults";
-    sendGameState();
+    const completionGameContext = activeGameContext;
+    const completionGameState = gameState;
+
+    if (!completionGameState.matchSavedId) {
+      if (completionGameState.matchSavePending) {
+        socket.emit("actionRejected", "Match history is already being saved.");
+        return;
+      }
+
+      completionGameState.matchSavePending = true;
+
+      try {
+        const matchId = await saveCompletedMatch({
+          gameState: completionGameState,
+          gameContext: completionGameContext
+        });
+
+        runInGameContext(completionGameContext, () => {
+          completionGameState.matchSavedId = matchId;
+          completionGameState.matchSavedAt = new Date().toISOString();
+          completionGameState.matchSavePending = false;
+        });
+      } catch (error) {
+        runInGameContext(completionGameContext, () => {
+          completionGameState.matchSavePending = false;
+        });
+        console.error("Failed to save completed match:", error);
+        socket.emit("actionRejected", "Could not save match history. Try again.");
+        return;
+      }
+    }
+
+    runInGameContext(completionGameContext, () => {
+      completionGameState.phase = "finalResults";
+      sendGameState();
+    });
   });
 
   onGameEvent(socket, "buzz", () => {
@@ -1205,6 +1321,10 @@ io.on("connection", (socket) => {
     stopTimer();
     gameState.phase = "waiting";
     resetCurrentPromptState();
+    gameState.gameStartedAt = null;
+    gameState.matchSavedId = "";
+    gameState.matchSavedAt = null;
+    gameState.matchSavePending = false;
     sendGameState();
   });
 
@@ -2315,6 +2435,10 @@ function resetFullGameToGrid() {
   }));
   gameState.currentTurnPlayerId = gameState.players[0]?.id || null;
   gameState.currentRound = "round1";
+  gameState.gameStartedAt = new Date().toISOString();
+  gameState.matchSavedId = "";
+  gameState.matchSavedAt = null;
+  gameState.matchSavePending = false;
   resetCurrentPromptState();
   resetRoundGuessedTracking("round1");
   resetRoundGuessedTracking("round2");
