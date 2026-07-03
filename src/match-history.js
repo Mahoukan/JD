@@ -107,8 +107,8 @@ async function insertMatchPlayer(client, matchId, { player, placement, finalScor
       getPlayerDatabaseId(player),
       nullableText(player.name) || "Unknown Player",
       nullableText(player.avatarUrl),
-      nullableText(player.provider) || "guest",
-      nullableText(player.providerUserId),
+      getSafeProvider(player),
+      getSafeProviderUserId(player),
       finalScore,
       placement,
       result
@@ -169,7 +169,7 @@ async function updatePlayerStatsForMatch(client, rankings, endedAt) {
   for (const ranking of rankings) {
     const playerId = getPlayerDatabaseId(ranking.player);
 
-    if (!playerId || ranking.player.provider === "guest") {
+    if (!playerId || getSafeProvider(ranking.player) === "guest") {
       continue;
     }
 
@@ -232,19 +232,29 @@ function nullableText(value) {
 }
 
 function nullableUuid(value) {
-  const text = nullableText(value);
-
-  if (!text) {
-    return null;
-  }
-
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(text)
-    ? text
-    : null;
+  const text = String(value || "").trim();
+  return text || null;
 }
 
 function getPlayerDatabaseId(player) {
   return nullableUuid(player?.databasePlayerId);
+}
+
+function getSafeProvider(player) {
+  if (!getPlayerDatabaseId(player)) {
+    return "guest";
+  }
+
+  const provider = String(player?.provider || "").trim();
+  return ["google", "discord", "browser"].includes(provider)
+    ? provider
+    : "guest";
+}
+
+function getSafeProviderUserId(player) {
+  return getSafeProvider(player) === "guest"
+    ? null
+    : nullableText(player?.providerUserId);
 }
 
 function getFinalRankings(players) {

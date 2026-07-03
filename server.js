@@ -1547,7 +1547,13 @@ io.on("connection", (socket) => {
         runInGameContext(completionGameContext, () => {
           completionGameState.matchSavePending = false;
         });
-        console.error("Failed to save completed match:", error);
+        console.error("Failed to save completed match:", {
+          message: error.message,
+          code: error.code,
+          detail: error.detail,
+          constraint: error.constraint,
+          stack: error.stack
+        });
         socket.emit("actionRejected", "Could not save match history. Try again.");
         return;
       }
