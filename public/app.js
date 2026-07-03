@@ -2440,5 +2440,3 @@ if (logoutBtn) {
 }
 
 registerServiceWorker();
-
-registerServiceWorker();
