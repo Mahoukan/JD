@@ -121,6 +121,10 @@ const imageLightboxCloseBtn = document.getElementById(
 
 const welcomeText = document.getElementById("welcome-text");
 const message = document.getElementById("message");
+const accountPanel = document.getElementById("account-panel");
+const accountStatus = document.getElementById("account-status");
+const logoutBtn = document.getElementById("logout-btn");
+const googleLoginLink = document.querySelector(".account-login-link");
 
 const hostList = document.getElementById("host-list");
 const playerList = document.getElementById("player-list");
@@ -167,6 +171,7 @@ function initialiseIdentity() {
 
   showLobbyControls();
   initialiseBrowserIdentity();
+  loadLoggedInAccount();
 }
 
 function registerServiceWorker() {
@@ -2365,5 +2370,75 @@ function formatDelay(delayMs) {
 function formatTimer(remainingMs) {
   return (Math.max(0, remainingMs) / 1000).toFixed(1);
 }
+
+async function loadLoggedInAccount() {
+  try {
+    const response = await fetch("/api/me");
+    const data = await response.json();
+
+    if (!data.ok || !data.loggedIn || !data.player) {
+      renderLoggedOutAccount();
+      return;
+    }
+
+    renderLoggedInAccount(data.player);
+
+    currentUser = {
+      ...currentUser,
+      name: data.player.displayName || currentUser?.name,
+      avatarUrl: data.player.avatarUrl || currentUser?.avatarUrl || "",
+      databasePlayerId: data.player.id,
+      provider: data.player.provider,
+      providerUserId: data.player.providerUserId,
+    };
+
+    socket.emit("setUserIdentity", {
+      name: data.player.displayName,
+      avatarUrl: data.player.avatarUrl || "",
+      databasePlayerId: data.player.id,
+      provider: data.player.provider,
+      providerUserId: data.player.providerUserId,
+      clientToken: getBrowserPlayerToken(),
+    });
+  } catch {
+    renderLoggedOutAccount();
+  }
+}
+
+function renderLoggedInAccount(player) {
+  if (!accountPanel) {
+    return;
+  }
+
+  accountStatus.textContent = `Signed in as ${player.displayName}`;
+  googleLoginLink.classList.add("hidden");
+  logoutBtn.classList.remove("hidden");
+}
+
+function renderLoggedOutAccount() {
+  if (!accountPanel) {
+    return;
+  }
+
+  accountStatus.textContent = "Playing as guest";
+  googleLoginLink.classList.remove("hidden");
+  logoutBtn.classList.add("hidden");
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch("/auth/logout", {
+        method: "POST",
+      });
+
+      window.location.reload();
+    } catch {
+      showToast("Could not log out.", "error");
+    }
+  });
+}
+
+registerServiceWorker();
 
 registerServiceWorker();

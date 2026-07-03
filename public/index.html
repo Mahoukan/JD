@@ -1,300 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Trivia Showdown</title>
+    <title>Trivia Showdown</title>
 
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="style.css?v=__BUILD_VERSION__" />
-</head>
-<body>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="style.css?v=__BUILD_VERSION__" />
+  </head>
+  <body>
 
-  <main class="app">
+    <main class="app">
 
-    <section id="role-screen" class="screen card">
-      <h1>Trivia Showdown</h1>
-      <h2>Welcome to Trivia Showdown!</h2>
-      <p>Choose how you'd like to join.</p>
-
-      <div id="lobby-panel" class="lobby-panel hidden">
-        <button id="create-lobby-btn" class="primary-button" type="button">Create Lobby</button>
-        <form id="join-lobby-form" class="join-lobby-form">
-          <label for="join-lobby-code">Lobby Code</label>
-          <div class="join-lobby-row">
-            <input id="join-lobby-code" autocomplete="off" inputmode="text" maxlength="6" placeholder="AB123" />
-            <button class="secondary-button" type="submit">Join</button>
-          </div>
-        </form>
-        <p id="lobby-status" class="lobby-status">Create a lobby as host, or join with a code.</p>
-      </div>
-
-      <div class="role-list">
-        <button id="host-btn" class="role-card">
-          <span class="role-icon">👑</span>
-          <span class="role-title">Host</span>
-          <span class="role-description">Control the game</span>
-        </button>
-
-        <button id="player-btn" class="role-card">
-          <span class="role-icon">🎮</span>
-          <span class="role-title">Player</span>
-          <span class="role-description">Compete for points</span>
-        </button>
-
-        <button id="spectator-btn" class="role-card">
-          <span class="role-icon">👀</span>
-          <span class="role-title">Spectator</span>
-          <span class="role-description">Watch the game</span>
-        </button>
-      </div>
-
-      <div class="browser-name-actions hidden">
-        <button class="secondary-button browser-change-name-btn" type="button">Change Name</button>
-      </div>
-
-      <p id="message" class="message"></p>
-    </section>
-
-    <section id="waiting-room" class="screen card hidden">
-      <h1>Trivia Showdown</h1>
-      <h2 id="welcome-text">Welcome!</h2>
-      <p class="subtle">Waiting Room</p>
-
-      <div id="waiting-lobby-panel" class="waiting-lobby-panel hidden">
-        <span>Lobby <strong id="current-lobby-code">-----</strong></span>
-        <button id="copy-lobby-code-btn" class="secondary-button" type="button">Copy Lobby Code</button>
-      </div>
-
-      <div class="room-grid">
-        <div class="room-section">
-          <h3>👑 Host</h3>
-          <ul id="host-list"></ul>
+      <section id="role-screen" class="screen card">
+        <h1>Trivia Showdown</h1>
+        <h2>Welcome to Trivia Showdown!</h2>
+        <p>Choose how you'd like to join.</p>
+        <div id="account-panel" class="account-panel">
+          <p id="account-status" class="account-status">Playing as guest</p>
+          <a class="primary-button account-login-link"
+            href="/auth/google">Continue with Google</a>
+          <button id="logout-btn" class="secondary-button hidden"
+            type="button">Log Out</button>
         </div>
-
-        <div class="room-section">
-          <h3>🎮 Players</h3>
-          <ul id="player-list"></ul>
-        </div>
-
-        <div class="room-section">
-          <h3>👀 Spectators</h3>
-          <ul id="spectator-list"></ul>
-        </div>
-      </div>
-
-      <div class="board-selection">
-        <!-- TODO: Rename legacy board/jeopardy/clue/answer/wager/daily-double DOM IDs and CSS classes in a follow-up pass. -->
-        <div id="board-selector-panel" class="board-selector-panel hidden">
-          <label for="board-select">Grid</label>
-          <select id="board-select"></select>
-        </div>
-        <p id="selected-board-name" class="selected-board-name">Selected grid: Loading...</p>
-      </div>
-
-      <div id="host-controls" class="host-controls hidden">
-        <button id="start-game-btn" class="primary-button">Start Game</button>
-        <button id="import-board-btn" class="secondary-button" type="button">Import Grid</button>
-        <input id="import-board-input" class="hidden" type="file" accept="application/json,.json" />
-      </div>
-
-      <p id="waiting-message" class="waiting-message">
-        Waiting for the host to start...
-      </p>
-
-      <button id="change-role-btn" class="secondary-button">Change Role</button>
-      <button class="secondary-button quit-game-btn" type="button">Quit to Main Screen</button>
-      <button class="secondary-button browser-change-name-btn hidden" type="button">Change Name</button>
-    </section>
-
-    <section id="game-screen" class="screen card hidden">
-      <div class="game-header">
-        <div>
-          <h1>Trivia Showdown</h1>
-          <p id="round-status" class="round-status">Trivia Showdown</p>
-          <p id="board-status" class="subtle">Loading grid...</p>
-        </div>
-        <div class="board-actions">
-          <button id="start-double-jeopardy-btn" class="secondary-button board-action-button hidden">Start Power Round</button>
-          <button id="start-final-jeopardy-btn" class="secondary-button board-action-button hidden">Start Face-a-Face</button>
-          <button id="reset-board-btn" class="secondary-button board-action-button hidden">Reset Grid</button>
-          <button class="secondary-button board-action-button quit-game-btn" type="button">Quit to Main</button>
-        </div>
-      </div>
-
-      <div class="board-layout">
-        <div id="jeopardy-board" class="jeopardy-board" aria-label="Trivia Showdown grid"></div>
-
-        <aside class="score-panel" aria-label="Player scores">
-          <h2>Scores</h2>
-          <p id="current-turn-display" class="current-turn-display">Current Turn: None</p>
-          <div id="turn-controls" class="turn-controls hidden">
-            <label for="turn-player-select">Change Turn</label>
-            <div class="turn-control-row">
-              <select id="turn-player-select"></select>
-              <button id="set-turn-btn" class="score-edit-button" type="button">Set</button>
+        <div id="lobby-panel" class="lobby-panel hidden">
+          <button id="create-lobby-btn" class="primary-button"
+            type="button">Create Lobby</button>
+          <form id="join-lobby-form" class="join-lobby-form">
+            <label for="join-lobby-code">Lobby Code</label>
+            <div class="join-lobby-row">
+              <input id="join-lobby-code" autocomplete="off" inputmode="text"
+                maxlength="6" placeholder="AB123" />
+              <button class="secondary-button" type="submit">Join</button>
             </div>
+          </form>
+          <p id="lobby-status" class="lobby-status">Create a lobby as host, or
+            join with a code.</p>
+        </div>
+
+        <div class="role-list">
+          <button id="host-btn" class="role-card">
+            <span class="role-icon">👑</span>
+            <span class="role-title">Host</span>
+            <span class="role-description">Control the game</span>
+          </button>
+
+          <button id="player-btn" class="role-card">
+            <span class="role-icon">🎮</span>
+            <span class="role-title">Player</span>
+            <span class="role-description">Compete for points</span>
+          </button>
+
+          <button id="spectator-btn" class="role-card">
+            <span class="role-icon">👀</span>
+            <span class="role-title">Spectator</span>
+            <span class="role-description">Watch the game</span>
+          </button>
+        </div>
+
+        <div class="browser-name-actions hidden">
+          <button class="secondary-button browser-change-name-btn"
+            type="button">Change Name</button>
+        </div>
+
+        <p id="message" class="message"></p>
+      </section>
+
+      <section id="waiting-room" class="screen card hidden">
+        <h1>Trivia Showdown</h1>
+        <h2 id="welcome-text">Welcome!</h2>
+        <p class="subtle">Waiting Room</p>
+
+        <div id="waiting-lobby-panel" class="waiting-lobby-panel hidden">
+          <span>Lobby <strong id="current-lobby-code">-----</strong></span>
+          <button id="copy-lobby-code-btn" class="secondary-button"
+            type="button">Copy Lobby Code</button>
+        </div>
+
+        <div class="room-grid">
+          <div class="room-section">
+            <h3>👑 Host</h3>
+            <ul id="host-list"></ul>
           </div>
-          <ul id="score-list" class="score-list"></ul>
-        </aside>
-      </div>
-    </section>
 
-    <section id="question-screen" class="screen card hidden">
-      <div class="question-top-actions">
-        <button class="secondary-button quit-game-btn question-quit-btn" type="button">Main Menu</button>
-      </div>
-      <p id="question-category" class="question-category"></p>
-      <h1 id="question-value" class="question-value"></h1>
-      <p id="question-clue" class="question-clue"></p>
-      <button id="clue-image-thumb-btn" class="clue-image-thumb hidden" type="button" aria-label="Open prompt image">
-        <img id="clue-image-thumb" alt="Prompt image" />
-      </button>
-      <div id="timer-panel" class="timer-panel">
-        <span id="timer-label" class="timer-label">Reading time</span>
-        <span id="timer-value" class="timer-value">0.0</span>
-        <span id="timer-status" class="timer-status">Paused</span>
-      </div>
-      <p id="buzzing-status" class="buzzing-status">Read the prompt...</p>
-      <div id="host-answer-panel" class="host-answer-panel hidden">
-        <p class="host-answer-label">Host Guess</p>
-        <p id="host-answer-text" class="host-answer-text"></p>
-      </div>
-      <div id="question-answer" class="question-answer answer-hidden">Guess hidden</div>
-      <p id="result-message" class="result-message"></p>
-      <p id="buzz-message" class="buzz-message"></p>
-      <ul id="buzz-list" class="buzz-list"></ul>
-      <p id="locked-out-message" class="locked-out-message"></p>
+          <div class="room-section">
+            <h3>🎮 Players</h3>
+            <ul id="player-list"></ul>
+          </div>
 
-      <div id="player-buzz-controls" class="buzz-controls hidden">
-        <button id="buzz-btn" class="buzz-button">BUZZ</button>
-      </div>
-
-      <div id="question-host-controls" class="host-controls hidden">
-        <div id="timer-controls" class="timer-controls">
-          <button id="pause-timer-btn" class="secondary-button">Pause Timer</button>
-          <button id="resume-timer-btn" class="secondary-button">Resume Timer</button>
-          <button id="add-time-btn" class="secondary-button">Add 5 Seconds</button>
+          <div class="room-section">
+            <h3>👀 Spectators</h3>
+            <ul id="spectator-list"></ul>
+          </div>
         </div>
-        <div class="judge-controls">
-          <button id="correct-btn" class="judge-button correct-button">Correct</button>
-          <button id="incorrect-btn" class="judge-button incorrect-button">Incorrect</button>
+
+        <div class="board-selection">
+          <!-- TODO: Rename legacy board/jeopardy/clue/answer/wager/daily-double DOM IDs and CSS classes in a follow-up pass. -->
+          <div id="board-selector-panel" class="board-selector-panel hidden">
+            <label for="board-select">Grid</label>
+            <select id="board-select"></select>
+          </div>
+          <p id="selected-board-name" class="selected-board-name">Selected grid:
+            Loading...</p>
         </div>
-        <button id="reveal-answer-btn" class="primary-button">Reveal Guess</button>
-        <button id="back-to-board-btn" class="primary-button">Back to Grid</button>
-      </div>
-    </section>
 
-    <section id="daily-double-screen" class="screen card hidden">
-      <p class="daily-double-kicker">Risk Tile!</p>
-      <h1>Risk Tile</h1>
-      <p id="daily-double-detail" class="daily-double-detail"></p>
+        <div id="host-controls" class="host-controls hidden">
+          <button id="start-game-btn" class="primary-button">Start Game</button>
+          <button id="import-board-btn" class="secondary-button"
+            type="button">Import Grid</button>
+          <input id="import-board-input" class="hidden" type="file"
+            accept="application/json,.json" />
+        </div>
 
-      <div id="daily-double-player-panel" class="daily-double-panel hidden">
-        <label for="daily-double-player-select">Player</label>
-        <select id="daily-double-player-select"></select>
-        <button id="daily-double-player-btn" class="primary-button" type="button">Choose Player</button>
-      </div>
+        <p id="waiting-message" class="waiting-message">
+          Waiting for the host to start...
+        </p>
 
-      <form id="daily-double-wager-form" class="daily-double-panel hidden">
-        <label for="daily-double-wager-input">Bet</label>
-        <input id="daily-double-wager-input" type="number" step="1" min="0" inputmode="numeric" />
-        <p id="daily-double-wager-error" class="daily-double-error" aria-live="polite"></p>
-        <button id="daily-double-wager-btn" class="primary-button" type="submit">Submit Bet</button>
+        <button id="change-role-btn" class="secondary-button">Change
+          Role</button>
+        <button class="secondary-button quit-game-btn" type="button">Quit to
+          Main Screen</button>
+        <button class="secondary-button browser-change-name-btn hidden"
+          type="button">Change Name</button>
+      </section>
+
+      <section id="game-screen" class="screen card hidden">
+        <div class="game-header">
+          <div>
+            <h1>Trivia Showdown</h1>
+            <p id="round-status" class="round-status">Trivia Showdown</p>
+            <p id="board-status" class="subtle">Loading grid...</p>
+          </div>
+          <div class="board-actions">
+            <button id="start-double-jeopardy-btn"
+              class="secondary-button board-action-button hidden">Start Power
+              Round</button>
+            <button id="start-final-jeopardy-btn"
+              class="secondary-button board-action-button hidden">Start
+              Face-a-Face</button>
+            <button id="reset-board-btn"
+              class="secondary-button board-action-button hidden">Reset
+              Grid</button>
+            <button class="secondary-button board-action-button quit-game-btn"
+              type="button">Quit to Main</button>
+          </div>
+        </div>
+
+        <div class="board-layout">
+          <div id="jeopardy-board" class="jeopardy-board"
+            aria-label="Trivia Showdown grid"></div>
+
+          <aside class="score-panel" aria-label="Player scores">
+            <h2>Scores</h2>
+            <p id="current-turn-display" class="current-turn-display">Current
+              Turn: None</p>
+            <div id="turn-controls" class="turn-controls hidden">
+              <label for="turn-player-select">Change Turn</label>
+              <div class="turn-control-row">
+                <select id="turn-player-select"></select>
+                <button id="set-turn-btn" class="score-edit-button"
+                  type="button">Set</button>
+              </div>
+            </div>
+            <ul id="score-list" class="score-list"></ul>
+          </aside>
+        </div>
+      </section>
+
+      <section id="question-screen" class="screen card hidden">
+        <div class="question-top-actions">
+          <button class="secondary-button quit-game-btn question-quit-btn"
+            type="button">Main Menu</button>
+        </div>
+        <p id="question-category" class="question-category"></p>
+        <h1 id="question-value" class="question-value"></h1>
+        <p id="question-clue" class="question-clue"></p>
+        <button id="clue-image-thumb-btn" class="clue-image-thumb hidden"
+          type="button" aria-label="Open prompt image">
+          <img id="clue-image-thumb" alt="Prompt image" />
+        </button>
+        <div id="timer-panel" class="timer-panel">
+          <span id="timer-label" class="timer-label">Reading time</span>
+          <span id="timer-value" class="timer-value">0.0</span>
+          <span id="timer-status" class="timer-status">Paused</span>
+        </div>
+        <p id="buzzing-status" class="buzzing-status">Read the prompt...</p>
+        <div id="host-answer-panel" class="host-answer-panel hidden">
+          <p class="host-answer-label">Host Guess</p>
+          <p id="host-answer-text" class="host-answer-text"></p>
+        </div>
+        <div id="question-answer" class="question-answer answer-hidden">Guess
+          hidden</div>
+        <p id="result-message" class="result-message"></p>
+        <p id="buzz-message" class="buzz-message"></p>
+        <ul id="buzz-list" class="buzz-list"></ul>
+        <p id="locked-out-message" class="locked-out-message"></p>
+
+        <div id="player-buzz-controls" class="buzz-controls hidden">
+          <button id="buzz-btn" class="buzz-button">BUZZ</button>
+        </div>
+
+        <div id="question-host-controls" class="host-controls hidden">
+          <div id="timer-controls" class="timer-controls">
+            <button id="pause-timer-btn" class="secondary-button">Pause
+              Timer</button>
+            <button id="resume-timer-btn" class="secondary-button">Resume
+              Timer</button>
+            <button id="add-time-btn" class="secondary-button">Add 5
+              Seconds</button>
+          </div>
+          <div class="judge-controls">
+            <button id="correct-btn"
+              class="judge-button correct-button">Correct</button>
+            <button id="incorrect-btn"
+              class="judge-button incorrect-button">Incorrect</button>
+          </div>
+          <button id="reveal-answer-btn" class="primary-button">Reveal
+            Guess</button>
+          <button id="back-to-board-btn" class="primary-button">Back to
+            Grid</button>
+        </div>
+      </section>
+
+      <section id="daily-double-screen" class="screen card hidden">
+        <p class="daily-double-kicker">Risk Tile!</p>
+        <h1>Risk Tile</h1>
+        <p id="daily-double-detail" class="daily-double-detail"></p>
+
+        <div id="daily-double-player-panel" class="daily-double-panel hidden">
+          <label for="daily-double-player-select">Player</label>
+          <select id="daily-double-player-select"></select>
+          <button id="daily-double-player-btn" class="primary-button"
+            type="button">Choose Player</button>
+        </div>
+
+        <form id="daily-double-wager-form" class="daily-double-panel hidden">
+          <label for="daily-double-wager-input">Bet</label>
+          <input id="daily-double-wager-input" type="number" step="1" min="0"
+            inputmode="numeric" />
+          <p id="daily-double-wager-error" class="daily-double-error"
+            aria-live="polite"></p>
+          <button id="daily-double-wager-btn" class="primary-button"
+            type="submit">Submit Bet</button>
+        </form>
+
+        <p id="daily-double-waiting" class="daily-double-waiting"></p>
+        <button class="secondary-button quit-game-btn in-round-quit-btn"
+          type="button">Quit to Main Screen</button>
+      </section>
+
+      <section id="final-jeopardy-screen" class="screen card hidden">
+        <p class="final-kicker">Face-a-Face</p>
+        <h1>Face-a-Face</h1>
+        <p id="final-category" class="final-category"></p>
+        <p id="final-clue" class="final-clue hidden"></p>
+        <p id="final-status" class="final-status"></p>
+
+        <form id="final-wager-form" class="final-panel hidden">
+          <label for="final-wager-input">Bet</label>
+          <input id="final-wager-input" type="number" step="1" min="0"
+            inputmode="numeric" />
+          <p id="final-wager-error" class="final-error" aria-live="polite"></p>
+          <button id="final-wager-btn" class="primary-button"
+            type="submit">Submit Bet</button>
+        </form>
+
+        <form id="final-answer-form" class="final-panel hidden">
+          <label for="final-answer-input">Guess</label>
+          <textarea id="final-answer-input" rows="3"></textarea>
+          <p id="final-answer-error" class="final-error" aria-live="polite"></p>
+          <button id="final-answer-btn" class="primary-button"
+            type="submit">Submit Guess</button>
+        </form>
+
+        <div id="final-host-panel" class="final-panel hidden">
+          <h2>Host Controls</h2>
+          <ul id="final-status-list" class="final-status-list"></ul>
+          <button id="reveal-final-clue-btn" class="primary-button hidden"
+            type="button">Reveal Face-a-Face Prompt</button>
+          <button id="start-final-review-btn" class="primary-button hidden"
+            type="button">Start Review</button>
+          <button id="show-final-results-btn" class="primary-button hidden"
+            type="button">Show Final Results</button>
+        </div>
+
+        <div id="final-review-panel" class="final-review-panel hidden"></div>
+        <div id="final-rankings" class="final-results hidden"></div>
+        <button class="secondary-button quit-game-btn in-round-quit-btn"
+          type="button">Quit to Main Screen</button>
+      </section>
+
+    </main>
+
+    <div id="score-edit-modal" class="modal-backdrop hidden" role="dialog"
+      aria-modal="true" aria-labelledby="score-edit-title">
+      <form id="score-edit-form" class="score-edit-modal">
+        <h2 id="score-edit-title">Edit Score</h2>
+        <p id="score-edit-player-name" class="score-edit-player"></p>
+        <label class="score-edit-label" for="score-edit-input">Score</label>
+        <input id="score-edit-input" class="score-edit-input" type="number"
+          step="1" inputmode="numeric" />
+        <p id="score-edit-error" class="score-edit-error"
+          aria-live="polite"></p>
+        <div class="score-edit-actions">
+          <button id="score-edit-cancel-btn" class="secondary-button"
+            type="button">Cancel</button>
+          <button id="score-edit-save-btn" class="primary-button"
+            type="submit">Save</button>
+        </div>
       </form>
-
-      <p id="daily-double-waiting" class="daily-double-waiting"></p>
-      <button class="secondary-button quit-game-btn in-round-quit-btn" type="button">Quit to Main Screen</button>
-    </section>
-
-    <section id="final-jeopardy-screen" class="screen card hidden">
-      <p class="final-kicker">Face-a-Face</p>
-      <h1>Face-a-Face</h1>
-      <p id="final-category" class="final-category"></p>
-      <p id="final-clue" class="final-clue hidden"></p>
-      <p id="final-status" class="final-status"></p>
-
-      <form id="final-wager-form" class="final-panel hidden">
-        <label for="final-wager-input">Bet</label>
-        <input id="final-wager-input" type="number" step="1" min="0" inputmode="numeric" />
-        <p id="final-wager-error" class="final-error" aria-live="polite"></p>
-        <button id="final-wager-btn" class="primary-button" type="submit">Submit Bet</button>
-      </form>
-
-      <form id="final-answer-form" class="final-panel hidden">
-        <label for="final-answer-input">Guess</label>
-        <textarea id="final-answer-input" rows="3"></textarea>
-        <p id="final-answer-error" class="final-error" aria-live="polite"></p>
-        <button id="final-answer-btn" class="primary-button" type="submit">Submit Guess</button>
-      </form>
-
-      <div id="final-host-panel" class="final-panel hidden">
-        <h2>Host Controls</h2>
-        <ul id="final-status-list" class="final-status-list"></ul>
-        <button id="reveal-final-clue-btn" class="primary-button hidden" type="button">Reveal Face-a-Face Prompt</button>
-        <button id="start-final-review-btn" class="primary-button hidden" type="button">Start Review</button>
-        <button id="show-final-results-btn" class="primary-button hidden" type="button">Show Final Results</button>
-      </div>
-
-      <div id="final-review-panel" class="final-review-panel hidden"></div>
-      <div id="final-rankings" class="final-results hidden"></div>
-      <button class="secondary-button quit-game-btn in-round-quit-btn" type="button">Quit to Main Screen</button>
-    </section>
-
-  </main>
-
-  <div id="score-edit-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="score-edit-title">
-    <form id="score-edit-form" class="score-edit-modal">
-      <h2 id="score-edit-title">Edit Score</h2>
-      <p id="score-edit-player-name" class="score-edit-player"></p>
-      <label class="score-edit-label" for="score-edit-input">Score</label>
-      <input id="score-edit-input" class="score-edit-input" type="number" step="1" inputmode="numeric" />
-      <p id="score-edit-error" class="score-edit-error" aria-live="polite"></p>
-      <div class="score-edit-actions">
-        <button id="score-edit-cancel-btn" class="secondary-button" type="button">Cancel</button>
-        <button id="score-edit-save-btn" class="primary-button" type="submit">Save</button>
-      </div>
-    </form>
-  </div>
-  <div id="confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-    <div class="confirm-modal">
-      <h2 id="confirm-title">Confirm</h2>
-      <p id="confirm-message"></p>
-      <div class="confirm-actions">
-        <button id="confirm-cancel-btn" class="secondary-button" type="button">Cancel</button>
-        <button id="confirm-confirm-btn" class="primary-button" type="button">Confirm</button>
+    </div>
+    <div id="confirm-modal" class="modal-backdrop hidden" role="dialog"
+      aria-modal="true" aria-labelledby="confirm-title">
+      <div class="confirm-modal">
+        <h2 id="confirm-title">Confirm</h2>
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+          <button id="confirm-cancel-btn" class="secondary-button"
+            type="button">Cancel</button>
+          <button id="confirm-confirm-btn" class="primary-button"
+            type="button">Confirm</button>
+        </div>
       </div>
     </div>
-  </div>
-  <div id="browser-name-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="browser-name-title">
-    <form id="browser-name-form" class="browser-name-modal">
-      <h2 id="browser-name-title">Enter Your Name</h2>
-      <p class="browser-name-copy">Choose the display name other players will see.</p>
-      <label class="browser-name-label" for="browser-name-input">Display name</label>
-      <input id="browser-name-input" class="browser-name-input" type="text" maxlength="40" autocomplete="nickname" />
-      <p id="browser-name-error" class="browser-name-error" aria-live="polite"></p>
-      <div class="browser-name-actions-row">
-        <button id="browser-name-cancel-btn" class="secondary-button" type="button">Cancel</button>
-        <button class="primary-button" type="submit">Save</button>
-      </div>
-    </form>
-  </div>
-  <div id="image-lightbox" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Prompt image preview">
-    <div class="image-lightbox">
-      <button id="image-lightbox-close-btn" class="image-lightbox-close" type="button" aria-label="Close image preview">Close</button>
-      <img id="image-lightbox-img" alt="Prompt image preview" />
+    <div id="browser-name-modal" class="modal-backdrop hidden" role="dialog"
+      aria-modal="true" aria-labelledby="browser-name-title">
+      <form id="browser-name-form" class="browser-name-modal">
+        <h2 id="browser-name-title">Enter Your Name</h2>
+        <p class="browser-name-copy">Choose the display name other players will
+          see.</p>
+        <label class="browser-name-label" for="browser-name-input">Display
+          name</label>
+        <input id="browser-name-input" class="browser-name-input" type="text"
+          maxlength="40" autocomplete="nickname" />
+        <p id="browser-name-error" class="browser-name-error"
+          aria-live="polite"></p>
+        <div class="browser-name-actions-row">
+          <button id="browser-name-cancel-btn" class="secondary-button"
+            type="button">Cancel</button>
+          <button class="primary-button" type="submit">Save</button>
+        </div>
+      </form>
     </div>
-  </div>
-  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-  <div id="build-badge" class="build-badge">Build __BUILD_VERSION__</div>
+    <div id="image-lightbox" class="modal-backdrop hidden" role="dialog"
+      aria-modal="true" aria-label="Prompt image preview">
+      <div class="image-lightbox">
+        <button id="image-lightbox-close-btn" class="image-lightbox-close"
+          type="button" aria-label="Close image preview">Close</button>
+        <img id="image-lightbox-img" alt="Prompt image preview" />
+      </div>
+    </div>
+    <div id="toast-container" class="toast-container" aria-live="polite"
+      aria-atomic="true"></div>
+    <div id="build-badge" class="build-badge">Build __BUILD_VERSION__</div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
     window.BUILD_VERSION = "__BUILD_VERSION__";
     console.log("Discord Trivia Showdown Build:", window.BUILD_VERSION);
   </script>
-  <script src="discord-sdk.js?v=__BUILD_VERSION__"></script>
-  <script src="app.js?v=__BUILD_VERSION__"></script>
-</body>
+    <script src="discord-sdk.js?v=__BUILD_VERSION__"></script>
+    <script src="app.js?v=__BUILD_VERSION__"></script>
+  </body>
 </html>

@@ -12,6 +12,7 @@ import {
 } from "./src/grid-normalizer.js";
 import { testDatabaseConnection } from "./src/db.js";
 import { sessionMiddleware } from "./src/session.js";
+import { passport, setupPassport } from "./src/auth.js";
 const app = express();
 const server = http.createServer(app);
 
@@ -35,10 +36,49 @@ const initialGrid = loadGridByFilename(selectedGrid.filename) ?? createEmptyGrid
 
 app.set("trust proxy", 1);
 
+setupPassport();
+
 app.use(express.json());
 app.use(sessionMiddleware);
+app.use(passport.initialize());
+app.use(passport.session());
 
 io.engine.use(sessionMiddleware);
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  }),
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/?login=failed",
+  }),
+  (req, res) => {
+    req.session.player = req.user;
+    res.redirect("/");
+  },
+);
+
+app.post("/auth/logout", (req, res) => {
+  req.logout(() => {
+    req.session.destroy(() => {
+      res.clearCookie("trivia.sid");
+      res.json({ ok: true });
+    });
+  });
+});
+
+app.get("/api/me", (req, res) => {
+  res.json({
+    ok: true,
+    loggedIn: Boolean(req.session.player),
+    player: req.session.player || null,
+  });
+});
 app.get("/api/db-health", async (req, res) => {
   try {
     const result = await testDatabaseConnection();

@@ -1629,3 +1629,28 @@ button:disabled,
     scroll-behavior: auto !important;
   }
 }
+.account-panel {
+  display: grid;
+  gap: 8px;
+  max-width: 360px;
+  margin: 0 auto 18px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(0, 229, 255, 0.08), transparent 48%),
+    var(--surface-2);
+}
+
+.account-status {
+  margin: 0;
+  color: var(--muted-2);
+  font-weight: 850;
+}
+
+.account-login-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
