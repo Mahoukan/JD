@@ -177,6 +177,16 @@ Notes:
 
 The repository includes several playable grids in `public/boards/`, including `Massive Mixed Trivia.json`, `academic-bowl.json`, `General-Knowledge.json`, and themed classroom or pop-culture sets.
 
+## PWA Notes
+
+- The app can be installed from supported browsers.
+- Live games require internet; offline mode only shows a reconnect message.
+- The service worker does not cache API, Socket.IO, auth, `/version`, or board JSON routes.
+- If updates seem stuck, refresh the page or clear site data.
+- Test installability in Chrome or Edge DevTools under Application.
+- Check that manifest icons are not broken and that the service worker registers.
+- A maskable icon can be added later if a suitable `icon-512-maskable.png` asset is created.
+
 ## Project Structure
 
 ```text
@@ -186,8 +196,11 @@ The repository includes several playable grids in `public/boards/`, including `M
 |   |-- media/
 |   |-- app.js
 |   |-- discord-sdk.js
+|   |-- icon-192.png
+|   |-- icon-512.png
 |   |-- index.html
 |   |-- manifest.json
+|   |-- offline.html
 |   |-- privacy.html
 |   |-- service-worker.js
 |   |-- style.css

@@ -213,15 +213,66 @@ function registerServiceWorker() {
 
   try {
     const buildVersion = encodeURIComponent(window.BUILD_VERSION || "dev");
+    let reloadForServiceWorkerUpdate = false;
     navigator.serviceWorker
       .register(`/service-worker.js?v=${buildVersion}`)
+      .then((registration) => {
+        let updatePromptShown = false;
+
+        const promptForUpdate = (waitingWorker = registration.waiting) => {
+          if (updatePromptShown || !waitingWorker) {
+            return;
+          }
+
+          updatePromptShown = true;
+          showToast("Update available. Refresh to update.", "info", {
+            actionLabel: "Refresh",
+            durationMs: 12000,
+            onAction: () => {
+              reloadForServiceWorkerUpdate = true;
+              waitingWorker.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        };
+
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          promptForUpdate(registration.waiting);
+        }
+
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+
+          if (!newWorker) {
+            return;
+          }
+
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              promptForUpdate(newWorker);
+            }
+          });
+        });
+      })
       .catch(() => {
         // PWA support is optional; Discord Activities and browsers keep working.
       });
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!reloadForServiceWorkerUpdate) {
+        return;
+      }
+
+      reloadForServiceWorkerUpdate = false;
+      window.location.reload();
+    });
   } catch {
     // Ignore unsupported or restricted embedded browser environments.
   }
 }
+
+window.addEventListener("appinstalled", () => {
+  showToast("Trivia Showdown installed.", "success");
+});
 
 function initialiseBrowserIdentity() {
   showBrowserNameControls();
@@ -813,10 +864,26 @@ function getDiscordDefaultAvatarUrl(user) {
   }
 }
 
-function showToast(messageText, type = "info") {
+function showToast(messageText, type = "info", options = {}) {
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
-  toast.textContent = messageText;
+
+  const messageSpan = document.createElement("span");
+  messageSpan.textContent = messageText;
+  toast.appendChild(messageSpan);
+
+  if (options.actionLabel && typeof options.onAction === "function") {
+    const actionButton = document.createElement("button");
+    actionButton.className = "toast-action";
+    actionButton.type = "button";
+    actionButton.textContent = options.actionLabel;
+    actionButton.addEventListener("click", () => {
+      options.onAction();
+      toast.remove();
+    });
+    toast.appendChild(actionButton);
+  }
+
   toastContainer.appendChild(toast);
 
   setTimeout(() => {
@@ -828,7 +895,7 @@ function showToast(messageText, type = "info") {
       },
       { once: true },
     );
-  }, 3500);
+  }, options.durationMs || 3500);
 }
 
 function showConfirm({

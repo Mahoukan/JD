@@ -1492,6 +1492,11 @@ a.secondary-button {
 }
 
 .toast {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
   border: 1px solid var(--border);
   border-left-width: 5px;
   border-radius: var(--radius-sm);
@@ -1524,6 +1529,18 @@ a.secondary-button {
 .toast-exiting {
   opacity: 0;
   transform: translateY(-6px);
+}
+
+.toast-action {
+  min-height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 9px;
+  background: #121822;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .empty-score {

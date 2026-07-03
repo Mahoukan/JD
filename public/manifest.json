@@ -1,12 +1,12 @@
 {
   "name": "Trivia Showdown",
   "short_name": "Trivia",
-  "description": "A live multiplayer trivia game for browsers and Discord Activities.",
+  "description": "Host and play live multiplayer trivia games.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#111318",
-  "theme_color": "#5865f2",
+  "background_color": "#070812",
+  "theme_color": "#00e5ff",
   "icons": [
     {
       "src": "/icon-192.png",
