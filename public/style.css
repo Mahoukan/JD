@@ -1717,6 +1717,19 @@ button:disabled,
   margin: 0;
 }
 
+.stats-profile {
+  display: grid;
+  gap: 9px;
+}
+
+.stats-profile-name {
+  color: var(--text);
+}
+
+.stats-profile-identity {
+  display: grid;
+}
+
 .stats-row,
 .stats-metric {
   margin: 0;
@@ -1727,6 +1740,34 @@ button:disabled,
   color: var(--muted-2);
   font-size: 13px;
   font-weight: 800;
+}
+
+.recent-match-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.recent-match-summary {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.recent-match-summary strong {
+  color: var(--text);
+}
+
+.recent-match-summary span {
+  color: var(--muted);
+}
+
+.stats-row-button {
+  width: auto;
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 12px;
 }
 
 .stats-metric {
@@ -1753,5 +1794,80 @@ button:disabled,
 @media (min-width: 900px) {
   .stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.match-detail-modal {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 720px);
+  max-height: calc(100vh - 28px);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+}
+
+.match-detail-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.match-detail-header h2,
+.match-detail-summary h3,
+.match-detail-content h3,
+.match-detail-summary p,
+.match-detail-face p,
+.match-detail-face-players p {
+  margin: 0;
+}
+
+.match-detail-header .secondary-button {
+  width: auto;
+  min-height: 38px;
+  padding: 8px 12px;
+}
+
+.match-detail-content,
+.match-detail-summary,
+.match-detail-face,
+.match-detail-face-players {
+  display: grid;
+  gap: 8px;
+}
+
+.match-detail-rankings {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+}
+
+.match-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.match-detail-row > span:last-child,
+.match-detail-summary p,
+.match-detail-face p,
+.match-detail-face-players p {
+  color: var(--muted-2);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .recent-match-row,
+  .match-detail-row,
+  .match-detail-header {
+    grid-template-columns: 1fr;
   }
 }

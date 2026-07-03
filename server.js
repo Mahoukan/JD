@@ -199,7 +199,7 @@ app.get("/api/matches/recent", async (req, res) => {
           m.id,
           m.grid_name,
           m.ended_at,
-          winner.display_name AS winner_name,
+          COALESCE(winner.display_name, winner_row.display_name) AS winner_name,
           COUNT(mp.match_id)::int AS player_count
         FROM matches m
         LEFT JOIN match_players winner
@@ -223,6 +223,203 @@ app.get("/api/matches/recent", async (req, res) => {
         error: "Could not load recent matches."
       });
     }
+  }
+});
+
+app.get("/api/matches/me/recent", async (req, res) => {
+  const playerId = req.session.player?.id;
+
+  if (!playerId) {
+    res.json({
+      ok: true,
+      loggedIn: false,
+      matches: []
+    });
+    return;
+  }
+
+  try {
+    const result = await query(
+      `
+        SELECT
+          m.id AS match_id,
+          m.grid_name,
+          m.ended_at,
+          winner.display_name AS winner_name,
+          COUNT(mp_all.match_id)::int AS player_count,
+          my_row.final_score AS my_score,
+          my_row.placement AS my_placement,
+          my_row.result AS my_result
+        FROM match_players my_row
+        JOIN matches m ON m.id = my_row.match_id
+        LEFT JOIN players winner ON winner.id = m.winner_player_id
+        LEFT JOIN match_players winner_row
+          ON winner_row.match_id = m.id
+          AND winner_row.placement = 1
+        LEFT JOIN match_players mp_all ON mp_all.match_id = m.id
+        WHERE my_row.player_id = $1
+        GROUP BY
+          m.id,
+          m.grid_name,
+          m.ended_at,
+          winner.display_name,
+          winner_row.display_name,
+          my_row.final_score,
+          my_row.placement,
+          my_row.result
+        ORDER BY m.ended_at DESC
+        LIMIT 10
+      `,
+      [playerId]
+    );
+
+    res.json({
+      ok: true,
+      loggedIn: true,
+      matches: result.rows.map(formatPlayerRecentMatchRow)
+    });
+  } catch (error) {
+    console.error("Player recent matches query failed:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Could not load your recent matches."
+    });
+  }
+});
+
+app.get("/api/matches/:matchId", async (req, res) => {
+  const playerId = req.session.player?.id;
+
+  if (!playerId) {
+    res.status(401).json({
+      ok: false,
+      error: "Sign in to view match details."
+    });
+    return;
+  }
+
+  const matchId = sanitizePlainText(req.params.matchId, 80);
+
+  if (!matchId) {
+    res.status(400).json({
+      ok: false,
+      error: "Invalid match."
+    });
+    return;
+  }
+
+  try {
+    const participation = await query(
+      `
+        SELECT 1
+        FROM match_players
+        WHERE match_id = $1
+          AND player_id = $2
+        LIMIT 1
+      `,
+      [matchId, playerId]
+    );
+
+    if (!participation.rows[0]) {
+      res.status(403).json({
+        ok: false,
+        error: "You cannot view this match."
+      });
+      return;
+    }
+
+    const [matchResult, playersResult, faceAFaceResult, faceAFacePlayersResult] =
+      await Promise.all([
+        query(
+          `
+            SELECT
+              m.id,
+              m.grid_name,
+              m.ended_at,
+              COALESCE(winner.display_name, winner_row.display_name) AS winner_name
+            FROM matches m
+            LEFT JOIN players winner ON winner.id = m.winner_player_id
+            LEFT JOIN match_players winner_row
+              ON winner_row.match_id = m.id
+              AND winner_row.placement = 1
+            WHERE m.id = $1
+            LIMIT 1
+          `,
+          [matchId]
+        ),
+        query(
+          `
+            SELECT
+              display_name,
+              avatar_url,
+              final_score,
+              placement,
+              result
+            FROM match_players
+            WHERE match_id = $1
+            ORDER BY placement ASC, final_score DESC
+          `,
+          [matchId]
+        ),
+        query(
+          `
+            SELECT category, prompt, guess_answer
+            FROM match_face_a_face
+            WHERE match_id = $1
+            LIMIT 1
+          `,
+          [matchId]
+        ),
+        query(
+          `
+            SELECT
+              display_name,
+              bet,
+              guess,
+              result,
+              score_change
+            FROM match_face_a_face_players
+            WHERE match_id = $1
+            ORDER BY display_name ASC
+          `,
+          [matchId]
+        )
+      ]);
+
+    const match = matchResult.rows[0];
+
+    if (!match) {
+      res.status(404).json({
+        ok: false,
+        error: "Match not found."
+      });
+      return;
+    }
+
+    res.json({
+      ok: true,
+      match: {
+        id: match.id,
+        gridName: match.grid_name || "",
+        endedAt: match.ended_at || null,
+        winnerName: match.winner_name || "",
+        players: playersResult.rows.map(formatMatchDetailPlayerRow),
+        faceAFace: faceAFaceResult.rows[0]
+          ? {
+              category: faceAFaceResult.rows[0].category || "",
+              prompt: faceAFaceResult.rows[0].prompt || "",
+              guessAnswer: faceAFaceResult.rows[0].guess_answer || ""
+            }
+          : null,
+        faceAFacePlayers: faceAFacePlayersResult.rows.map(formatMatchDetailFaceAFacePlayerRow)
+      }
+    });
+  } catch (error) {
+    console.error("Match detail query failed:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Could not load match details."
+    });
   }
 });
 
@@ -515,6 +712,39 @@ function formatRecentMatchRow(row) {
     endedAt: row.ended_at || row.endedAt || null,
     winnerName: row.winner_name || row.winnerName || "",
     playerCount: Number(row.player_count ?? row.playerCount ?? 0)
+  };
+}
+
+function formatPlayerRecentMatchRow(row) {
+  return {
+    id: row.match_id || row.matchId || "",
+    gridName: row.grid_name || row.gridName || "",
+    endedAt: row.ended_at || row.endedAt || null,
+    winnerName: row.winner_name || row.winnerName || "",
+    playerCount: Number(row.player_count ?? row.playerCount ?? 0),
+    myScore: Number(row.my_score ?? row.myScore ?? 0),
+    myPlacement: Number(row.my_placement ?? row.myPlacement ?? 0),
+    myResult: row.my_result || row.myResult || ""
+  };
+}
+
+function formatMatchDetailPlayerRow(row) {
+  return {
+    displayName: row.display_name || "",
+    avatarUrl: row.avatar_url || "",
+    finalScore: Number(row.final_score || 0),
+    placement: Number(row.placement || 0),
+    result: row.result || ""
+  };
+}
+
+function formatMatchDetailFaceAFacePlayerRow(row) {
+  return {
+    displayName: row.display_name || "",
+    bet: Number(row.bet || 0),
+    guess: row.guess || "",
+    result: row.result || "",
+    scoreChange: Number(row.score_change || 0)
   };
 }
 

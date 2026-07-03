@@ -138,6 +138,9 @@ const browserNameForm = document.getElementById("browser-name-form");
 const browserNameInput = document.getElementById("browser-name-input");
 const browserNameError = document.getElementById("browser-name-error");
 const browserNameCancelBtn = document.getElementById("browser-name-cancel-btn");
+const matchDetailModal = document.getElementById("match-detail-modal");
+const matchDetailCloseBtn = document.getElementById("match-detail-close-btn");
+const matchDetailContent = document.getElementById("match-detail-content");
 const browserChangeNameButtons = document.querySelectorAll(
   ".browser-change-name-btn",
 );
@@ -160,6 +163,8 @@ let pendingConfirmAction = null;
 let resetGridConfirmTimeout = null;
 let currentLobby = "";
 let statsLoadToastShown = false;
+let statsPanelLoading = false;
+let lastStatsRefreshMatchId = "";
 const browserDisplayNameStorageKey = "triviaShowdownDisplayName";
 const legacyBrowserDisplayNameStorageKey = "jeopardyDisplayName";
 const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
@@ -813,6 +818,7 @@ socket.on("connected", (user) => {
 
 socket.on("gameState", (state) => {
   currentState = state;
+  maybeRefreshStatsAfterSavedMatch(state);
   if (state.lobbyCode) {
     currentLobby = state.lobbyCode;
     storeBrowserLobbyCode(currentLobby);
@@ -1044,6 +1050,18 @@ imageLightbox.addEventListener("click", (event) => {
     closeImageLightbox();
   }
 });
+
+if (matchDetailCloseBtn) {
+  matchDetailCloseBtn.addEventListener("click", closeMatchDetail);
+}
+
+if (matchDetailModal) {
+  matchDetailModal.addEventListener("click", (event) => {
+    if (event.target === matchDetailModal) {
+      closeMatchDetail();
+    }
+  });
+}
 
 browserNameForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -2197,6 +2215,7 @@ function renderFinalRankings(state) {
   playAgainButton.disabled = currentUser?.role !== "host";
   playAgainButton.addEventListener("click", () => {
     socket.emit("playAgain");
+    loadStatsPanel();
   });
 
   const lobbyButton = document.createElement("button");
@@ -2454,34 +2473,50 @@ async function loadStatsPanel() {
     return;
   }
 
+  if (statsPanelLoading) {
+    return;
+  }
+
+  statsLoadToastShown = false;
+  statsPanelLoading = true;
+  if (refreshStatsBtn) {
+    refreshStatsBtn.disabled = true;
+  }
   renderStatsLoading();
 
-  const [myStatsResult, leaderboardResult, recentMatchesResult] =
-    await Promise.allSettled([
-      fetchJson("/api/stats/me"),
-      fetchJson("/api/leaderboard"),
-      fetchJson("/api/matches/recent"),
-    ]);
+  try {
+    const [myStatsResult, leaderboardResult, recentMatchesResult] =
+      await Promise.allSettled([
+        fetchJson("/api/stats/me"),
+        fetchJson("/api/leaderboard"),
+        fetchJson("/api/matches/me/recent"),
+      ]);
 
-  if (myStatsResult.status === "fulfilled") {
-    renderMyStats(myStatsResult.value);
-  } else {
-    renderStatsPanelError(myStatsContent, "Could not load your stats.");
-    showStatsLoadToast();
-  }
+    if (myStatsResult.status === "fulfilled") {
+      renderMyStats(myStatsResult.value);
+    } else {
+      renderStatsPanelError(myStatsContent, "Could not load your stats.");
+      showStatsLoadToast();
+    }
 
-  if (leaderboardResult.status === "fulfilled") {
-    renderLeaderboard(leaderboardResult.value.leaderboard || []);
-  } else {
-    renderListError(leaderboardList, "Could not load leaderboard.");
-    showStatsLoadToast();
-  }
+    if (leaderboardResult.status === "fulfilled") {
+      renderLeaderboard(leaderboardResult.value.leaderboard || []);
+    } else {
+      renderListError(leaderboardList, "Could not load leaderboard.");
+      showStatsLoadToast();
+    }
 
-  if (recentMatchesResult.status === "fulfilled") {
-    renderRecentMatches(recentMatchesResult.value.matches || []);
-  } else {
-    renderListError(recentMatchesList, "Could not load recent matches.");
-    showStatsLoadToast();
+    if (recentMatchesResult.status === "fulfilled") {
+      renderRecentMatches(recentMatchesResult.value);
+    } else {
+      renderListError(recentMatchesList, "Could not load your recent matches.");
+      showStatsLoadToast();
+    }
+  } finally {
+    statsPanelLoading = false;
+    if (refreshStatsBtn) {
+      refreshStatsBtn.disabled = false;
+    }
   }
 }
 
@@ -2503,48 +2538,62 @@ async function fetchJson(url) {
 
 function renderStatsLoading() {
   myStatsContent.innerHTML = "";
-  myStatsContent.appendChild(createStatsEmpty("Loading stats..."));
+  myStatsContent.appendChild(createStatsEmpty("Loading your stats..."));
   leaderboardList.innerHTML = "";
   leaderboardList.appendChild(createStatsListItem("Loading leaderboard..."));
   recentMatchesList.innerHTML = "";
-  recentMatchesList.appendChild(createStatsListItem("Loading matches..."));
+  recentMatchesList.appendChild(
+    createStatsListItem("Loading your recent matches..."),
+  );
 }
 
 function renderMyStats(data) {
   myStatsContent.innerHTML = "";
 
   if (isLikelyDiscordActivity()) {
-    myStatsContent.appendChild(
-      createStatsEmpty(
-        "Stats are available after signing in on the browser/PWA version.",
-      ),
-    );
+    myStatsContent.appendChild(createGuestProfileCard());
     return;
   }
 
   if (!data.loggedIn) {
-    myStatsContent.appendChild(
-      createStatsEmpty("Sign in with Google to save and view your stats."),
-    );
+    myStatsContent.appendChild(createGuestProfileCard());
     return;
   }
 
   const stats = data.stats;
 
-  if (!stats || Number(stats.gamesPlayed || 0) === 0) {
-    myStatsContent.appendChild(createStatsEmpty("No saved games yet."));
+  if (!stats) {
+    myStatsContent.appendChild(
+      createStatsProfileCard({
+        displayName: activeAccountPlayer?.displayName || "Signed-in player",
+        avatarUrl: activeAccountPlayer?.avatarUrl || "",
+        emptyText:
+          "No saved games yet. Finish a game while signed in to start tracking stats.",
+      }),
+    );
+    return;
+  }
+
+  const hasGames = Number(stats.gamesPlayed || 0) > 0;
+  const profile = createStatsProfileCard({
+    displayName: stats.displayName || activeAccountPlayer?.displayName || "",
+    avatarUrl: stats.avatarUrl || activeAccountPlayer?.avatarUrl || "",
+    emptyText: hasGames
+      ? ""
+      : "No saved games yet. Finish a game while signed in to start tracking stats.",
+  });
+
+  if (!hasGames) {
+    myStatsContent.appendChild(profile);
     return;
   }
 
   const metrics = [
     ["Games Played", formatScore(stats.gamesPlayed)],
-    ["Wins", formatScore(stats.wins)],
-    ["Losses", formatScore(stats.losses)],
+    ["Wins / Losses", `${formatScore(stats.wins)} / ${formatScore(stats.losses)}`],
     ["Win Rate", formatPercentage(stats.winRatePercentage)],
-    ["Highest Score", formatScore(stats.highestScore)],
-    ["Average Score", formatScore(Math.round(Number(stats.averageScore || 0)))],
+    ["Best Score", formatScore(stats.highestScore)],
     ["Average Placement", Number(stats.averagePlacement || 0).toFixed(1)],
-    ["Last Played", formatDateTime(stats.lastPlayedAt)],
   ];
   const list = document.createElement("dl");
   list.className = "stats-metrics";
@@ -2566,14 +2615,19 @@ function renderMyStats(data) {
     list.appendChild(row);
   });
 
-  myStatsContent.appendChild(list);
+  profile.appendChild(list);
+  myStatsContent.appendChild(profile);
 }
 
 function renderLeaderboard(entries) {
   leaderboardList.innerHTML = "";
 
   if (!entries.length) {
-    leaderboardList.appendChild(createStatsListItem("No leaderboard data yet."));
+    leaderboardList.appendChild(
+      createStatsListItem(
+        "No leaderboard data yet. Complete a saved game to create the first entry.",
+      ),
+    );
     return;
   }
 
@@ -2585,21 +2639,202 @@ function renderLeaderboard(entries) {
   });
 }
 
-function renderRecentMatches(matches) {
+function renderRecentMatches(data) {
   recentMatchesList.innerHTML = "";
+  const matches = data.matches || [];
+
+  if (!data.loggedIn) {
+    recentMatchesList.appendChild(
+      createStatsListItem("Sign in with Google to view your saved matches."),
+    );
+    return;
+  }
 
   if (!matches.length) {
-    recentMatchesList.appendChild(createStatsListItem("No saved matches yet."));
+    recentMatchesList.appendChild(
+      createStatsListItem(
+        "No saved matches found yet. Complete a game while signed in to see it here.",
+      ),
+    );
     return;
   }
 
   matches.slice(0, 10).forEach((match) => {
-    const playerCount = Number(match.playerCount || 0);
-    const item = createStatsListItem(
-      `${match.gridName || "Trivia Showdown"} - Winner: ${match.winnerName || "Unknown"} - ${formatScore(playerCount)} ${playerCount === 1 ? "player" : "players"} - ${formatDateTime(match.endedAt)}`,
-    );
+    const item = createRecentMatchItem(match);
     recentMatchesList.appendChild(item);
   });
+}
+
+function createGuestProfileCard() {
+  const card = document.createElement("div");
+  card.className = "stats-profile";
+
+  const name = document.createElement("strong");
+  name.className = "stats-profile-name";
+  name.textContent = "Playing as guest";
+
+  const messageElement = createStatsEmpty(
+    "Sign in with Google to save stats and match history.",
+  );
+
+  card.appendChild(name);
+  card.appendChild(messageElement);
+  return card;
+}
+
+function createStatsProfileCard({ displayName, avatarUrl, emptyText }) {
+  const card = document.createElement("div");
+  card.className = "stats-profile";
+  const identity = createUserIdentity({
+    name: displayName || "Signed-in player",
+    avatarUrl: avatarUrl || "",
+  });
+  identity.classList.add("stats-profile-identity");
+  card.appendChild(identity);
+
+  if (emptyText) {
+    card.appendChild(createStatsEmpty(emptyText));
+  }
+
+  return card;
+}
+
+function createRecentMatchItem(match) {
+  const item = document.createElement("li");
+  item.className = "stats-row recent-match-row";
+
+  const summary = document.createElement("div");
+  summary.className = "recent-match-summary";
+
+  const title = document.createElement("strong");
+  title.textContent = match.gridName || "Trivia Showdown";
+  summary.appendChild(title);
+
+  const playerCount = Number(match.playerCount || 0);
+  const meta = document.createElement("span");
+  meta.textContent = `Winner: ${match.winnerName || "Unknown"} · ${formatScore(playerCount)} ${playerCount === 1 ? "player" : "players"} · ${formatDateTime(match.endedAt)}`;
+  summary.appendChild(meta);
+
+  const personal = document.createElement("span");
+  personal.textContent = `You placed ${formatPlacement(match.myPlacement)} with ${formatScore(match.myScore)}`;
+  summary.appendChild(personal);
+
+  const viewButton = document.createElement("button");
+  viewButton.className = "secondary-button stats-row-button";
+  viewButton.type = "button";
+  viewButton.textContent = "View";
+  viewButton.addEventListener("click", () => {
+    openMatchDetail(match.id);
+  });
+
+  item.appendChild(summary);
+  item.appendChild(viewButton);
+  return item;
+}
+
+async function openMatchDetail(matchId) {
+  if (!matchDetailModal || !matchDetailContent) {
+    return;
+  }
+
+  matchDetailContent.innerHTML = "";
+  matchDetailContent.appendChild(createStatsEmpty("Loading match details..."));
+  matchDetailModal.classList.remove("hidden");
+  matchDetailCloseBtn?.focus();
+
+  try {
+    const data = await fetchJson(`/api/matches/${encodeURIComponent(matchId)}`);
+    renderMatchDetail(data.match);
+  } catch {
+    matchDetailContent.innerHTML = "";
+    matchDetailContent.appendChild(
+      createStatsEmpty("Could not load match details."),
+    );
+  }
+}
+
+function closeMatchDetail() {
+  matchDetailModal?.classList.add("hidden");
+  if (matchDetailContent) {
+    matchDetailContent.innerHTML = "";
+  }
+}
+
+function renderMatchDetail(match) {
+  matchDetailContent.innerHTML = "";
+
+  const summary = document.createElement("div");
+  summary.className = "match-detail-summary";
+  const title = document.createElement("h3");
+  title.textContent = match.gridName || "Trivia Showdown";
+  const meta = document.createElement("p");
+  meta.textContent = `Winner: ${match.winnerName || "Unknown"} · ${formatDateTime(match.endedAt)}`;
+  summary.appendChild(title);
+  summary.appendChild(meta);
+  matchDetailContent.appendChild(summary);
+
+  const rankingsTitle = document.createElement("h3");
+  rankingsTitle.textContent = "Final Rankings";
+  matchDetailContent.appendChild(rankingsTitle);
+
+  const rankings = document.createElement("ol");
+  rankings.className = "match-detail-rankings";
+  (match.players || []).forEach((player) => {
+    const item = document.createElement("li");
+    item.className = "match-detail-row";
+    const identity = createUserIdentity({
+      name: player.displayName,
+      avatarUrl: player.avatarUrl || "",
+    });
+    const detail = document.createElement("span");
+    detail.textContent = `${formatPlacement(player.placement)} · ${formatScore(player.finalScore)} · ${player.result || "played"}`;
+    item.appendChild(identity);
+    item.appendChild(detail);
+    rankings.appendChild(item);
+  });
+  matchDetailContent.appendChild(rankings);
+
+  if (match.faceAFace) {
+    const face = document.createElement("div");
+    face.className = "match-detail-face";
+    const faceTitle = document.createElement("h3");
+    faceTitle.textContent = "Face-a-Face";
+    const category = document.createElement("p");
+    category.textContent = `Category: ${match.faceAFace.category || "Unavailable"}`;
+    const prompt = document.createElement("p");
+    prompt.textContent = match.faceAFace.prompt || "";
+    const answer = document.createElement("p");
+    answer.textContent = `Guess answer: ${match.faceAFace.guessAnswer || "Unavailable"}`;
+    face.appendChild(faceTitle);
+    face.appendChild(category);
+    face.appendChild(prompt);
+    face.appendChild(answer);
+    matchDetailContent.appendChild(face);
+  }
+
+  if (match.faceAFacePlayers?.length) {
+    const facePlayers = document.createElement("div");
+    facePlayers.className = "match-detail-face-players";
+    match.faceAFacePlayers.forEach((player) => {
+      const row = document.createElement("p");
+      row.textContent = `${player.displayName}: ${formatScore(player.bet)} bet, ${player.result || "unjudged"}, ${formatSignedScore(player.scoreChange)}${player.guess ? `, "${player.guess}"` : ""}`;
+      facePlayers.appendChild(row);
+    });
+    matchDetailContent.appendChild(facePlayers);
+  }
+}
+
+function maybeRefreshStatsAfterSavedMatch(state) {
+  if (
+    state.phase !== "finalResults" ||
+    !state.matchSavedId ||
+    state.matchSavedId === lastStatsRefreshMatchId
+  ) {
+    return;
+  }
+
+  lastStatsRefreshMatchId = state.matchSavedId;
+  loadStatsPanel();
 }
 
 function renderStatsPanelError(element, text) {
@@ -2656,6 +2891,33 @@ function formatDateTime(value) {
 function formatPercentage(value) {
   const number = Number(value || 0);
   return `${number.toFixed(1)}%`;
+}
+
+function formatPlacement(value) {
+  const placement = Number(value);
+
+  if (placement === 1) {
+    return "1st";
+  }
+
+  if (placement === 2) {
+    return "2nd";
+  }
+
+  if (placement === 3) {
+    return "3rd";
+  }
+
+  if (!Number.isFinite(placement) || placement <= 0) {
+    return "unplaced";
+  }
+
+  return `${placement}th`;
+}
+
+function formatSignedScore(value) {
+  const score = Number(value || 0);
+  return `${score >= 0 ? "+" : ""}${formatScore(score)}`;
 }
 
 async function loadLoggedInAccount() {
