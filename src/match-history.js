@@ -8,12 +8,14 @@ export async function saveCompletedMatch({ gameState, gameContext }) {
   const rankings = getFinalRankings(gameState.players);
   const winner = rankings[0]?.player || null;
   const finalRound = gameState.grid?.rounds?.final || null;
+  const endedAt = new Date().toISOString();
   const matchId = await saveMatchTransaction({
     gameState,
     gameContext,
     rankings,
     winner,
-    finalRound
+    finalRound,
+    endedAt
   });
 
   return matchId;
@@ -24,7 +26,8 @@ async function saveMatchTransaction({
   gameContext,
   rankings,
   winner,
-  finalRound
+  finalRound,
+  endedAt
 }) {
   const client = await db.connect();
 
@@ -43,7 +46,7 @@ async function saveMatchTransaction({
           started_at,
           ended_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id
       `,
       [
@@ -53,7 +56,8 @@ async function saveMatchTransaction({
         nullableText(gameState.grid?.name) || "Trivia Showdown Grid",
         getPlayerDatabaseId(gameState.host),
         getPlayerDatabaseId(winner),
-        nullableText(gameState.gameStartedAt)
+        nullableText(gameState.gameStartedAt),
+        endedAt
       ]
     );
     const matchId = matchResult.rows[0].id;
@@ -70,6 +74,8 @@ async function saveMatchTransaction({
       await insertFaceAFacePlayer(client, matchId, ranking.player, gameState.faceAFaceState);
     }
 
+    await updatePlayerStatsForMatch(client, rankings, endedAt);
+
     await client.query("COMMIT");
     return matchId;
   } catch (error) {
@@ -80,7 +86,7 @@ async function saveMatchTransaction({
   }
 }
 
-async function insertMatchPlayer(client, matchId, { player, placement }) {
+async function insertMatchPlayer(client, matchId, { player, placement, finalScore, result }) {
   await client.query(
     `
       INSERT INTO match_players (
@@ -103,9 +109,9 @@ async function insertMatchPlayer(client, matchId, { player, placement }) {
       nullableText(player.avatarUrl),
       nullableText(player.provider) || "guest",
       nullableText(player.providerUserId),
-      Math.round(Number(player.score || 0)),
+      finalScore,
       placement,
-      placement === 1 ? "win" : "loss"
+      result
     ]
   );
 }
@@ -159,6 +165,63 @@ async function insertFaceAFacePlayer(client, matchId, player, faceAFaceState) {
   );
 }
 
+async function updatePlayerStatsForMatch(client, rankings, endedAt) {
+  for (const ranking of rankings) {
+    const playerId = getPlayerDatabaseId(ranking.player);
+
+    if (!playerId || ranking.player.provider === "guest") {
+      continue;
+    }
+
+    const isWin = ranking.placement === 1;
+
+    await client.query(
+      `
+        INSERT INTO player_stats (
+          player_id,
+          games_played,
+          wins,
+          losses,
+          highest_score,
+          total_score,
+          total_placement,
+          last_played_at,
+          updated_at
+        )
+        VALUES (
+          $1,
+          1,
+          $2,
+          $3,
+          $4,
+          $4,
+          $5,
+          $6,
+          NOW()
+        )
+        ON CONFLICT (player_id) DO UPDATE
+        SET
+          games_played = player_stats.games_played + 1,
+          wins = player_stats.wins + EXCLUDED.wins,
+          losses = player_stats.losses + EXCLUDED.losses,
+          highest_score = GREATEST(player_stats.highest_score, EXCLUDED.highest_score),
+          total_score = player_stats.total_score + EXCLUDED.total_score,
+          total_placement = player_stats.total_placement + EXCLUDED.total_placement,
+          last_played_at = EXCLUDED.last_played_at,
+          updated_at = NOW()
+      `,
+      [
+        playerId,
+        isWin ? 1 : 0,
+        isWin ? 0 : 1,
+        ranking.finalScore,
+        ranking.placement,
+        endedAt
+      ]
+    );
+  }
+}
+
 function nullableText(value) {
   if (typeof value !== "string") {
     return null;
@@ -175,7 +238,7 @@ function nullableUuid(value) {
     return null;
   }
 
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text)
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(text)
     ? text
     : null;
 }
@@ -189,7 +252,9 @@ function getFinalRankings(players) {
     .sort((first, second) => Number(second.score || 0) - Number(first.score || 0))
     .map((player, index) => ({
       player,
-      placement: index + 1
+      placement: index + 1,
+      finalScore: Math.round(Number(player.score || 0)),
+      result: index === 0 ? "win" : "loss"
     }));
 }
 

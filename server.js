@@ -153,6 +153,141 @@ app.get("/api/matches/recent", async (req, res) => {
   }
 });
 
+app.get("/api/stats/me", async (req, res) => {
+  const playerId = req.session.player?.id;
+
+  if (!playerId) {
+    res.json({
+      ok: true,
+      loggedIn: false,
+      stats: null
+    });
+    return;
+  }
+
+  try {
+    const result = await query(
+      `
+        SELECT *
+        FROM player_stats_view
+        WHERE player_id = $1
+        LIMIT 1
+      `,
+      [playerId]
+    );
+
+    res.json({
+      ok: true,
+      loggedIn: true,
+      stats: result.rows[0]
+        ? formatPlayerStatsRow(result.rows[0], { includePlayerId: true })
+        : createEmptyPlayerStats(req.session.player)
+    });
+  } catch (error) {
+    if (error.code !== "42P01") {
+      console.error("Player stats view query failed:", error);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load player stats."
+      });
+      return;
+    }
+
+    try {
+      const fallbackResult = await query(
+        `
+          SELECT
+            p.id AS player_id,
+            p.display_name,
+            p.avatar_url,
+            COALESCE(ps.games_played, 0)::int AS games_played,
+            COALESCE(ps.wins, 0)::int AS wins,
+            COALESCE(ps.losses, 0)::int AS losses,
+            COALESCE(ps.highest_score, 0)::int AS highest_score,
+            COALESCE(ps.total_score, 0)::int AS total_score,
+            COALESCE(ps.total_placement, 0)::int AS total_placement,
+            ps.last_played_at
+          FROM players p
+          LEFT JOIN player_stats ps ON ps.player_id = p.id
+          WHERE p.id = $1
+          LIMIT 1
+        `,
+        [playerId]
+      );
+
+      res.json({
+        ok: true,
+        loggedIn: true,
+        stats: fallbackResult.rows[0]
+          ? formatPlayerStatsRow(fallbackResult.rows[0], { includePlayerId: true })
+          : createEmptyPlayerStats(req.session.player)
+      });
+    } catch (fallbackError) {
+      console.error("Player stats fallback query failed:", fallbackError);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load player stats."
+      });
+    }
+  }
+});
+
+app.get("/api/leaderboard", async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT *
+      FROM player_stats_view
+      ORDER BY wins DESC, highest_score DESC, games_played DESC
+      LIMIT 10
+    `);
+
+    res.json({
+      ok: true,
+      leaderboard: result.rows.map((row) => formatPlayerStatsRow(row))
+    });
+  } catch (error) {
+    if (error.code !== "42P01") {
+      console.error("Leaderboard view query failed:", error);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load leaderboard."
+      });
+      return;
+    }
+
+    try {
+      const fallbackResult = await query(`
+        SELECT
+          p.display_name,
+          p.avatar_url,
+          COALESCE(ps.games_played, 0)::int AS games_played,
+          COALESCE(ps.wins, 0)::int AS wins,
+          COALESCE(ps.losses, 0)::int AS losses,
+          COALESCE(ps.highest_score, 0)::int AS highest_score,
+          COALESCE(ps.total_score, 0)::int AS total_score,
+          COALESCE(ps.total_placement, 0)::int AS total_placement,
+          ps.last_played_at
+        FROM player_stats ps
+        JOIN players p ON p.id = ps.player_id
+        WHERE COALESCE(ps.games_played, 0) > 0
+        ORDER BY ps.wins DESC, ps.highest_score DESC, ps.games_played DESC
+        LIMIT 10
+      `);
+
+      res.json({
+        ok: true,
+        leaderboard: fallbackResult.rows.map((row) => formatPlayerStatsRow(row))
+      });
+    } catch (fallbackError) {
+      console.error("Leaderboard fallback query failed:", fallbackError);
+      res.status(500).json({
+        ok: false,
+        error: "Could not load leaderboard."
+      });
+    }
+  }
+});
+
 app.get("/api/session-test", (req, res) => {
   req.session.views = Number(req.session.views || 0) + 1;
 
@@ -308,6 +443,70 @@ function formatRecentMatchRow(row) {
     winnerName: row.winner_name || row.winnerName || "",
     playerCount: Number(row.player_count ?? row.playerCount ?? 0)
   };
+}
+
+function formatPlayerStatsRow(row, { includePlayerId = false } = {}) {
+  const gamesPlayed = Number(row.games_played ?? row.gamesPlayed ?? 0);
+  const wins = Number(row.wins ?? 0);
+  const losses = Number(row.losses ?? 0);
+  const highestScore = Number(row.highest_score ?? row.highestScore ?? 0);
+  const totalScore = Number(row.total_score ?? row.totalScore ?? 0);
+  const totalPlacement = Number(row.total_placement ?? row.totalPlacement ?? 0);
+  const stats = {
+    displayName: row.display_name || row.displayName || "",
+    avatarUrl: row.avatar_url || row.avatarUrl || "",
+    gamesPlayed,
+    wins,
+    losses,
+    winRatePercentage: getPercentageValue(
+      row.win_rate_percentage ?? row.winRatePercentage,
+      gamesPlayed > 0 ? (wins / gamesPlayed) * 100 : 0
+    ),
+    highestScore,
+    averageScore: getAverageValue(
+      row.average_score ?? row.averageScore,
+      gamesPlayed > 0 ? totalScore / gamesPlayed : 0
+    ),
+    averagePlacement: getAverageValue(
+      row.average_placement ?? row.averagePlacement,
+      gamesPlayed > 0 ? totalPlacement / gamesPlayed : 0
+    ),
+    lastPlayedAt: row.last_played_at || row.lastPlayedAt || null
+  };
+
+  if (includePlayerId) {
+    stats.playerId = row.player_id || row.playerId || "";
+  }
+
+  return stats;
+}
+
+function createEmptyPlayerStats(player) {
+  return {
+    playerId: player.id,
+    displayName: player.displayName || "",
+    avatarUrl: player.avatarUrl || "",
+    gamesPlayed: 0,
+    wins: 0,
+    losses: 0,
+    winRatePercentage: 0,
+    highestScore: 0,
+    averageScore: 0,
+    averagePlacement: 0,
+    lastPlayedAt: null
+  };
+}
+
+function getPercentageValue(value, fallback) {
+  return roundStatValue(value === undefined || value === null ? fallback : Number(value));
+}
+
+function getAverageValue(value, fallback) {
+  return roundStatValue(value === undefined || value === null ? fallback : Number(value));
+}
+
+function roundStatValue(value) {
+  return Number.isFinite(value) ? Math.round(value * 100) / 100 : 0;
 }
 
 function createGameContext(id, options = {}) {
