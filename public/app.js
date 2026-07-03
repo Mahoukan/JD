@@ -125,6 +125,10 @@ const accountPanel = document.getElementById("account-panel");
 const accountStatus = document.getElementById("account-status");
 const logoutBtn = document.getElementById("logout-btn");
 const googleLoginLink = document.querySelector(".account-login-link");
+const refreshStatsBtn = document.getElementById("refresh-stats-btn");
+const myStatsContent = document.getElementById("my-stats-content");
+const leaderboardList = document.getElementById("leaderboard-list");
+const recentMatchesList = document.getElementById("recent-matches-list");
 
 const hostList = document.getElementById("host-list");
 const playerList = document.getElementById("player-list");
@@ -154,6 +158,7 @@ let browserNameModalMode = "initial";
 let pendingConfirmAction = null;
 let resetGridConfirmTimeout = null;
 let currentLobby = "";
+let statsLoadToastShown = false;
 const browserDisplayNameStorageKey = "triviaShowdownDisplayName";
 const legacyBrowserDisplayNameStorageKey = "jeopardyDisplayName";
 const browserPlayerTokenStorageKey = "triviaShowdownPlayerToken";
@@ -166,12 +171,13 @@ function initialiseIdentity() {
     hideLobbyControls();
     hideBrowserNameControls();
     initialiseDiscordIdentity();
+    loadStatsPanel();
     return;
   }
 
   showLobbyControls();
   initialiseBrowserIdentity();
-  loadLoggedInAccount();
+  loadLoggedInAccount().finally(loadStatsPanel);
 }
 
 function registerServiceWorker() {
@@ -2371,6 +2377,215 @@ function formatTimer(remainingMs) {
   return (Math.max(0, remainingMs) / 1000).toFixed(1);
 }
 
+async function loadStatsPanel() {
+  if (!myStatsContent || !leaderboardList || !recentMatchesList) {
+    return;
+  }
+
+  renderStatsLoading();
+
+  const [myStatsResult, leaderboardResult, recentMatchesResult] =
+    await Promise.allSettled([
+      fetchJson("/api/stats/me"),
+      fetchJson("/api/leaderboard"),
+      fetchJson("/api/matches/recent"),
+    ]);
+
+  if (myStatsResult.status === "fulfilled") {
+    renderMyStats(myStatsResult.value);
+  } else {
+    renderStatsPanelError(myStatsContent, "Could not load your stats.");
+    showStatsLoadToast();
+  }
+
+  if (leaderboardResult.status === "fulfilled") {
+    renderLeaderboard(leaderboardResult.value.leaderboard || []);
+  } else {
+    renderListError(leaderboardList, "Could not load leaderboard.");
+    showStatsLoadToast();
+  }
+
+  if (recentMatchesResult.status === "fulfilled") {
+    renderRecentMatches(recentMatchesResult.value.matches || []);
+  } else {
+    renderListError(recentMatchesList, "Could not load recent matches.");
+    showStatsLoadToast();
+  }
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (data.ok === false) {
+    throw new Error(data.error || "Request failed.");
+  }
+
+  return data;
+}
+
+function renderStatsLoading() {
+  myStatsContent.innerHTML = "";
+  myStatsContent.appendChild(createStatsEmpty("Loading stats..."));
+  leaderboardList.innerHTML = "";
+  leaderboardList.appendChild(createStatsListItem("Loading leaderboard..."));
+  recentMatchesList.innerHTML = "";
+  recentMatchesList.appendChild(createStatsListItem("Loading matches..."));
+}
+
+function renderMyStats(data) {
+  myStatsContent.innerHTML = "";
+
+  if (isLikelyDiscordActivity()) {
+    myStatsContent.appendChild(
+      createStatsEmpty(
+        "Stats are available after signing in on the browser/PWA version.",
+      ),
+    );
+    return;
+  }
+
+  if (!data.loggedIn) {
+    myStatsContent.appendChild(
+      createStatsEmpty("Sign in with Google to save and view your stats."),
+    );
+    return;
+  }
+
+  const stats = data.stats;
+
+  if (!stats || Number(stats.gamesPlayed || 0) === 0) {
+    myStatsContent.appendChild(createStatsEmpty("No saved games yet."));
+    return;
+  }
+
+  const metrics = [
+    ["Games Played", formatScore(stats.gamesPlayed)],
+    ["Wins", formatScore(stats.wins)],
+    ["Losses", formatScore(stats.losses)],
+    ["Win Rate", formatPercentage(stats.winRatePercentage)],
+    ["Highest Score", formatScore(stats.highestScore)],
+    ["Average Score", formatScore(Math.round(Number(stats.averageScore || 0)))],
+    ["Average Placement", Number(stats.averagePlacement || 0).toFixed(1)],
+    ["Last Played", formatDateTime(stats.lastPlayedAt)],
+  ];
+  const list = document.createElement("dl");
+  list.className = "stats-metrics";
+
+  metrics.forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "stats-metric";
+
+    const term = document.createElement("dt");
+    term.className = "stats-metric-label";
+    term.textContent = label;
+
+    const detail = document.createElement("dd");
+    detail.className = "stats-metric-value";
+    detail.textContent = value;
+
+    row.appendChild(term);
+    row.appendChild(detail);
+    list.appendChild(row);
+  });
+
+  myStatsContent.appendChild(list);
+}
+
+function renderLeaderboard(entries) {
+  leaderboardList.innerHTML = "";
+
+  if (!entries.length) {
+    leaderboardList.appendChild(createStatsListItem("No leaderboard data yet."));
+    return;
+  }
+
+  entries.slice(0, 10).forEach((entry, index) => {
+    const item = createStatsListItem(
+      `#${index + 1} ${entry.displayName || "Unknown Player"} - ${formatScore(entry.wins)} wins, ${formatScore(entry.gamesPlayed)} games, best ${formatScore(entry.highestScore)}`,
+    );
+    leaderboardList.appendChild(item);
+  });
+}
+
+function renderRecentMatches(matches) {
+  recentMatchesList.innerHTML = "";
+
+  if (!matches.length) {
+    recentMatchesList.appendChild(createStatsListItem("No saved matches yet."));
+    return;
+  }
+
+  matches.slice(0, 10).forEach((match) => {
+    const playerCount = Number(match.playerCount || 0);
+    const item = createStatsListItem(
+      `${match.gridName || "Trivia Showdown"} - Winner: ${match.winnerName || "Unknown"} - ${formatScore(playerCount)} ${playerCount === 1 ? "player" : "players"} - ${formatDateTime(match.endedAt)}`,
+    );
+    recentMatchesList.appendChild(item);
+  });
+}
+
+function renderStatsPanelError(element, text) {
+  element.innerHTML = "";
+  element.appendChild(createStatsEmpty(text));
+}
+
+function renderListError(list, text) {
+  list.innerHTML = "";
+  list.appendChild(createStatsListItem(text));
+}
+
+function createStatsEmpty(text) {
+  const messageElement = document.createElement("p");
+  messageElement.className = "empty";
+  messageElement.textContent = text;
+  return messageElement;
+}
+
+function createStatsListItem(text) {
+  const item = document.createElement("li");
+  item.className = "stats-row";
+  item.textContent = text;
+  return item;
+}
+
+function showStatsLoadToast() {
+  if (statsLoadToastShown) {
+    return;
+  }
+
+  statsLoadToastShown = true;
+  showToast("Could not load stats.", "error");
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return "Unknown date";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatPercentage(value) {
+  const number = Number(value || 0);
+  return `${number.toFixed(1)}%`;
+}
+
 async function loadLoggedInAccount() {
   try {
     const response = await fetch("/api/me");
@@ -2436,6 +2651,13 @@ if (logoutBtn) {
     } catch {
       showToast("Could not log out.", "error");
     }
+  });
+}
+
+if (refreshStatsBtn) {
+  refreshStatsBtn.addEventListener("click", () => {
+    statsLoadToastShown = false;
+    loadStatsPanel();
   });
 }
 
