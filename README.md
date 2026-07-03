@@ -101,6 +101,8 @@ BUILD_VERSION=
 
 `BUILD_VERSION` is optional. If omitted, the server uses the Railway commit hash when available plus a startup timestamp, or falls back to the package version plus a startup timestamp.
 
+`ADMIN_BOARD_PASSWORD` enables the separate password-protected admin board uploader at `/admin/boards`. Leave it unset to disable that admin tool.
+
 ## How to Play
 
 1. Create a lobby as host, or join a lobby with a code.
@@ -172,6 +174,14 @@ Notes:
 - Runtime fields such as answered prompts are managed in memory by the server.
 - Imported grids are saved into `public/boards/` and become available immediately. On redeploys or ephemeral hosting, imported grid files may be lost unless that directory is persisted or the files are committed/deployed with the app.
 - Legacy grid files using the previous keys are still accepted and normalized on load for compatibility.
+
+## Admin Board Uploader
+
+Set `ADMIN_BOARD_PASSWORD` and visit `/admin/boards` to use the owner-only board uploader. The page uses the existing Express session and a simple password form; it does not use Google login.
+
+Uploaded JSON is normalized and validated with the same grid rules as the normal host import flow, then stored in the Postgres `saved_grids` table with `created_by_player_id` set to `NULL`. Duplicate `grid_id` values are rejected by default.
+
+This is a separate database-management tool. The normal host Import Grid flow is unchanged, and the main game does not automatically load boards from `saved_grids` yet.
 
 ## Included Grids
 

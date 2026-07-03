@@ -10,7 +10,7 @@ import {
   normalizeGridPack,
   stripAnsweredTracking
 } from "./src/grid-normalizer.js";
-import { query, testDatabaseConnection } from "./src/db.js";
+import { db, query, testDatabaseConnection } from "./src/db.js";
 import { sessionMiddleware } from "./src/session.js";
 import { isGoogleAuthConfigured, passport, setupPassport } from "./src/auth.js";
 import { saveCompletedMatch } from "./src/match-history.js";
@@ -25,11 +25,13 @@ const ANSWER_TIMER_MS = 10000;
 const TIMER_BROADCAST_MS = 250;
 const LOBBY_CODE_LENGTH = 5;
 const LOBBY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const ADMIN_BOARD_UPLOAD_LIMIT_BYTES = 2 * 1024 * 1024;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(readFileSync(join(__dirname, "package.json"), "utf8"));
 const buildCommit = process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) || packageJson.version;
 const BUILD_VERSION = process.env.BUILD_VERSION ||
   `${buildCommit}-${Date.now()}`;
+const ADMIN_BOARD_PASSWORD = process.env.ADMIN_BOARD_PASSWORD || "";
 const gridsDirectory = join(__dirname, "public", "boards");
 let availableGrids = discoverAvailableGrids();
 const selectedGrid = availableGrids[0] ?? createFallbackGridOption();
@@ -40,6 +42,7 @@ app.set("trust proxy", 1);
 setupPassport();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false, limit: "3mb" }));
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -593,6 +596,53 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
+app.get("/admin/boards", async (req, res) => {
+  res.type("html").status(isAdminBoardUploaderEnabled() ? 200 : 503).send(await renderAdminBoardsPage(req));
+});
+
+app.post("/admin/boards/login", (req, res) => {
+  if (!isAdminBoardUploaderEnabled()) {
+    res.status(503).type("html").send(renderAdminDisabledPage());
+    return;
+  }
+
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+
+  if (!isAdminBoardPasswordValid(password)) {
+    res.status(401).type("html").send(renderAdminLoginPage("Incorrect password."));
+    return;
+  }
+
+  req.session.boardAdminAuthed = true;
+  res.redirect("/admin/boards");
+});
+
+app.post("/admin/boards/logout", (req, res) => {
+  req.session.boardAdminAuthed = false;
+  res.redirect("/admin/boards");
+});
+
+app.post("/admin/boards/upload", async (req, res) => {
+  if (!isAdminBoardUploaderEnabled()) {
+    res.status(503).type("html").send(renderAdminDisabledPage());
+    return;
+  }
+
+  if (!req.session.boardAdminAuthed) {
+    res.status(403).type("html").send(renderAdminLoginPage("Log in before uploading boards."));
+    return;
+  }
+
+  const result = await uploadAdminBoardJson({
+    filename: req.body?.filename,
+    contents: req.body?.gridJson
+  });
+  const type = result.ok ? "success" : "error";
+  const message = encodeURIComponent(result.message || result.error || "Upload complete.");
+
+  res.redirect(`/admin/boards?type=${type}&message=${message}`);
+});
+
 app.get(["/", "/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   res.setHeader("Pragma", "no-cache");
@@ -708,6 +758,401 @@ function getUser(socket) {
     connected: true,
     disconnectedAt: null
   };
+}
+
+function isAdminBoardUploaderEnabled() {
+  return Boolean(ADMIN_BOARD_PASSWORD);
+}
+
+function isAdminBoardPasswordValid(password) {
+  return typeof password === "string" && password === ADMIN_BOARD_PASSWORD;
+}
+
+async function renderAdminBoardsPage(req) {
+  if (!isAdminBoardUploaderEnabled()) {
+    return renderAdminDisabledPage();
+  }
+
+  if (!req.session.boardAdminAuthed) {
+    return renderAdminLoginPage(getAdminMessage(req));
+  }
+
+  const { rows, error } = await getSavedAdminBoardRows();
+  return renderAdminUploadPage({
+    message: getAdminMessage(req),
+    messageType: getAdminMessageType(req),
+    rows,
+    listError: error
+  });
+}
+
+function getAdminMessage(req) {
+  return typeof req.query?.message === "string" ? req.query.message.slice(0, 300) : "";
+}
+
+function getAdminMessageType(req) {
+  return req.query?.type === "success" ? "success" : "error";
+}
+
+function renderAdminDisabledPage() {
+  return renderAdminHtml(`
+    <section class="panel">
+      <h1>Admin Board Uploader</h1>
+      <p class="message error">Admin board uploading is disabled. Set <code>ADMIN_BOARD_PASSWORD</code> to enable this tool.</p>
+      <p><a href="/">Return to Trivia Showdown</a></p>
+    </section>
+  `);
+}
+
+function renderAdminLoginPage(message = "") {
+  return renderAdminHtml(`
+    <section class="panel">
+      <h1>Admin Board Uploader</h1>
+      ${message ? `<p class="message error">${escapeHtml(message)}</p>` : ""}
+      <form method="post" action="/admin/boards/login">
+        <label>
+          Admin password
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit">Log In</button>
+      </form>
+      <p><a href="/">Return to Trivia Showdown</a></p>
+    </section>
+  `);
+}
+
+function renderAdminUploadPage({ message, messageType, rows, listError }) {
+  return renderAdminHtml(`
+    <section class="panel">
+      <div class="header-row">
+        <div>
+          <h1>Admin Board Uploader</h1>
+          <p>Upload permanent board JSON into <code>saved_grids</code>.</p>
+        </div>
+        <form method="post" action="/admin/boards/logout">
+          <button class="secondary" type="submit">Log Out</button>
+        </form>
+      </div>
+
+      ${message ? `<p class="message ${messageType}">${escapeHtml(message)}</p>` : ""}
+      ${db ? "" : '<p class="message error">DATABASE_URL is not set. Uploads and saved board listing are unavailable.</p>'}
+
+      <form id="board-upload-form" method="post" action="/admin/boards/upload">
+        <label>
+          Board JSON file
+          <input id="board-json-file" type="file" accept="application/json,.json" />
+        </label>
+        <input id="board-json-filename" type="hidden" name="filename" />
+        <label>
+          JSON text
+          <textarea id="board-json-text" name="gridJson" rows="8" placeholder="Select a .json file or paste board JSON here."></textarea>
+        </label>
+        <button type="submit" ${db ? "" : "disabled"}>Upload Board</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Saved Database Boards</h2>
+      ${listError ? `<p class="message error">${escapeHtml(listError)}</p>` : renderSavedAdminBoardList(rows)}
+    </section>
+
+    <script>
+      const form = document.getElementById("board-upload-form");
+      const fileInput = document.getElementById("board-json-file");
+      const filenameInput = document.getElementById("board-json-filename");
+      const textInput = document.getElementById("board-json-text");
+
+      form?.addEventListener("submit", async (event) => {
+        const file = fileInput?.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        event.preventDefault();
+        filenameInput.value = file.name || "";
+        textInput.value = await file.text();
+        form.submit();
+      });
+    </script>
+  `);
+}
+
+function renderSavedAdminBoardList(rows) {
+  if (!rows.length) {
+    return '<p class="empty">No saved database boards yet.</p>';
+  }
+
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map((row) => `
+          <tr>
+            <td>${escapeHtml(row.grid_name || "")}</td>
+            <td><code>${escapeHtml(row.grid_id || "")}</code></td>
+            <td>${escapeHtml(formatAdminDate(row.updated_at || row.created_at))}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderAdminHtml(body) {
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Board Uploader</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #070812;
+        color: #f5f7fb;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #070812;
+      }
+      main {
+        display: grid;
+        gap: 16px;
+        width: min(860px, 100%);
+        margin: 0 auto;
+      }
+      .panel {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        padding: 18px;
+        background: #171d28;
+      }
+      .header-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+      }
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+      form {
+        display: grid;
+        gap: 12px;
+      }
+      label {
+        display: grid;
+        gap: 6px;
+        color: #b3c1d6;
+        font-weight: 800;
+      }
+      input,
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        padding: 10px;
+        background: #0f1420;
+        color: #f5f7fb;
+        font: inherit;
+      }
+      button,
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        border: 1px solid rgba(0, 229, 255, 0.44);
+        border-radius: 8px;
+        padding: 0 14px;
+        background: #00e5ff;
+        color: #031014;
+        font-weight: 900;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      button.secondary {
+        border-color: rgba(255, 255, 255, 0.16);
+        background: #202837;
+        color: #f5f7fb;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+      .message {
+        border-left: 4px solid #00e5ff;
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: #202837;
+      }
+      .message.error {
+        border-left-color: #ff4d6d;
+      }
+      .message.success {
+        border-left-color: #35e07f;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 9px 6px;
+        text-align: left;
+      }
+      code {
+        color: #00e5ff;
+      }
+      .empty {
+        color: #b3c1d6;
+      }
+      @media (max-width: 640px) {
+        body {
+          padding: 12px;
+        }
+        .header-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>${body}</main>
+  </body>
+</html>`;
+}
+
+async function getSavedAdminBoardRows() {
+  if (!db) {
+    return {
+      rows: [],
+      error: "DATABASE_URL is not set."
+    };
+  }
+
+  try {
+    const result = await query(`
+      SELECT grid_id, grid_name, created_at, updated_at
+      FROM saved_grids
+      ORDER BY updated_at DESC
+    `);
+
+    return {
+      rows: result.rows,
+      error: ""
+    };
+  } catch (error) {
+    return {
+      rows: [],
+      error: `Could not load saved boards: ${error.message}`
+    };
+  }
+}
+
+async function uploadAdminBoardJson({ filename, contents }) {
+  if (!db) {
+    return { ok: false, error: "DATABASE_URL is not set." };
+  }
+
+  const originalFilename = typeof filename === "string" ? basename(filename) : "";
+
+  if (originalFilename && !originalFilename.toLowerCase().endsWith(".json")) {
+    return { ok: false, error: "Choose a .json grid file." };
+  }
+
+  if (typeof contents !== "string" || !contents.trim()) {
+    return { ok: false, error: "The selected file is empty." };
+  }
+
+  if (Buffer.byteLength(contents, "utf8") > ADMIN_BOARD_UPLOAD_LIMIT_BYTES) {
+    return { ok: false, error: "Grid file is too large. Keep it under 2 MB." };
+  }
+
+  let rawGrid;
+
+  try {
+    rawGrid = JSON.parse(contents);
+  } catch {
+    return { ok: false, error: "Invalid JSON. Check the file syntax and try again." };
+  }
+
+  const grid = normalizeGridPack(rawGrid);
+  const validationError = validateGridSchema(grid);
+
+  if (validationError) {
+    return { ok: false, error: validationError };
+  }
+
+  const cleanGrid = stripAnsweredTracking(grid);
+
+  try {
+    const existing = await query("SELECT 1 FROM saved_grids WHERE grid_id = $1 LIMIT 1", [cleanGrid.id]);
+
+    if (existing.rowCount > 0) {
+      return { ok: false, error: "A saved grid with this ID already exists." };
+    }
+
+    await query(
+      `
+        INSERT INTO saved_grids (
+          grid_id,
+          grid_name,
+          grid_json,
+          created_by_player_id
+        )
+        VALUES ($1, $2, $3::jsonb, NULL)
+      `,
+      [cleanGrid.id, cleanGrid.name, JSON.stringify(cleanGrid)]
+    );
+
+    return {
+      ok: true,
+      message: `Saved ${cleanGrid.name}.`
+    };
+  } catch (error) {
+    if (error.code === "23505") {
+      return { ok: false, error: "A saved grid with this ID already exists." };
+    }
+
+    return { ok: false, error: `Could not save board: ${error.message}` };
+  }
+}
+
+function formatAdminDate(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleString();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function renderIndexHtml() {
