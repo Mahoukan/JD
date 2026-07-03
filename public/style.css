@@ -497,6 +497,14 @@ button:disabled,
   font-size: 16px;
 }
 
+a.primary-button,
+a.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .primary-button {
   background: linear-gradient(180deg, var(--accent), var(--accent-strong));
   color: #031014;
