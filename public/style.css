@@ -803,16 +803,19 @@ a.secondary-button {
 
 .editable-score-row {
   grid-template-columns: minmax(0, 1fr) auto auto;
-}
-
-.removable-score-row {
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-areas:
+    "name name name"
+    "score edit remove";
 }
 
 .current-turn-score-row {
   border-color: rgba(77, 212, 198, 0.48);
   background: var(--accent-soft);
   box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.editable-score-row .score-name {
+  grid-area: name;
 }
 
 .score-name {
@@ -827,9 +830,18 @@ a.secondary-button {
   display: grid;
 }
 
+.editable-score-row .score-value {
+  grid-area: score;
+  justify-self: start;
+}
+
 .score-value {
   color: var(--accent);
   font-weight: 950;
+}
+
+.editable-score-row .score-edit-button {
+  grid-area: edit;
 }
 
 .score-edit-button {
@@ -838,6 +850,10 @@ a.secondary-button {
   background: #121822;
   color: var(--muted-2);
   font-size: 12px;
+}
+
+.editable-score-row .remove-user-button {
+  grid-area: remove;
 }
 
 .remove-user-button {
@@ -1548,7 +1564,7 @@ a.secondary-button {
 
 @media (min-width: 900px) {
   .board-layout {
-    grid-template-columns: minmax(0, 1fr) 210px;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
   }
 }
 
