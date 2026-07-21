@@ -156,6 +156,8 @@ let pendingScoreEdit = null;
 let discordIdentityInitialised = false;
 let discordIdentityEmitted = false;
 let discordSdkClient = null;
+let discordGameInstanceId = "";
+let discordIdentityPayload = null;
 let lastRichPresenceKey = "";
 let browserIdentityReady = false;
 let browserNameModalMode = "initial";
@@ -294,6 +296,16 @@ async function initialiseDiscordIdentity() {
   const isDiscordActivity = isLikelyDiscordActivity();
 
   if (discordIdentityInitialised) {
+    if (discordGameInstanceId) {
+      socket.emit("setGameInstance", {
+        instanceId: discordGameInstanceId,
+      });
+    }
+
+    if (discordIdentityPayload) {
+      socket.emit("setUserIdentity", discordIdentityPayload);
+    }
+
     return;
   }
 
@@ -323,9 +335,9 @@ async function initialiseDiscordIdentity() {
     // later, call updateRichPresence() with the latest authoritative gameState.
     // The "logo" Rich Presence asset must exist in the Discord Developer Portal.
     discordSdkClient = discordSdk;
-    const instanceId = discordSdk.instanceId || "";
+    discordGameInstanceId = discordSdk.instanceId || "";
     socket.emit("setGameInstance", {
-      instanceId,
+      instanceId: discordGameInstanceId,
     });
     updateRichPresence(currentState);
 
@@ -371,12 +383,12 @@ async function initialiseDiscordIdentity() {
       return;
     }
 
-    const identityPayload = {
+    discordIdentityPayload = {
       name: getDiscordDisplayName(user),
       avatarUrl: getDiscordAvatarUrl(user),
       discordUserId: user.id,
     };
-    socket.emit("setUserIdentity", identityPayload);
+    socket.emit("setUserIdentity", discordIdentityPayload);
     discordIdentityEmitted = true;
   } catch (error) {
     console.warn(

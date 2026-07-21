@@ -2325,6 +2325,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const selectedGameContext = activeGameContext;
     const grid = await loadGridByFilename(gridOption.filename, gameState.availableGrids);
 
     if (!grid) {
@@ -2332,16 +2333,28 @@ io.on("connection", (socket) => {
       return;
     }
 
-    gameState.grid = grid;
-    gameState.selectedGridFilename = gridOption.filename;
-    gameState.currentRound = "round1";
-    resetCurrentPromptState();
-
-    if (gameState.phase === "grid") {
-      gameState.phase = "grid";
+    if (getSocketGame(socket) !== selectedGameContext) {
+      socket.emit("actionRejected", "Your game changed while the grid was loading. Select it again.");
+      return;
     }
 
-    sendGameState();
+    runInGameContext(selectedGameContext, () => {
+      if (gameState.host?.id !== socket.id) {
+        socket.emit("actionRejected", "Only the host can select a grid.");
+        return;
+      }
+
+      if (gameState.phase !== "waiting" && gameState.phase !== "grid") {
+        socket.emit("actionRejected", "Grids can only be changed before a prompt is active.");
+        return;
+      }
+
+      gameState.grid = grid;
+      gameState.selectedGridFilename = gridOption.filename;
+      gameState.currentRound = "round1";
+      resetCurrentPromptState();
+      sendGameState();
+    });
   });
 
   onGameEvent(socket, "resetGrid", () => {
@@ -3062,6 +3075,7 @@ async function refreshAvailableGridDefaults() {
 
 async function refreshGridsForAllGames() {
   const grids = await refreshAvailableGridDefaults();
+  const firstGrid = grids[0] ?? createFallbackGridOption();
 
   for (const gameContext of GameManager.games.values()) {
     gameContext.state.availableGrids = grids;
